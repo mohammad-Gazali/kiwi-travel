@@ -1,9 +1,15 @@
 import "@/styles/globals.css";
-
-import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-
+import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "@/trpc/react";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -15,10 +21,21 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${GeistSans.variable}`}>
+        <body className="bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+          <header className="fixed w-full top-0 flex h-16 items-center justify-end gap-4 p-4">
+            <SignedOut>
+              <SignInButton />
+              <SignUpButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </header>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
