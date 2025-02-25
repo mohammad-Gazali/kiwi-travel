@@ -37,7 +37,7 @@ export default function Testimonials() {
               <CardContent>
                 <p className="mb-4">{testimonial.comment}</p>
                 <div className="flex">
-                  {[...Array(testimonial.rating)].map((_, i) => (
+                  {Array(testimonial.rating).fill(null).map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>

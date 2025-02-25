@@ -2,7 +2,7 @@
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
-import React, { PropsWithChildren } from "react";
+import React, { type PropsWithChildren } from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 function ThemeProvider({
