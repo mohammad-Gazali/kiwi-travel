@@ -9,6 +9,7 @@ import {
 import { ThemeToggle } from "./theme-toggle";
 import Link from "next/link";
 import { Plane } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Header = () => {
   return (
@@ -21,14 +22,18 @@ export const Header = () => {
           </h1>
         </Link>
         <div className="flex gap-4">
-          <ThemeToggle />
           <SignedOut>
-            <SignInButton />
-            <SignUpButton />
+            <SignInButton>
+              <Button variant="ghost">Sign In</Button>
+            </SignInButton>
+            <SignUpButton>
+              <Button>Sign Up</Button>
+            </SignUpButton>
           </SignedOut>
           <SignedIn>
             <UserButton />
           </SignedIn>
+          <ThemeToggle />
         </div>
       </nav>
     </header>
