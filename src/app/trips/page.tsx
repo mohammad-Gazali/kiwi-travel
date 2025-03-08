@@ -4,7 +4,7 @@ import { TripResults } from "./_components/trip-results";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const awaitedSearchParams = await searchParams;
 
