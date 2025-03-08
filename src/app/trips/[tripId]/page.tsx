@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { Calendar, Globe, MapPin, Star, Users, Wifi, Coffee, Utensils, Car, Check } from "lucide-react"
 
@@ -9,12 +8,12 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ImageGallery } from "./_components/image-gallery"
 
-interface PageProps {
-  params: Promise<{ tripId: string }>;
-}
+// interface PageProps {
+//   params: Promise<{ tripId: string }>;
+// }
 
-export default async function TripDetailsPage({ params }: PageProps) {
-  const { tripId } = await params;
+export default async function TripDetailsPage(/*{ params }: PageProps*/) {
+  // const { tripId } = await params;
 
   // This would typically come from an API or database
   const trip = {
@@ -168,7 +167,7 @@ export default async function TripDetailsPage({ params }: PageProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex">
-                    {[...Array(5)].map((_, i) => (
+                    {Array(5).fill(null).map((_, i) => (
                       <Star
                         key={i}
                         className={`h-4 w-4 ${i < Math.floor(trip.rating) ? "fill-primary text-primary" : "text-muted"}`}

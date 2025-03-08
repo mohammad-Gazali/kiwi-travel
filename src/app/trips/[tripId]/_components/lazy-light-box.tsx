@@ -1,4 +1,4 @@
-import Lightbox, { LightboxExternalProps, RenderSlideProps, Slide } from "yet-another-react-lightbox";
+import Lightbox, { type LightboxExternalProps, type RenderSlideProps, type Slide } from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Counter from "yet-another-react-lightbox/plugins/counter";
@@ -15,7 +15,6 @@ import {
 export default function LazyLightbox(props: LightboxExternalProps) {
   return (
     <Lightbox
-    // @ts-ignore
     plugins={[Thumbnails, Zoom, Counter, Video]}
     render={{ slide: NextJsImage }}
     {...props}
@@ -60,11 +59,11 @@ export function NextJsImage({ slide, offset, rect }: RenderSlideProps<Slide>) {
       <Image
         fill
         alt=""
-        // @ts-ignore
+        // @ts-expect-error ignore the slide error
         src={slide}
         loading="eager"
         draggable={false}
-        // @ts-ignore
+        // @ts-expect-error ignore the placeholder error
         placeholder={slide.blurDataURL ? "blur" : undefined}
         style={{
           objectFit: cover ? "cover" : "contain",

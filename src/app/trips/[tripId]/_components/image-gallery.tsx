@@ -47,7 +47,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         onClick={() => openLightbox(0)}
       >
         <Image
-          src={images[0] || "/placeholder.svg"}
+          src={images[0] ?? "/placeholder.svg"}
           alt={title}
           fill
           className="object-cover hover:scale-105 transition-transform duration-300"
@@ -83,7 +83,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
             onClick={() => openLightbox(visibleThumbnailsCount + 1)}
           >
             <Image
-              src={images[visibleThumbnailsCount + 1] || "/placeholder.svg"}
+              src={images[visibleThumbnailsCount + 1] ?? "/placeholder.svg"}
               alt={`${title} - more images`}
               fill
               className="object-cover"

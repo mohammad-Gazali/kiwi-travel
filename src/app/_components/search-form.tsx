@@ -14,7 +14,7 @@ const SearchForm = () => {
       onSubmit={e => {
         e.preventDefault();
 
-        const searchValue = e.currentTarget["search"].value;
+        const searchValue = e.currentTarget.search?.value;
 
         router.push(searchValue ? `/trips?search=${searchValue}` : '/trips');
       }}
