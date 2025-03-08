@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,17 +16,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Users, SearchIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { useSearchParams } from "next/navigation";
 
-export function Search() {
+export function Search({ initialValue }: { initialValue?: string }) {
   const [date, setDate] = useState<Date>();
   const [priceRange, setPriceRange] = useState([500, 5000]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-
-  const searchParams = useSearchParams();
-
-  const initialValue = useRef(searchParams.get('search') ?? '');
 
   const popularDestinations = [
     "Paris",
@@ -74,7 +69,7 @@ export function Search() {
                 id="destination"
                 placeholder="Search destinations, cities, or landmarks"
                 className="h-12"
-                defaultValue={initialValue.current}
+                defaultValue={initialValue}
               />
             </div>
 

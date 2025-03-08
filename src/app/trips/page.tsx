@@ -1,10 +1,23 @@
 import { Search } from "./_components/search";
 import { TripResults } from "./_components/trip-results";
 
-export default function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const awaitedSearchParams = await searchParams;
+
+  const initialSearchValue =
+    typeof awaitedSearchParams.search === "string"
+      ? awaitedSearchParams.search
+      : awaitedSearchParams.search instanceof Array
+        ? awaitedSearchParams.search[0]
+        : undefined;
+
   return (
-    <main className="container mx-auto md:px-0 px-4 py-8 mt-14">
-      <Search />
+    <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
+      <Search initialValue={initialSearchValue} />
       <TripResults />
     </main>
   );
