@@ -7,7 +7,7 @@ import {
   timestamp,
   time,
 } from "drizzle-orm/pg-core";
-import { countries } from "./countries";
+import { destinations } from "./destinations";
 
 // TODO: handle availability dates for trips
 
@@ -15,13 +15,14 @@ export const trip = pgTable("trips", {
   id: integer("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
+  longDescription: text("description").notNull(),
   features: text("features").array().notNull(),
-  imagesUrls: text("images_urls").array().notNull(),
+  assetsUrls: text("assets_urls").array().notNull(),
   travelTime: time("travel_time").notNull(),
   status: text("status", { enum: ["available", "full", "ended"] }).notNull(),
-  countryId: integer("country_id")
+  destinationId: integer("destination_id")
     .notNull()
-    .references(() => countries.id),
+    .references(() => destinations.id),
   tripPriceInCents: integer("trip_price_in_cents").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -58,9 +59,9 @@ export const tripBook = pgTable(
 // ======================== relations ========================
 export const tripRelations = relations(trip, ({ many, one }) => ({
 	books: many(trip),
-  country: one(countries, {
-    fields: [trip.countryId],
-    references: [countries.id],
+  country: one(destinations, {
+    fields: [trip.destinationId],
+    references: [destinations.id],
   }),
 }));
 

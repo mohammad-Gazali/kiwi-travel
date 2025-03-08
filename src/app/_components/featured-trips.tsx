@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/carousel";
 import { Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const featuredTrips = [
   {
@@ -87,7 +88,9 @@ export default function FeaturedTrips() {
                   </CardContent>
                   <CardFooter className="flex items-center justify-between p-4 pt-0">
                     <span className="text-lg font-bold">${trip.price}</span>
-                    <Button size="sm">Book Now</Button>
+                    <Link href={`/trips/${trip.id}`}>
+                      <Button size="sm">Book Now</Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               </CarouselItem>

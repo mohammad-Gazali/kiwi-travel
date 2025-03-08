@@ -4,7 +4,7 @@ import { Plane } from "lucide-react"
 export default function Footer() {
   return (
     <footer className="bg-muted text-foreground py-8">
-      <div className="container mx-auto">
+      <div className="container md:px-0 px-4 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <Link href="/" className="flex items-center space-x-2">

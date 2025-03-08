@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { MapPin } from "lucide-react"
+import SearchForm from "./search-form"
 
 export default function Hero() {
   return (
@@ -18,15 +16,7 @@ export default function Hero() {
             <CardTitle>Find your Next Travel</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="flex items-center space-x-4">
-              <div className="relative flex-grow">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input type="text" placeholder="Where do you want to go?" className="text-inherit pl-10 w-full" />
-              </div>
-              <Button type="submit" className="flex-shrink-0">
-                Search
-              </Button>
-            </form>
+            <SearchForm />
           </CardContent>
         </Card>
       </div>
