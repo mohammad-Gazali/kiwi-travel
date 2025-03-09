@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Calendar, Edit } from "lucide-react"
+import { PageParams } from "@/types/page-params"
 
 // Mock booking data
 const mockBooking = {
@@ -23,7 +24,9 @@ const mockBooking = {
   travelers: 2,
 }
 
-export default function BookingDetailsPage({ params }: { params: { id: string } }) {
+export default async function BookingDetailsPage({ params }: PageParams<{ id: string }>) {
+  const { id } = await params;
+
   const booking = mockBooking // In a real app, fetch the booking by ID
 
   const getStatusBadgeVariant = (status: string) => {
@@ -41,15 +44,7 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Booking Details" description="View booking information" backButtonLink="/dashboard/bookings">
-        <Button asChild className="ml-auto">
-          <Link href={`/dashboard/bookings/${params.id}/edit`}>
-            <Edit className="mr-1 h-4 w-4" />
-            Edit Booking
-          </Link>
-        </Button>
-      </PageHeader>
-
+      <PageHeader title="Booking Details" description="View booking information" backButtonLink="/dashboard/bookings" />
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -66,7 +61,7 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Booking ID</div>
-                <div className="font-medium">{booking.id}</div>
+                <div className="font-medium">{id}</div>
               </div>
             </div>
 
