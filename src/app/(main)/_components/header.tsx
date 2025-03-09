@@ -6,7 +6,7 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import { Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,10 +31,15 @@ export const Header = () => {
               <Button>Sign Up</Button>
             </SignUpButton>
           </SignedOut>
+          <ThemeToggle />
           <SignedIn>
+            <Link href="/dashboard">
+              <Button>
+                Dashboard
+              </Button>
+            </Link>
             <UserButton />
           </SignedIn>
-          <ThemeToggle />
         </div>
         <DrawerButton />
       </nav>

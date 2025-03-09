@@ -5,6 +5,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -18,8 +19,9 @@ import {
   useClerk,
 } from "@clerk/nextjs";
 import { LogOut, Menu, User, X } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
+import Link from "next/link";
 
 export const DrawerButton = () => {
   const [open, setOpen] = useState(false);
@@ -52,33 +54,38 @@ export const DrawerButton = () => {
           </DrawerDescription>
         </DrawerHeader>
         <div className="m-4">
-          <div className="flex flex-col gap-4">
-            <SignedOut>
-              <SignInButton>
-                <Button variant="outline">Sign In</Button>
-              </SignInButton>
-              <SignUpButton>
-                <Button>Sign Up</Button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <Button
-                onClick={() => {
-                  setOpen(false);
-                  openUserProfile();
-                }}
-              >
-                <User /> Open Profile
-              </Button>
-              <SignOutButton>
-                <Button onClick={() => setOpen(false)} variant="outline">
-                  <LogOut />
-                  Sign out
-                </Button>
-              </SignOutButton>
-            </SignedIn>
+          <div className="flex flex-col gap-2">
+            <Link href="/dashboard">
+              <Button className="w-full">Dashboard</Button>
+            </Link>
           </div>
         </div>
+        <DrawerFooter>
+          <SignedOut>
+            <SignInButton>
+              <Button variant="outline">Sign In</Button>
+            </SignInButton>
+            <SignUpButton>
+              <Button>Sign Up</Button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <Button
+              onClick={() => {
+                setOpen(false);
+                openUserProfile();
+              }}
+            >
+              <User /> Open Profile
+            </Button>
+            <SignOutButton>
+              <Button onClick={() => setOpen(false)} variant="outline">
+                <LogOut />
+                Sign out
+              </Button>
+            </SignOutButton>
+          </SignedIn>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
