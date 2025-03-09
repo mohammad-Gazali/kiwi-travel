@@ -1,8 +1,9 @@
 import { PageHeader } from "@/components/dashboard/page-header"
 import { DestinationForm } from "../../_components/destination-form"
+import { PageParams } from "@/types/page-params";
 
-export default async function EditDestinationPage() {
-  const id = 'test';
+export default async function EditDestinationPage({ params }: PageParams<{ id: string }>) {
+  const { id } = await params;
 
   return (
     <div className="space-y-6">
