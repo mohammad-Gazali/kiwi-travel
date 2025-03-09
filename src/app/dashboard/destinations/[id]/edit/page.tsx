@@ -1,7 +1,10 @@
 import { PageHeader } from "@/components/dashboard/page-header"
 import { DestinationForm } from "../../_components/destination-form"
+import { PageParams } from "@/types/page-params";
 
-export default function EditDestinationPage({ params }: { params: { id: string } }) {
+export default async function EditDestinationPage({ params }: PageParams<{ id: string }>) {
+  const { id } = await params;
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -9,7 +12,7 @@ export default function EditDestinationPage({ params }: { params: { id: string }
         description="Update destination information"
         backButtonLink="/dashboard/destinations"
       />
-      <DestinationForm id={params.id} />
+      <DestinationForm id={id} />
     </div>
   )
 }
