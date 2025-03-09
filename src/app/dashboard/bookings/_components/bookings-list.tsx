@@ -185,7 +185,7 @@ export function BookingsList() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string
+        const status = row.getValue<string>("status")
         return <Badge variant={getStatusBadgeVariant(status)}>{status}</Badge>
       },
     },

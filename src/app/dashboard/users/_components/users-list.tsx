@@ -155,7 +155,7 @@ export function UsersList() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string
+        const status = row.getValue<string>("status")
         return <Badge variant={status === "Active" ? "default" : "secondary"}>{status}</Badge>
       },
     },

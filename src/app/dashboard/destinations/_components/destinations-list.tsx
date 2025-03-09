@@ -138,7 +138,7 @@ export function DestinationsList() {
       accessorKey: "popular",
       header: "Status",
       cell: ({ row }) => {
-        const popular = row.getValue("popular") as boolean
+        const popular = row.getValue<boolean>("popular")
         return popular ? <Badge>Popular</Badge> : <Badge variant="secondary">Regular</Badge>
       },
     },

@@ -135,7 +135,7 @@ export function ConstantsList() {
       accessorKey: "category",
       header: "Category",
       cell: ({ row }) => {
-        const category = row.getValue("category") as string
+        const category = row.getValue<string>("category")
         return <Badge variant={getCategoryColor(category)}>{category}</Badge>
       },
     },
