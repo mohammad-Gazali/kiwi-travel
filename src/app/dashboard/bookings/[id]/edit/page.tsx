@@ -1,9 +1,8 @@
 import { PageHeader } from "@/components/dashboard/page-header"
 import { BookingForm } from "../../_components/booking-form"
-import { PageParams } from "@/types/page-params"
 
-export default async function EditBookingPage({ params }: PageParams<{ id: string }>) {
-  const { id } = await params;
+export default async function EditBookingPage() {
+  const id = 'test';
 
   return (
     <div className="space-y-6">

@@ -1,9 +1,8 @@
 import { PageHeader } from "@/components/dashboard/page-header"
 import { UserForm } from "../../_components/user-form"
-import { PageParams } from "@/types/page-params";
 
-export default async function EditUserPage({ params }: PageParams<{ id: string }>) {
-  const { id } = await params;
+export default async function EditUserPage() {
+  const id = 'test';
 
   return (
     <div className="space-y-6">
