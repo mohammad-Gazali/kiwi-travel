@@ -1,88 +1,94 @@
-import Link from "next/link"
-import { Plane } from "lucide-react"
+import Link from "next/link";
+import { Plane } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const t = useTranslations("General.footer");
+
   return (
-    <footer className="bg-muted text-foreground py-8">
-      <div className="container md:px-0 px-4 mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-muted py-8 text-foreground">
+      <div className="container mx-auto px-4 md:px-0">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <Link href="/" className="flex items-center space-x-2">
               <Plane className="h-6 w-6" />
-              <span className="text-xl font-bold">TravelEase</span>
+              <span className="text-xl font-bold">Kiwi Travel</span>
             </Link>
-            <p className="mt-2 text-sm">Discover the world with us</p>
+            <p className="mt-2 text-sm">{t("discoverTheWorld")}</p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="mb-4 text-lg font-semibold">
+              {t("quickLinksTitle")}
+            </h3>
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="hover:underline">
-                  Home
+                  {t("quickLinks.home")}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:underline">
-                  Destinations
+                  {t("quickLinks.destinations")}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:underline">
-                  Trips
+                  {t("quickLinks.trips")}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:underline">
-                  About Us
+                  {t("quickLinks.aboutUs")}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <h3 className="mb-4 text-lg font-semibold">{t("supportTitle")}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="hover:underline">
-                  FAQs
+                  {t("supportLinks.faqs")}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:underline">
-                  Contact Us
+                  {t("supportLinks.contactUs")}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:underline">
-                  Privacy Policy
+                  {t("supportLinks.privacyPolicy")}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:underline">
-                  Terms of Service
+                  {t("supportLinks.termsOfService")}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
+            <h3 className="mb-4 text-lg font-semibold">{t("followUsTitle")}</h3>
             <div className="flex flex-col gap-4">
               <Link href="#" className="hover:text-primary">
-                Facebook
+                {t("socialLinks.facebook")}
               </Link>
               <Link href="#" className="hover:text-primary">
-                Twitter
+                {t("socialLinks.twitter")}
               </Link>
               <Link href="#" className="hover:text-primary">
-                Instagram
+                {t("socialLinks.instagram")}
               </Link>
             </div>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-foreground/20 text-center">
-          <p>&copy; {new Date().getFullYear()} TravelEase. All rights reserved.</p>
+        <div className="mt-8 border-t border-foreground/20 pt-8 text-center">
+          <p>
+            &copy; {new Date().getFullYear()} Kiwi Travel. {t("copyright")}
+          </p>
         </div>
       </div>
     </footer>
-  )
+  );
 }
-

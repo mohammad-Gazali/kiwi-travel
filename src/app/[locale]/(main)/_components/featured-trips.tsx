@@ -16,6 +16,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -58,10 +59,12 @@ const featuredTrips = [
 ];
 
 export default function FeaturedTrips() {
+  const t = useTranslations("HomePage.featuredTrips");
+
   return (
     <section className="bg-accent dark:bg-accent/20 py-16">
       <div className="container mx-auto">
-        <h2 className="mb-8 text-center text-3xl font-bold">Featured Trips</h2>
+        <h2 className="mb-8 text-center text-3xl font-bold">{t('sectionTitle')}</h2>
         <Carousel className="sm:px-12">
           <CarouselContent className="p-4 sm:pl-1">
             {featuredTrips.map((trip) => (
@@ -89,7 +92,7 @@ export default function FeaturedTrips() {
                   <CardFooter className="flex items-center justify-between p-4 pt-0">
                     <span className="text-lg font-bold">${trip.price}</span>
                     <Link href={`/trips/${trip.id}`}>
-                      <Button size="sm">Book Now</Button>
+                      <Button size="sm">{t('buttonLabel')}</Button>
                     </Link>
                   </CardFooter>
                 </Card>

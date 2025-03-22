@@ -22,10 +22,13 @@ import { LogOut, Menu, User, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export const DrawerButton = () => {
   const [open, setOpen] = useState(false);
   const { openUserProfile } = useClerk();
+
+  const t = useTranslations("General.header");
 
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
@@ -50,23 +53,23 @@ export const DrawerButton = () => {
             </div>
           </DrawerTitle>
           <DrawerDescription className="sr-only">
-            Sidenav for settings
+            {t("sidenavDescription")}
           </DrawerDescription>
         </DrawerHeader>
         <div className="m-4">
           <div className="flex flex-col gap-2">
             <Link href="/dashboard">
-              <Button className="w-full">Dashboard</Button>
+              <Button className="w-full">{t("dashboard")}</Button>
             </Link>
           </div>
         </div>
         <DrawerFooter>
           <SignedOut>
             <SignInButton>
-              <Button variant="outline">Sign In</Button>
+              <Button variant="outline">{t("signIn")}</Button>
             </SignInButton>
             <SignUpButton>
-              <Button>Sign Up</Button>
+              <Button>{t("signUp")}</Button>
             </SignUpButton>
           </SignedOut>
           <SignedIn>
@@ -76,12 +79,12 @@ export const DrawerButton = () => {
                 openUserProfile();
               }}
             >
-              <User /> Open Profile
+              <User /> {t("openProfile")}
             </Button>
             <SignOutButton>
               <Button onClick={() => setOpen(false)} variant="outline">
                 <LogOut />
-                Sign out
+                {t("signOut")}
               </Button>
             </SignOutButton>
           </SignedIn>

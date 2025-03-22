@@ -1,12 +1,21 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useSidebar } from "./sidebar-provider"
-import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Globe, Map, Settings, ShoppingCart, Users, CircleGauge } from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSidebar } from "./sidebar-provider";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Globe,
+  Map,
+  Settings,
+  ShoppingCart,
+  Users,
+  CircleGauge,
+} from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const sidebarNavItems = [
   {
@@ -34,11 +43,11 @@ const sidebarNavItems = [
     href: "/dashboard/constants",
     icon: Settings,
   },
-]
+];
 
 export function DashboardSidebar() {
-  const pathname = usePathname()
-  const { isOpen, close } = useSidebar()
+  const pathname = usePathname();
+  const { isOpen, close } = useSidebar();
 
   return (
     <>
@@ -54,7 +63,27 @@ export function DashboardSidebar() {
             <CircleGauge className="h-6 w-6 text-primary" />
             <span className="font-semibold">Dashboard</span>
           </div>
-          <ThemeToggle />
+          <div className="space-x-2">
+            <TooltipProvider>
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger>
+                  <Link
+                    href="/"
+                    className={buttonVariants({
+                      size: "icon",
+                      variant: "outline",
+                    })}
+                  >
+                    <Globe />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Go to website</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <ThemeToggle />
+          </div>
         </div>
         <ScrollArea className="flex-1 py-4">
           <nav className="grid gap-1 px-2">
@@ -76,8 +105,12 @@ export function DashboardSidebar() {
           </nav>
         </ScrollArea>
       </aside>
-      {isOpen && <div onClick={close} className="fixed inset-0 z-10 bg-background/80 backdrop-blur-sm lg:hidden" />}
+      {isOpen && (
+        <div
+          onClick={close}
+          className="fixed inset-0 z-10 bg-background/80 backdrop-blur-sm lg:hidden"
+        />
+      )}
     </>
-  )
+  );
 }
-

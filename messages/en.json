@@ -1,0 +1,72 @@
+{
+  "HomePage": {
+    "hero": {
+      "headline": "Discover Your Next Adventure",
+      "subheadline": "Find and book amazing trips around the world",
+      "cardTitle": "Find your Next Travel"
+    },
+    "featuredTrips": {
+      "sectionTitle": "Featured Trips",
+      "buttonLabel": "Book Now"
+    },
+    "popularDestinations": {
+      "sectionTitle": "Popular Destinations"
+    },
+    "whyChooseUs": {
+      "sectionTitle": "Why Choose Us",
+      "reason1Title": "Safe and Secure",
+      "reason1Description": "We prioritize your safety with trusted partners and 24/7 support.",
+      "reason2Title": "Best Price Guarantee",
+      "reason2Description": "Find a lower price? We'll match it and give you an additional discount.",
+      "reason3Title": "Exceptional Customer Service",
+      "reason3Description": "Our dedicated team is always ready to assist you before, during, and after your trip."
+    },
+    "testimonials": {
+      "sectionTitle": "What Our Travelers Say"
+    }
+  },
+  "General": {
+    "themeToggle": {
+      "toggleTheme": "Toggle theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "header": {
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "signOut": "Sign Out",
+      "dashboard": "Dashboard",
+      "openProfile": "Open Profile",
+      "sidenavDescription": "Sidenav for settings",
+      "changeLanguage": "Change Language"
+    },
+    "footer": {
+      "quickLinksTitle": "Quick Links",
+      "quickLinks": {
+        "home": "Home",
+        "destinations": "Destinations",
+        "trips": "Trips",
+        "aboutUs": "About Us"
+      },
+      "supportTitle": "Support",
+      "supportLinks": {
+        "faqs": "FAQs",
+        "contactUs": "Contact Us",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service"
+      },
+      "followUsTitle": "Follow Us",
+      "socialLinks": {
+        "facebook": "Facebook",
+        "twitter": "Twitter",
+        "instagram": "Instagram"
+      },
+      "discoverTheWorld": "Discover the world with us",
+      "copyright": "All rights reserved."
+    }
+  },
+  "Metadata": {
+    "title": "kiwi travel"
+  }
+}

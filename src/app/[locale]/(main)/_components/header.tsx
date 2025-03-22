@@ -11,8 +11,12 @@ import Link from "next/link";
 import { Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DrawerButton from "./drawer-button";
+import { useTranslations } from "next-intl";
+import LanguageToggle from "./language-toggle";
 
 export const Header = () => {
+  const t = useTranslations("General.header");
+
   return (
     <header className="z-10 fixed w-full top-0 h-16 border-b shadow bg-background text-foreground p-4">
       <nav className="container flex items-center justify-between gap-4 mx-auto">
@@ -25,17 +29,22 @@ export const Header = () => {
         <div className="md:flex hidden gap-4">
           <SignedOut>
             <SignInButton>
-              <Button variant="outline">Sign In</Button>
+              <Button variant="outline">
+                {t("signIn")}
+              </Button>
             </SignInButton>
             <SignUpButton>
-              <Button>Sign Up</Button>
+              <Button>
+                {t("signUp")}
+              </Button>
             </SignUpButton>
           </SignedOut>
           <ThemeToggle />
+          <LanguageToggle />
           <SignedIn>
             <Link href="/dashboard">
               <Button>
-                Dashboard
+                {t("dashboard")}
               </Button>
             </Link>
             <UserButton />

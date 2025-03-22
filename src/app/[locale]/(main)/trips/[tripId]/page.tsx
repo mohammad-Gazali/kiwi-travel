@@ -81,31 +81,8 @@ export default async function TripDetailsPage(/*{ params }: PageProps*/) {
             </Badge>
           </div>
 
-          {/* Main Image and Gallery */}
+          {/* Main Image Gallery */}
           <ImageGallery images={trip.images} title={trip.title} />
-          {/* <div className="space-y-2">
-            <div className="relative h-[300px] sm:h-[400px] w-full overflow-hidden rounded-xl">
-              <Image
-                src={trip.images[0] || "/placeholder.svg"}
-                alt={trip.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {trip.images.slice(1).map((image, index) => (
-                <div key={index} className="relative h-20 overflow-hidden rounded-lg">
-                  <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`${trip.title} - image ${index + 2}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div> */}
 
           {/* Tabs for Description and Details */}
           <Tabs defaultValue="description" className="w-full">
@@ -170,7 +147,7 @@ export default async function TripDetailsPage(/*{ params }: PageProps*/) {
                     {Array(5).fill(null).map((_, i) => (
                       <Star
                         key={i}
-                        className={`h-4 w-4 ${i < Math.floor(trip.rating) ? "fill-primary text-primary" : "text-muted"}`}
+                        className={`h-4 w-4 ${i < Math.floor(trip.rating) ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"}`}
                       />
                     ))}
                   </div>
@@ -210,7 +187,7 @@ export default async function TripDetailsPage(/*{ params }: PageProps*/) {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span>Base price</span>
-                  <span>${trip.price} × 2</span>
+                  <span>${trip.price} &times; 2</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Taxes & fees</span>

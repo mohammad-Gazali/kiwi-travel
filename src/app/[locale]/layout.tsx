@@ -7,6 +7,10 @@ import { Suspense } from "react";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
+import { routing } from "@/i18n/routing";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { notFound } from "next/navigation";
+import { PageParams } from "@/types/page-params";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
@@ -20,22 +24,31 @@ async function UTSSR() {
   return <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />;
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  params,
+}: Readonly<{ children: React.ReactNode } & PageParams<{ locale: string }>>) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${GeistSans.variable}`}
       suppressHydrationWarning
     >
       <body>
-        <Providers>
-          <Suspense>
-            <UTSSR />
-          </Suspense>
-          {children}
-        </Providers>
+        <NextIntlClientProvider>
+          <Providers locale={locale}>
+            <Suspense>
+              <UTSSR />
+            </Suspense>
+            {children}
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

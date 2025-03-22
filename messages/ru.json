@@ -1,0 +1,72 @@
+{
+  "HomePage": {
+    "hero": {
+      "headline": "Откройте для себя своё следующее приключение",
+      "subheadline": "Найдите и забронируйте удивительные поездки по всему миру",
+      "cardTitle": "Найдите своё следующее путешествие"
+    },
+    "featuredTrips": {
+      "sectionTitle": "Рекомендуемые поездки",
+      "buttonLabel": "Забронировать"
+    },
+    "popularDestinations": {
+      "sectionTitle": "Популярные направления"
+    },
+    "whyChooseUs": {
+      "sectionTitle": "Почему выбирают нас",
+      "reason1Title": "Безопасность и защита",
+      "reason1Description": "Мы ставим вашу безопасность на первое место, сотрудничая с надежными партнёрами и предоставляя круглосуточную поддержку.",
+      "reason2Title": "Гарантия лучшей цены",
+      "reason2Description": "Нашли цену ниже? Мы её сравняем и предоставим дополнительную скидку.",
+      "reason3Title": "Исключительное обслуживание клиентов",
+      "reason3Description": "Наша команда всегда готова помочь вам до, во время и после путешествия."
+    },
+    "testimonials": {
+      "sectionTitle": "Что говорят наши путешественники"
+    }
+  },
+  "General": {
+    "themeToggle": {
+      "toggleTheme": "Переключить тему",
+      "light": "Светлая",
+      "dark": "Тёмная",
+      "system": "Системная"
+    },
+    "header": {
+      "signIn": "Войти",
+      "signUp": "Регистрация",
+      "signOut": "Выйти",
+      "dashboard": "Панель управления",
+      "openProfile": "Открыть профиль",
+      "sidenavDescription": "Боковая панель для настроек",
+      "changeLanguage": "Изменить язык"
+    },
+    "footer": {
+      "quickLinksTitle": "Быстрые ссылки",
+      "quickLinks": {
+        "home": "Главная",
+        "destinations": "Направления",
+        "trips": "Путешествия",
+        "aboutUs": "О нас"
+      },
+      "supportTitle": "Поддержка",
+      "supportLinks": {
+        "faqs": "Часто задаваемые вопросы",
+        "contactUs": "Свяжитесь с нами",
+        "privacyPolicy": "Политика конфиденциальности",
+        "termsOfService": "Условия обслуживания"
+      },
+      "followUsTitle": "Следите за нами",
+      "socialLinks": {
+        "facebook": "Facebook",
+        "twitter": "Twitter",
+        "instagram": "Instagram"
+      },
+      "discoverTheWorld": "Откройте мир с нами",
+      "copyright": "Все права защищены."
+    }
+  },
+  "Metadata": {
+    "title": "kiwi travel"
+  }
+}

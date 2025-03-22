@@ -4,6 +4,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
 import React, { type PropsWithChildren } from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ruRU } from "@clerk/localizations";
 
 function ThemeProvider({
   children,
@@ -12,9 +13,14 @@ function ThemeProvider({
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
 
-const Providers = ({ children }: PropsWithChildren) => {
+const Providers = ({
+  children,
+  locale,
+}: PropsWithChildren<{
+  locale: string;
+}>) => {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={locale === "ru" ? ruRU : undefined}>
       <TRPCReactProvider>
         <ThemeProvider
           attribute="class"

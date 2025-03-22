@@ -13,9 +13,12 @@ import { destinations } from "./destinations";
 
 export const trip = pgTable("trips", {
   id: integer("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  longDescription: text("description").notNull(),
+  titleEn: text("titleEn").notNull(),
+  titleRu: text("titleRu").notNull(),
+  descriptionEn: text("descriptionEn").notNull(),
+  descriptionRu: text("descriptionRu").notNull(),
+  longDescriptionEn: text("longDescriptionEn").notNull(),
+  longDescriptionRu: text("longDescriptionRu").notNull(),
   features: text("features").array().notNull(),
   assetsUrls: text("assets_urls").array().notNull(),
   travelTime: time("travel_time").notNull(),
