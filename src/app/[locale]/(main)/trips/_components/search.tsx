@@ -16,12 +16,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Users, SearchIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 
 export function Search({ initialValue }: { initialValue?: string }) {
   const [date, setDate] = useState<Date>();
   const [priceRange, setPriceRange] = useState([500, 5000]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  const t = useTranslations("TripsPage");
 
   const popularDestinations = [
     "Paris",
@@ -64,10 +67,10 @@ export function Search({ initialValue }: { initialValue?: string }) {
         <CardContent className="p-6">
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="destination">Where do you want to go?</Label>
+              <Label htmlFor="destination">{t("destinationLabel")}</Label>
               <Input
                 id="destination"
-                placeholder="Search destinations, cities, or landmarks"
+                placeholder={t("destinationPlaceholder")}
                 className="h-12"
                 defaultValue={initialValue}
               />
@@ -75,7 +78,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="grid gap-2">
-                <Label>When do you want to travel?</Label>
+                <Label>{t("dateLabel")}</Label>
                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -86,7 +89,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : "Select date"}
+                      {date ? format(date, "PPP") : t("datePlaceholder")}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -98,14 +101,14 @@ export function Search({ initialValue }: { initialValue?: string }) {
                         setDate(date);
                         setIsCalendarOpen(false);
                       }}
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="travelers">Travelers</Label>
+                <Label htmlFor="travelers">{t("travelersLabel")}</Label>
                 <div className="relative">
                   <Input
                     id="travelers"
@@ -119,11 +122,11 @@ export function Search({ initialValue }: { initialValue?: string }) {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="budget">Budget per person</Label>
+                <Label htmlFor="budget">{t("budgetLabel")}</Label>
                 <Input
                   id="budget"
                   type="text"
-                  placeholder="Enter your budget"
+                  placeholder={t("budgetPlaceholder")}
                   className="h-12"
                 />
               </div>
@@ -134,14 +137,14 @@ export function Search({ initialValue }: { initialValue?: string }) {
               className="mt-2 h-12"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
-              {isFilterOpen ? "Hide Filters" : "Show More Filters"}
+              {isFilterOpen ? t("filtersToggleHide") : t("filtersToggleShow")}
             </Button>
 
             {isFilterOpen && (
               <div className="mt-4 grid gap-6 border-t pt-4">
                 <div>
                   <Label className="mb-3 block">
-                    Price Range ($ per person)
+                    {t("priceRangeLabel")}
                   </Label>
                   <div className="px-2">
                     <Slider
@@ -161,7 +164,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
                 </div>
 
                 <div>
-                  <Label className="mb-3 block">Popular Destinations</Label>
+                  <Label className="mb-3 block">{t("popularDestinationsLabel")}</Label>
                   <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
                     {popularDestinations.map((destination) => (
                       <div
@@ -182,7 +185,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <Label className="mb-3 block">Regions</Label>
+                    <Label className="mb-3 block">{t("regionsLabel")}</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {regions.map((region) => (
                         <div
@@ -202,7 +205,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
                   </div>
 
                   <div>
-                    <Label className="mb-3 block">Trip Type</Label>
+                    <Label className="mb-3 block">{t("tripTypesLabel")}</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {tripTypes.map((type) => (
                         <div key={type} className="flex items-center space-x-2">
@@ -226,7 +229,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
 
       <Button className="h-12 w-full text-lg">
         <SearchIcon className="mr-2 h-5 w-5" />
-        Search Trips
+        {t("searchButton")}
       </Button>
     </div>
   );

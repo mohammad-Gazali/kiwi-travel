@@ -7,7 +7,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/theme-toggle";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";;
 import { Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DrawerButton from "./drawer-button";

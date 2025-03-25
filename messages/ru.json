@@ -25,6 +25,28 @@
       "sectionTitle": "Что говорят наши путешественники"
     }
   },
+  "TripsPage": {
+    "destinationLabel": "Куда вы хотите поехать?",
+    "destinationPlaceholder": "Ищите направления, города или достопримечательности",
+    "dateLabel": "Когда вы хотите путешествовать?",
+    "datePlaceholder": "Выберите дату",
+    "travelersLabel": "Путешественники",
+    "budgetLabel": "Бюджет на человека",
+    "budgetPlaceholder": "Введите ваш бюджет",
+    "filtersToggleShow": "Показать больше фильтров",
+    "filtersToggleHide": "Скрыть фильтры",
+    "priceRangeLabel": "Ценовой диапазон ($ на человека)",
+    "popularDestinationsLabel": "Популярные направления",
+    "regionsLabel": "Регионы",
+    "tripTypesLabel": "Тип поездки",
+    "searchButton": "Найти поездки",
+    "tripsFoundHeader": "Найдено {count} поездок",
+    "gridViewTab": "Сетка",
+    "listViewTab": "Список",
+    "tripCardPricePerPerson": "за человека",
+    "viewDetailsButton": "Подробнее",
+    "loadMoreResultsButton": "Загрузить ещё"
+  },
   "General": {
     "themeToggle": {
       "toggleTheme": "Переключить тему",

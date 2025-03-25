@@ -25,6 +25,28 @@
       "sectionTitle": "What Our Travelers Say"
     }
   },
+  "TripsPage": {
+    "destinationLabel": "Where do you want to go?",
+    "destinationPlaceholder": "Search destinations, cities, or landmarks",
+    "dateLabel": "When do you want to travel?",
+    "datePlaceholder": "Select date",
+    "travelersLabel": "Travelers",
+    "budgetLabel": "Budget per person",
+    "budgetPlaceholder": "Enter your budget",
+    "filtersToggleShow": "Show More Filters",
+    "filtersToggleHide": "Hide Filters",
+    "priceRangeLabel": "Price Range ($ per person)",
+    "popularDestinationsLabel": "Popular Destinations",
+    "regionsLabel": "Regions",
+    "tripTypesLabel": "Trip Type",
+    "searchButton": "Search Trips",
+    "tripsFoundHeader": "{count} trips found",
+    "gridViewTab": "Grid View",
+    "listViewTab": "List View",
+    "tripCardPricePerPerson": "per person",
+    "viewDetailsButton": "View Details",
+    "loadMoreResultsButton": "Load More Results"
+  },
   "General": {
     "themeToggle": {
       "toggleTheme": "Toggle theme",

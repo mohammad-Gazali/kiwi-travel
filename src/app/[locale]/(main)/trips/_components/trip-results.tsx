@@ -6,7 +6,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, MapPin, Star, Users } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl"
 
 // Mock data for trips
 const trips = [
@@ -85,17 +86,23 @@ const trips = [
 ]
 
 export function TripResults() {
+  const t = useTranslations("TripsPage");
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">{trips.length} trips found</h2>
+        <h2 className="text-xl font-bold">{t("tripsFoundHeader", { count: trips.length })}</h2>
       </div>
 
       <Tabs defaultValue="grid" className="mb-6">
         <div className="md:flex hidden justify-between items-center">
           <TabsList>
-            <TabsTrigger value="grid">Grid View</TabsTrigger>
-            <TabsTrigger value="list">List View</TabsTrigger>
+            <TabsTrigger value="grid">
+              {t("gridViewTab")}
+            </TabsTrigger>
+            <TabsTrigger value="list">
+            {t("listViewTab")}
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -120,7 +127,7 @@ export function TripResults() {
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold">${trip.price}</div>
-                      <div className="text-xs text-muted-foreground">per person</div>
+                      <div className="text-xs text-muted-foreground">{t("tripCardPricePerPerson")}</div>
                     </div>
                   </div>
 
@@ -137,7 +144,9 @@ export function TripResults() {
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
                   <Link href={`/trips/${trip.id}`}>
-                    <Button className="w-full">View Details</Button>
+                    <Button className="w-full">
+                      {t("viewDetailsButton")}
+                    </Button>
                   </Link>
                 </CardFooter>
               </Card>
@@ -167,7 +176,7 @@ export function TripResults() {
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-bold">${trip.price}</div>
-                        <div className="text-xs text-muted-foreground">per person</div>
+                        <div className="text-xs text-muted-foreground">{t("tripCardPricePerPerson")}</div>
                       </div>
                     </div>
 
@@ -187,7 +196,9 @@ export function TripResults() {
 
                     <div className="mt-4">
                       <Link href={`/trips/${trip.id}`}>
-                        <Button>View Details</Button>
+                        <Button>
+                          {t("viewDetailsButton")}
+                        </Button>
                       </Link>
                     </div>
                   </div>
@@ -199,7 +210,9 @@ export function TripResults() {
       </Tabs>
 
       <div className="flex justify-center mt-8">
-        <Button variant="outline">Load More Results</Button>
+        <Button variant="outline">
+          {t("loadMoreResultsButton")}
+        </Button>
       </div>
     </div>
   )

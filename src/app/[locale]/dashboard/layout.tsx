@@ -1,15 +1,19 @@
-"use client"
+import { SidebarProvider } from "./_components/sidebar-provider";
+import { DashboardSidebar } from "./_components/dashboard-sidebar";
+import { FloatingMenuButton } from "./_components/floating-menu-button";
+import type { Metadata } from "next";
 
-import type React from "react"
-
-import { SidebarProvider } from "./_components/sidebar-provider"
-import { DashboardSidebar } from "./_components/dashboard-sidebar"
-import { FloatingMenuButton } from "./_components/floating-menu-button"
+export const metadata: Metadata = {
+  title: "Dashboard",
+  robots: {
+    index: false,
+  },
+};
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <SidebarProvider>
@@ -19,6 +23,5 @@ export default function DashboardLayout({
         <FloatingMenuButton />
       </div>
     </SidebarProvider>
-  )
+  );
 }
-

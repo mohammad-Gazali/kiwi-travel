@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button"
 import { Calendar, Edit } from "lucide-react"
 import { PageParams } from "@/types/page-params"
