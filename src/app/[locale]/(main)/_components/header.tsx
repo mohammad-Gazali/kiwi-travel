@@ -1,4 +1,4 @@
-import React from "react";
+import { Suspense } from "react";
 import {
   SignedIn,
   SignedOut,
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import DrawerButton from "./drawer-button";
 import { useTranslations } from "next-intl";
 import LanguageToggle from "./language-toggle";
+import DashboardButton from "./dashboard-button";
 
 export const Header = () => {
   const t = useTranslations("General.header");
@@ -41,12 +42,10 @@ export const Header = () => {
           </SignedOut>
           <ThemeToggle />
           <LanguageToggle />
+          <Suspense fallback={<Button disabled>Loading...</Button>}>
+            <DashboardButton />
+          </Suspense>
           <SignedIn>
-            <Link href="/dashboard">
-              <Button>
-                {t("dashboard")}
-              </Button>
-            </Link>
             <UserButton />
           </SignedIn>
         </div>

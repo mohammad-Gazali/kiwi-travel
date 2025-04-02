@@ -8,7 +8,7 @@ export const tripFormSchema = z.object({
   longDescriptionEn: z.string().min(1, "English long description is required"),
   longDescriptionRu: z.string().min(1, "Russian long description is required"),
   features: z.array(z.string()).min(1, "At least one feature is required"),
-  assetsUrls: z
+  assets: z
     .array(z.string().url("Must be a valid URL"))
     .min(1, "At least one asset URL is required"),
   travelTime: z

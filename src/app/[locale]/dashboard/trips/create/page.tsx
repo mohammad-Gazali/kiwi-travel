@@ -5,7 +5,11 @@ export default function NewTripPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Create Trip" description="Add a new trip to your catalog" backButtonLink="/dashboard/trips" />
-      <TripForm />
+      <TripForm initialData={{
+        assets: [
+          "https://f7cxh5ao0u.ufs.sh/f/CuY1d5DkGBO1TofOjOqyBCbFf4GLnIwNtqoEKaQXuUYlcMmv?type=video"
+        ],
+      }} />
     </div>
   )
 }

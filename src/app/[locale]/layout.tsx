@@ -11,6 +11,7 @@ import { routing } from "@/i18n/routing";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { PageParams } from "@/types/page-params";
+import { Toaster } from "@/components/ui/toaster"
 import Providers from "./providers";
 
 export const metadata: Metadata = {
@@ -47,6 +48,7 @@ export default async function RootLayout({
               <UTSSR />
             </Suspense>
             {children}
+            <Toaster />
           </Providers>
         </NextIntlClientProvider>
       </body>

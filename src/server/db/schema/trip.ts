@@ -6,26 +6,29 @@ import {
   index,
   timestamp,
   time,
+  primaryKey,
 } from "drizzle-orm/pg-core";
-import { destinations } from "./destinations";
+import { destination } from "./destination";
 
 // TODO: handle availability dates for trips
 
 export const trip = pgTable("trips", {
   id: integer("id").primaryKey(),
-  titleEn: text("titleEn").notNull(),
-  titleRu: text("titleRu").notNull(),
-  descriptionEn: text("descriptionEn").notNull(),
-  descriptionRu: text("descriptionRu").notNull(),
-  longDescriptionEn: text("longDescriptionEn").notNull(),
-  longDescriptionRu: text("longDescriptionRu").notNull(),
-  features: text("features").array().notNull(),
+  titleEn: text("title_en").notNull(),
+  titleRu: text("title_ru").notNull(),
+  descriptionEn: text("description_en").notNull(),
+  descriptionRu: text("description_ru").notNull(),
+  longDescriptionEn: text("long_description_en").notNull(),
+  longDescriptionRu: text("long_description_ru").notNull(),
+  // each asset consists of this format:
+  // "{url}?type=video" if video
+  // "{url}?type=image" if image
   assetsUrls: text("assets_urls").array().notNull(),
   travelTime: time("travel_time").notNull(),
   status: text("status", { enum: ["available", "full", "ended"] }).notNull(),
   destinationId: integer("destination_id")
     .notNull()
-    .references(() => destinations.id),
+    .references(() => destination.id),
   tripPriceInCents: integer("trip_price_in_cents").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -35,8 +38,8 @@ export const trip = pgTable("trips", {
   ),
 });
 
-export const tripBook = pgTable(
-  "trip_books",
+export const tripBooking = pgTable(
+  "trip_bookings",
   {
     id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
     userId: text("user_id").notNull(),
@@ -53,24 +56,49 @@ export const tripBook = pgTable(
       () => new Date(),
     ),
   },
-  (table) => ({
-    userIdIndex: index("user_id_idx").on(table.userId),
-  }),
+  (t) => [
+    index("user_id_idx").on(t.userId),
+  ],
 );
 
+export const tripFeature = pgTable("trip_features", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  contentEn: text("content_en").notNull(),
+  contentRu: text("content_ru").notNull(),
+})
+
+
+export const tripToFeature = pgTable("trip_to_feature", {
+  tripId: integer('trip_id')
+    .notNull()
+    .references(() => trip.id),
+  featureId: integer('feature_id')
+    .notNull()
+    .references(() => tripFeature.id),
+}, (t) => [
+  primaryKey({ columns: [t.tripId, t.featureId] }),
+])
 
 // ======================== relations ========================
 export const tripRelations = relations(trip, ({ many, one }) => ({
-	books: many(trip),
-  country: one(destinations, {
+	bookings: many(trip),
+  features: many(tripToFeature),
+  destination: one(destination, {
     fields: [trip.destinationId],
-    references: [destinations.id],
+    references: [destination.id],
   }),
 }));
 
-export const tripBookRelations = relations(tripBook, ({ one }) => ({
+export const tripBookRelations = relations(tripBooking, ({ one }) => ({
   trip: one(trip, {
-    fields: [tripBook.tripId],
+    fields: [tripBooking.tripId],
     references: [trip.id],
   }),
 }));
+
+export const tripToFeatureRelations = relations(tripToFeature, ({ one }) => ({
+  feature: one(tripFeature, {
+    fields: [tripToFeature.featureId],
+    references: [tripFeature.id],
+  }),
+}))

@@ -6,11 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import { auth } from "@clerk/nextjs/server";
 
 /**
  * 1. CONTEXT
@@ -96,6 +97,17 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const adminMiddleware = t.middleware(async ({ next }) => {
+  const { sessionClaims } = await auth();
+
+  if (!sessionClaims?.metadata.isAdmin) throw new TRPCError({
+    code: 'FORBIDDEN',
+    message: 'admin only procedure',
+  })
+
+  return next()
+})
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -104,3 +116,6 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+
+export const adminProcedure = publicProcedure.use(adminMiddleware);

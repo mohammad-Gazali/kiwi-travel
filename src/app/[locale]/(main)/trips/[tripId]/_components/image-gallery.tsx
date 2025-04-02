@@ -9,7 +9,7 @@ import dynamic from "next/dynamic"
 import "yet-another-react-lightbox/styles.css"
 import "yet-another-react-lightbox/plugins/thumbnails.css"
 import "yet-another-react-lightbox/plugins/counter.css"
-const LazyLightbox = dynamic(() => import("./lazy-light-box").then(mod => mod.default))
+const LazyLightbox = dynamic(() => import("@/components/lazy-light-box").then(mod => mod.default))
 
 interface ImageGalleryProps {
   images: string[]
@@ -53,9 +53,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           className="object-cover hover:scale-105 transition-transform duration-300"
           priority
         />
-        <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-          <span className="text-white opacity-0 hover:opacity-100 font-medium">View Gallery</span>
-        </div>
+        <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center" />
       </div>
 
       {/* Thumbnail images */}

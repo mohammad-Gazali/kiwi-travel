@@ -1,8 +1,28 @@
 import createIntlMiddleware from "next-intl/middleware";
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { routing } from "./i18n/routing";
 
-export default clerkMiddleware((_, req) => createIntlMiddleware(routing)(req));
+const isAdminRoute = createRouteMatcher([
+  "/en/dashboard(.*)",
+  "/ru/dashboard(.*)",
+])
+
+const isAPIRoute = createRouteMatcher([
+  "/api(.*)",
+])
+
+export default clerkMiddleware(async (auth, req) => {
+  const { sessionClaims } = await auth();
+  
+  if (isAdminRoute(req) && !sessionClaims?.metadata.isAdmin) {
+    await auth.protect();
+  }
+
+  // prevent locale handling for api endpoints
+  if (isAPIRoute(req)) return;
+
+  return createIntlMiddleware(routing)(req);
+})
 
 export const config = {
   matcher: [
