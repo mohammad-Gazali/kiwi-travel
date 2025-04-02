@@ -1,8 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import dynamic from "next/dynamic";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -22,24 +18,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useRef, useState } from "react";
-import { Play, Plus, UploadCloud, X } from "lucide-react";
-import { useDropzone } from "react-dropzone";
-import { tripFormSchema } from "@/validators/trip-schema";
-import "yet-another-react-lightbox/styles.css";
-import "yet-another-react-lightbox/plugins/thumbnails.css";
-import "yet-another-react-lightbox/plugins/counter.css";
-import { z } from "zod";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useUploadThing } from "@/hooks/use-upload-thing";
+import { tripFormSchema } from "@/validators/trip-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import UploadFilesField, { AssetFile } from "./upload-files-field";
 import {
   UploadProgressDialog,
   type FileWithProgress,
 } from "./upload-progress-dialog";
-import { useUploadThing } from "@/hooks/use-upload-thing";
 
-const LazyLightbox = dynamic(() =>
-  import("@/components/lazy-light-box").then((mod) => mod.default),
-);
 
 // Mock destinations for select dropdown
 const mockDestinations = [
@@ -59,14 +52,13 @@ interface TripFormProps {
   initialData?: Partial<TripFormValues & { assets: string[] }>;
 }
 
-interface AssetFile {
-  preview: string;
-  isVideo: boolean;
-  isInitialData: boolean;
-}
-
 export function TripForm({ initialData }: TripFormProps) {
   const [newFeature, setNewFeature] = useState("");
+  const [currentUploadingFileIndex, setCurrentUploadingFileIndex] = useState(0);
+  const [filesWithProgress, setFilesWithProgress] = useState<
+    FileWithProgress[]
+  >([]);
+  const [progressDialogOpen, setProgressDialogOpen] = useState(false);
   const [assets, setAssets] = useState<AssetFile[]>(
     initialData?.assets?.map((asset) => ({
       preview: asset,
@@ -77,44 +69,7 @@ export function TripForm({ initialData }: TripFormProps) {
       isInitialData: true,
     })) ?? [],
   );
-  const [openLightbox, setOpenLightbox] = useState(false);
-  const [imageIndex, setImageIndex] = useState(0);
-  const [currentUploadingFileIndex, setCurrentUploadingFileIndex] = useState(0);
-  const [filesWithProgress, setFilesWithProgress] = useState<
-    FileWithProgress[]
-  >([]);
-  const [progressDialogOpen, setProgressDialogOpen] = useState(false);
   const { toast } = useToast();
-  const extraFilesRef = useRef<HTMLInputElement>(null);
-
-  // Format slides for lightbox
-  const lightboxSlides = assets.map(({ isVideo, ...file }) => ({
-    src: isVideo ? null : file.preview,
-    type: isVideo ? "video" : "image",
-    sources: isVideo
-      ? [
-          {
-            src: file.preview,
-          },
-        ]
-      : undefined,
-  }));
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    multiple: true,
-    disabled: assets.length !== 0,
-    onDrop: (acceptedFiles) => {
-      return setAssets(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-            isVideo: file.type.startsWith("video"),
-            isInitialData: false,
-          }),
-        ),
-      );
-    },
-  });
 
   const { startUpload, isUploading } = useUploadThing("fileUploader", {
     onClientUploadComplete: () => {
@@ -434,106 +389,10 @@ export function TripForm({ initialData }: TripFormProps) {
           />
 
           {/* Asset URLs */}
-          <FormItem className="col-span-1 md:col-span-2">
-            <FormLabel>Assets</FormLabel>
-            <input
-              ref={extraFilesRef}
-              onChange={(e) => {
-                const files = Array.from(e.target.files!).map((file) =>
-                  Object.assign(file, {
-                    preview: URL.createObjectURL(file),
-                    isVideo: file.type.startsWith("video"),
-                    isInitialData: false,
-                  }),
-                );
-
-                setAssets((pre) => [...pre, ...files]);
-              }}
-              type="file"
-              className="hidden"
-              accept="image/*,video/*"
-              multiple
-            />
-            <div
-              className={`cursor-pointer rounded-lg border border-dashed border-gray-900/25 p-4 text-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-input ${assets.length === 0 ? "hover:bg-gray-100 dark:hover:bg-gray-100/5" : ""}`}
-              {...getRootProps()}
-            >
-              <input {...getInputProps()} accept="image/*,video/*" />
-              {assets.length === 0 ? (
-                <>
-                  <UploadCloud className="mx-auto size-12 text-gray-500" />
-                  {isDragActive ? (
-                    <p className="text-sm text-gray-500">
-                      Drop the files here ...
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-500">
-                      Drag 'n' drop some files here, or click to select files
-                    </p>
-                  )}
-                </>
-              ) : (
-                <div className="flex flex-wrap items-center gap-4">
-                  {assets.map((file, index) => (
-                    <div className="relative rounded-md overflow-hidden" key={index}>
-                      {file.isVideo ? (
-                        <>
-                          <video
-                            className="h-20 w-24 object-cover"
-                            src={file.preview}
-                          ></video>
-                          <div className="absolute text-sm pr-2 bottom-0 left-0 rounded-tr-full bg-black/60 p-0.5 text-white hover:bg-black">
-                            video
-                          </div>
-                        </>
-                      ) : (
-                        <img
-                          className="h-20 w-24 object-cover"
-                          src={file.preview}
-                        />
-                      )}
-                      <div
-                        className="absolute inset-0 transition-colors hover:bg-black/60"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setImageIndex(index);
-                          setOpenLightbox(true);
-                        }}
-                      />
-                      <button
-                        className="absolute right-1 top-1 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setAssets((pre) => pre.filter((f) => f !== file));
-
-                          if (!file.isInitialData) {
-                            URL.revokeObjectURL(file.preview);
-                          }
-                        }}
-                      >
-                        <X className="size-4" />
-                      </button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      extraFilesRef.current?.click();
-                    }}
-                  >
-                    <Plus />
-                    Add More Files
-                  </Button>
-                </div>
-              )}
-            </div>
-            <FormDescription>
-              Add images or videos for this trip
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
+          <UploadFilesField 
+            assets={assets}
+            setAssets={setAssets}
+          />
           <UploadProgressDialog
             open={progressDialogOpen}
             setOpen={setProgressDialogOpen}
@@ -649,39 +508,6 @@ export function TripForm({ initialData }: TripFormProps) {
           Save Trip
         </Button>
       </form>
-
-      {/* Lightbox Component */}
-      {openLightbox && (
-        <LazyLightbox
-          open={openLightbox}
-          close={() => setOpenLightbox(false)}
-          slides={lightboxSlides as any}
-          index={imageIndex}
-          counter={{
-            container: { style: { top: "unset", bottom: 0, left: 0 } },
-          }}
-          thumbnails={{
-            position: "bottom",
-            width: 120,
-            height: 80,
-            border: 2,
-            borderRadius: 4,
-            padding: 4,
-            gap: 8,
-          }}
-          zoom={{
-            maxZoomPixelRatio: 3,
-            zoomInMultiplier: 2,
-          }}
-          carousel={{
-            finite: true,
-          }}
-          render={{
-            buttonPrev: assets.length <= 1 ? () => null : undefined,
-            buttonNext: assets.length <= 1 ? () => null : undefined,
-          }}
-        />
-      )}
-    </Form>
+      </Form>
   );
 }
