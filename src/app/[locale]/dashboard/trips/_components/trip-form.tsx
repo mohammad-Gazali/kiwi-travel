@@ -50,9 +50,10 @@ type TripFormValues = z.infer<typeof clientFormSchema>;
 
 interface TripFormProps {
   initialData?: Partial<TripFormValues & { assets: string[] }>;
+  isUpdate?: boolean;
 }
 
-export function TripForm({ initialData }: TripFormProps) {
+export function TripForm({ initialData, isUpdate }: TripFormProps) {
   const [newFeature, setNewFeature] = useState("");
   const [currentUploadingFileIndex, setCurrentUploadingFileIndex] = useState(0);
   const [filesWithProgress, setFilesWithProgress] = useState<

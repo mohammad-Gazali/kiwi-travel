@@ -1,163 +1,218 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useUploadThing } from "@/hooks/use-upload-thing";
+import { destinationFormSchema } from "@/validators/destination-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-
-// Mock destination data for edit mode
-const mockDestination = {
-  id: "1",
-  name: "Paris",
-  country: "France",
-  continent: "Europe",
-  description: "The City of Light, known for its stunning architecture, art museums, and romantic atmosphere.",
-  popular: true,
-  image: "https://placehold.co/300x200",
-}
-
-// Mock continents for select dropdown
-const continents = ["Africa", "Antarctica", "Asia", "Europe", "North America", "Oceania", "South America"]
+const mockCountries = [
+  { id: 1, nameEn: "United States", nameRu: "Соединенные Штаты" },
+  { id: 2, nameEn: "Russia", nameRu: "Россия" },
+  { id: 3, nameEn: "Japan", nameRu: "Япония" },
+  { id: 4, nameEn: "Germany", nameRu: "Германия" },
+  { id: 5, nameEn: "France", nameRu: "Франция" },
+  { id: 6, nameEn: "China", nameRu: "Китай" },
+  { id: 7, nameEn: "Brazil", nameRu: "Бразилия" },
+  { id: 8, nameEn: "Italy", nameRu: "Италия" },
+  { id: 9, nameEn: "India", nameRu: "Индия" },
+  { id: 10, nameEn: "Egypt", nameRu: "Египет" },
+];
 
 interface DestinationFormProps {
-  id?: string
+  initialData?: Partial<DestinationFormValues & { imageUrl: string }>;
+  isUpdate?: boolean;
 }
 
-export function DestinationForm({ id }: DestinationFormProps) {
-  const router = useRouter()
-  const isEditMode = !!id
+const clientFormSchema = destinationFormSchema.omit({ imageUrl: true });
 
-  // Initialize form with mock data if in edit mode
-  const [formData, setFormData] = useState(
-    isEditMode
-      ? mockDestination
-      : {
-          id: "",
-          name: "",
-          country: "",
-          continent: "",
-          description: "",
-          popular: false,
-          image: "",
-        },
-  )
+type DestinationFormValues = z.infer<typeof clientFormSchema>;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+export function DestinationForm({
+  initialData,
+  isUpdate,
+}: DestinationFormProps) {
+  const [imagePreview, setImagePreview] = useState(initialData?.imageUrl ?? "");
+  const [image, setImage] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  // Define form with default values
+  const form = useForm<DestinationFormValues>({
+    resolver: zodResolver(clientFormSchema),
+    defaultValues: {
+      nameEn: initialData?.nameEn || "",
+      nameRu: initialData?.nameRu || "",
+      isPopular: initialData?.isPopular || false,
+      country: initialData?.country || ("" as any),
+    },
+  });
 
-  const handleSwitchChange = (name: string, checked: boolean) => {
-    setFormData((prev) => ({ ...prev, [name]: checked }))
-  }
+  const { startUpload } = useUploadThing("countryImageUploader", {
+    // TODO: fill here
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
+  const handleSubmit = async (value: DestinationFormValues) => {
+    // TODO: handle submit
+  };
 
-    // In a real app, you would save the data to your backend here
-
-    // Navigate back to destinations list
-    router.push("/dashboard/destinations")
-  }
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview !== initialData?.imageUrl) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, []);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card>
-        <CardHeader>
-          <CardTitle>{isEditMode ? "Edit Destination" : "Create Destination"}</CardTitle>
-          <CardDescription>
-            {isEditMode ? "Update the details of an existing destination" : "Add a new destination to your catalog"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-3">
-            <Label htmlFor="name">Destination Name</Label>
-            <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="country">Country</Label>
-            <Input id="country" name="country" value={formData.country} onChange={handleChange} required />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="continent">Continent</Label>
-            <Select value={formData.continent} onValueChange={(value) => handleSelectChange("continent", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a continent" />
-              </SelectTrigger>
-              <SelectContent>
-                {continents.map((continent) => (
-                  <SelectItem key={continent} value={continent}>
-                    {continent}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              rows={5}
-              value={formData.description}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Label htmlFor="popular">Popular Destination</Label>
-            <Switch
-              id="popular"
-              checked={formData.popular}
-              onCheckedChange={(checked) => handleSwitchChange("popular", checked)}
-            />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="image">Image URL</Label>
-            <Input
-              id="image"
-              name="image"
-              type="url"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-            />
-            {formData.image && (
-              <div className="mt-2 aspect-video w-full max-w-md overflow-hidden rounded-md border">
-                <img
-                  src={formData.image || "/placeholder.svg"}
-                  alt="Destination preview"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* English Name */}
+          <FormField
+            control={form.control}
+            name="nameEn"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>English Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter English name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button type="button" variant="outline" onClick={() => router.push("/dashboard/destinations")}>
-            Cancel
-          </Button>
-          <Button type="submit">{isEditMode ? "Update Destination" : "Create Destination"}</Button>
-        </CardFooter>
-      </Card>
-    </form>
-  )
-}
+          />
 
+          {/* Russian Name */}
+          <FormField
+            control={form.control}
+            name="nameRu"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Russian Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter Russian name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Country */}
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem className="col-span-1 md:col-span-2">
+                <FormLabel>Country</FormLabel>
+                <Select
+                  defaultValue={field.value.toString()}
+                  onValueChange={(value) => field.onChange(Number(value))}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a country" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-56">
+                    {mockCountries.map((country) => (
+                      <SelectItem
+                        key={country.id}
+                        value={country.id.toString()}
+                      >
+                        {country.nameEn}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Image */}
+          <div className="flex flex-col gap-4">
+            <Label>Image</Label>
+            <div className="flex items-center gap-2">
+              {imagePreview && (
+                <img
+                  className="h-20 w-24 rounded-md bg-slate-400 object-cover"
+                  src={imagePreview}
+                  alt="image preview"
+                />
+              )}
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                variant="outline"
+                type="button"
+              >
+                Upload Image
+              </Button>
+              <input
+                ref={fileInputRef}
+                accept="image/*"
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.item(0);
+                  const oldImagePreview = imagePreview;
+
+                  if (file) {
+                    setImage(file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+
+                  if (oldImagePreview) {
+                    URL.revokeObjectURL(oldImagePreview)
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Is it popular */}
+          <FormField
+            control={form.control}
+            name="isPopular"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2">
+                <FormControl>
+                  <Switch
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={field.disabled}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Popular Destination</FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
+        <Button type="submit" className="w-full md:w-auto">
+          Save Destination
+        </Button>
+      </form>
+    </Form>
+  );
+}

@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// TODO: add missing fields
 export const tripFormSchema = z.object({
   titleEn: z.string().min(1, "English title is required"),
   titleRu: z.string().min(1, "Russian title is required"),

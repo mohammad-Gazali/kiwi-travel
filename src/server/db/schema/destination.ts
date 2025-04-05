@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm"
-import { integer, text, pgTable } from "drizzle-orm/pg-core";
+import { integer, text, pgTable, boolean } from "drizzle-orm/pg-core";
 
 export const country = pgTable("contries", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -11,9 +11,11 @@ export const destination = pgTable("destinations", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   nameEn: text("name_en").notNull(),
   nameRu: text("name_ru").notNull(),
+  imageUrl: text("image_url").notNull(),
+  isPopular: boolean("is_popular").notNull(),
   country: integer("country_id")
     .notNull()
-    .references(() => country.id),
+    .references(() => country.id, { onDelete: "restrict" }),
 });
 
 

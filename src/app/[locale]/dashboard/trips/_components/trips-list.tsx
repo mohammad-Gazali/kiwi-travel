@@ -130,6 +130,7 @@ export function TripsList() {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const handleDelete = () => {
+    // TODO: handle delete
     if (tripToDelete) {
       setTrips(trips.filter((trip) => trip.id !== tripToDelete))
       setTripToDelete(null)

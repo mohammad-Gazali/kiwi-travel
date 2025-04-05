@@ -6,12 +6,15 @@ import {
   index,
   timestamp,
   time,
+  boolean,
   primaryKey,
 } from "drizzle-orm/pg-core";
 import { destination } from "./destination";
 
 // TODO: handle availability dates for trips
 
+
+// TODO: add allowed days
 export const trip = pgTable("trips", {
   id: integer("id").primaryKey(),
   titleEn: text("title_en").notNull(),
@@ -20,15 +23,17 @@ export const trip = pgTable("trips", {
   descriptionRu: text("description_ru").notNull(),
   longDescriptionEn: text("long_description_en").notNull(),
   longDescriptionRu: text("long_description_ru").notNull(),
-  // each asset consists of this format:
-  // "{url}?type=video" if video
-  // "{url}?type=image" if image
+  /**
+   * each asset consists of this format:
+   * `{url}?type=video` if video
+   * `{url}?type=image` if image
+   */
   assetsUrls: text("assets_urls").array().notNull(),
   travelTime: time("travel_time").notNull(),
   status: text("status", { enum: ["available", "full", "ended"] }).notNull(),
   destinationId: integer("destination_id")
     .notNull()
-    .references(() => destination.id),
+    .references(() => destination.id, { onDelete: "restrict" }),
   tripPriceInCents: integer("trip_price_in_cents").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -36,6 +41,7 @@ export const trip = pgTable("trips", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
     () => new Date(),
   ),
+  isFeatured: boolean("is_featured").notNull(),
 });
 
 export const tripBooking = pgTable(
@@ -46,9 +52,11 @@ export const tripBooking = pgTable(
     priceInCents: integer("price_in_cents").notNull(),
     tripId: integer("trip_id")
       .notNull()
-      .references(() => trip.id),
-		tripStartTime: timestamp("trip_start_time", { withTimezone: true }),
-		status: text("status", { enum: ["pending", "cancelled", "done", "missed"] }),
+      .references(() => trip.id, { onDelete: "cascade" }),
+    tripStartTime: timestamp("trip_start_time", { withTimezone: true }),
+    status: text("status", {
+      enum: ["pending", "cancelled", "done", "missed"],
+    }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -56,32 +64,31 @@ export const tripBooking = pgTable(
       () => new Date(),
     ),
   },
-  (t) => [
-    index("user_id_idx").on(t.userId),
-  ],
+  (t) => [index("user_id_idx").on(t.userId)],
 );
 
 export const tripFeature = pgTable("trip_features", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   contentEn: text("content_en").notNull(),
   contentRu: text("content_ru").notNull(),
-})
+});
 
-
-export const tripToFeature = pgTable("trip_to_feature", {
-  tripId: integer('trip_id')
-    .notNull()
-    .references(() => trip.id),
-  featureId: integer('feature_id')
-    .notNull()
-    .references(() => tripFeature.id),
-}, (t) => [
-  primaryKey({ columns: [t.tripId, t.featureId] }),
-])
+export const tripToFeature = pgTable(
+  "trip_to_feature",
+  {
+    tripId: integer("trip_id")
+      .notNull()
+      .references(() => trip.id, { onDelete: "cascade" }),
+    featureId: integer("feature_id")
+      .notNull()
+      .references(() => tripFeature.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.tripId, t.featureId] })],
+);
 
 // ======================== relations ========================
 export const tripRelations = relations(trip, ({ many, one }) => ({
-	bookings: many(trip),
+  bookings: many(trip),
   features: many(tripToFeature),
   destination: one(destination, {
     fields: [trip.destinationId],
@@ -101,4 +108,4 @@ export const tripToFeatureRelations = relations(tripToFeature, ({ one }) => ({
     fields: [tripToFeature.featureId],
     references: [tripFeature.id],
   }),
-}))
+}));

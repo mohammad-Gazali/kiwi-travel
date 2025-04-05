@@ -4,6 +4,15 @@ import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
+const adminMiddleware = async () => {
+  // This code runs on your server before upload
+  const { sessionClaims } = await auth();
+
+  // If you throw, the user will not be able to upload
+  if (!sessionClaims?.metadata.isAdmin) throw new UploadThingError("Forbidden");
+
+  return {};
+};
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
@@ -19,15 +28,15 @@ export const ourFileRouter = {
     },
   })
     // Set permissions and file types for this FileRoute
-    .middleware(async () => {
-      // This code runs on your server before upload
-      const { sessionClaims } = await auth();
-
-      // If you throw, the user will not be able to upload
-      if (!sessionClaims?.metadata.isAdmin) throw new UploadThingError("Forbidden");
-
-      return {};
-    })
+    .middleware(adminMiddleware)
+    .onUploadComplete(() => ({ message: "Success" })),
+  countryImageUploader: f({
+    image: {
+      maxFileCount: 1,
+      maxFileSize: "128MB",
+    },
+  })
+    .middleware(adminMiddleware)
     .onUploadComplete(() => ({ message: "Success" })),
 } satisfies FileRouter;
 

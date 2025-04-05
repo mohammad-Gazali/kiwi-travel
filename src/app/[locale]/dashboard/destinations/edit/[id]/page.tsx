@@ -12,7 +12,7 @@ export default async function EditDestinationPage({ params }: PageParams<{ id: s
         description="Update destination information"
         backButtonLink="/dashboard/destinations"
       />
-      <DestinationForm id={id} />
+      <DestinationForm />
     </div>
   )
 }

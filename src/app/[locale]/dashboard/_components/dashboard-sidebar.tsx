@@ -12,9 +12,10 @@ import {
   ShoppingCart,
   Users,
   CircleGauge,
+  Flag,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const sidebarNavItems = [
@@ -22,6 +23,11 @@ const sidebarNavItems = [
     title: "Trips",
     href: "/dashboard/trips",
     icon: Map,
+  },
+  {
+    title: "Countries",
+    href: "/dashboard/countries",
+    icon: Flag,
   },
   {
     title: "Destinations",
