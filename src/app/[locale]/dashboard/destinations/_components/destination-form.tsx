@@ -67,11 +67,17 @@ export function DestinationForm({
     },
   });
 
-  const { startUpload } = useUploadThing("countryImageUploader", {
-    // TODO: fill here
-  })
+  const { startUpload } = useUploadThing("countryImageUploader");
 
   const handleSubmit = async (value: DestinationFormValues) => {
+    let imageUrl = imagePreview;
+
+    if (image) {
+      const res = await startUpload([image]);
+
+      imageUrl = res!.at(0)!.ufsUrl!;
+    }
+
     // TODO: handle submit
   };
 
@@ -133,7 +139,7 @@ export function DestinationForm({
                       <SelectValue placeholder="Select a country" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="max-h-56">
+                  <SelectContent>
                     {mockCountries.map((country) => (
                       <SelectItem
                         key={country.id}
@@ -182,7 +188,7 @@ export function DestinationForm({
                   }
 
                   if (oldImagePreview) {
-                    URL.revokeObjectURL(oldImagePreview)
+                    URL.revokeObjectURL(oldImagePreview);
                   }
                 }}
               />
@@ -194,9 +200,10 @@ export function DestinationForm({
             control={form.control}
             name="isPopular"
             render={({ field }) => (
-              <FormItem className="flex items-center gap-2">
+              <FormItem className="flex items-center gap-2 -mt-2">
                 <FormControl>
                   <Switch
+                    className="mt-2"
                     name={field.name}
                     ref={field.ref}
                     disabled={field.disabled}

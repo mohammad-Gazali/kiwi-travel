@@ -21,7 +21,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useUploadThing } from "@/hooks/use-upload-thing";
-import { tripFormSchema } from "@/validators/trip-schema";
+import { days, tripFormSchema } from "@/validators/trip-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,7 +32,9 @@ import {
   UploadProgressDialog,
   type FileWithProgress,
 } from "./upload-progress-dialog";
-
+import { MultiSelect } from "@/components/multi-select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Switch } from "@/components/ui/switch";
 
 // Mock destinations for select dropdown
 const mockDestinations = [
@@ -44,17 +46,27 @@ const mockDestinations = [
   { id: 6, name: "Athens, Greece" },
 ];
 
+// Mock features for select dropdown
+const mockFeatures = [
+  { id: 1, name: "Private beach access" },
+  { id: 2, name: "Infinity pool" },
+  { id: 3, name: "Daily breakfast" },
+  { id: 4, name: "Airport transfers" },
+  { id: 5, name: "Complimentary spa session" },
+  { id: 6, name: "24/7 concierge service" },
+  { id: 7, name: "WiFi throughout the property" },
+  { id: 8, name: "Air conditioning" },
+];
+
 const clientFormSchema = tripFormSchema.omit({ assets: true });
 
 type TripFormValues = z.infer<typeof clientFormSchema>;
 
 interface TripFormProps {
   initialData?: Partial<TripFormValues & { assets: string[] }>;
-  isUpdate?: boolean;
 }
 
-export function TripForm({ initialData, isUpdate }: TripFormProps) {
-  const [newFeature, setNewFeature] = useState("");
+export function TripForm({ initialData }: TripFormProps) {
   const [currentUploadingFileIndex, setCurrentUploadingFileIndex] = useState(0);
   const [filesWithProgress, setFilesWithProgress] = useState<
     FileWithProgress[]
@@ -162,33 +174,20 @@ export function TripForm({ initialData, isUpdate }: TripFormProps) {
       longDescriptionRu: initialData?.longDescriptionRu || "",
       features: initialData?.features || [],
       travelTime: initialData?.travelTime || "00:00",
-      status: initialData?.status || "available",
-      destinationId: initialData?.destinationId || 0,
-      tripPriceInCents: initialData?.tripPriceInCents || 0,
+      destinationId: initialData?.destinationId || ("" as any),
+      price: initialData?.price || 0,
+      availableDays: initialData?.availableDays || [],
+      bookingsLimitCount: initialData?.bookingsLimitCount,
+      duration: initialData?.duration || "",
+      isAvailable: initialData?.isAvailable || true,
+      isFeatured: initialData?.isFeatured || false,
     },
   });
-
-  // Add a new feature to the features array
-  const addFeature = () => {
-    if (newFeature.trim() === "") return;
-    const currentFeatures = form.getValues("features");
-    form.setValue("features", [...currentFeatures, newFeature]);
-    setNewFeature("");
-  };
-
-  // Remove a feature from the features array
-  const removeFeature = (index: number) => {
-    const currentFeatures = form.getValues("features");
-    form.setValue(
-      "features",
-      currentFeatures.filter((_, i) => i !== index),
-    );
-  };
 
   const getAssets = async () => {
     const files = assets
       .filter((asset) => !asset.isInitialData)
-      // here we wrote as any because when the file is not in the initial data
+      // here we wrote `as unknown as File` because when the file is not in the initial data
       // it will be a File object also
       .map((asset) => asset as unknown as File);
 
@@ -221,8 +220,8 @@ export function TripForm({ initialData, isUpdate }: TripFormProps) {
       toast({
         variant: "destructive",
         title: "Invalid Assets",
-        description: "You must provide at least one asset for your trip"
-      })
+        description: "You must provide at least one asset for your trip",
+      });
       return;
     }
 
@@ -344,62 +343,56 @@ export function TripForm({ initialData, isUpdate }: TripFormProps) {
             render={({ field }) => (
               <FormItem className="col-span-1 md:col-span-2">
                 <FormLabel>Features</FormLabel>
-                <div className="mb-2 flex flex-wrap gap-2">
-                  {field.value.map((feature, index) => (
-                    <div
-                      key={feature}
-                      className="flex items-center rounded-md bg-secondary px-3 py-1 text-secondary-foreground"
-                    >
-                      <span>{feature}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="ml-1 h-auto p-1"
-                        onClick={() => removeFeature(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add a feature"
-                    value={newFeature}
-                    onChange={(e) => setNewFeature(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addFeature();
-                      }
-                    }}
-                    className="flex-1"
+                <FormControl>
+                  <MultiSelect
+                    options={mockFeatures.map((f) => ({
+                      label: f.name,
+                      value: f.id.toString(),
+                    }))}
+                    defaultValue={field.value.map((v) => v.toString())}
+                    onValueChange={(value) => field.onChange(value.map(Number))}
+                    placeholder="Select features"
                   />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={addFeature}
-                  >
-                    Add
-                  </Button>
-                </div>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
           {/* Asset URLs */}
-          <UploadFilesField 
-            assets={assets}
-            setAssets={setAssets}
-          />
+          <UploadFilesField assets={assets} setAssets={setAssets} />
           <UploadProgressDialog
             open={progressDialogOpen}
             setOpen={setProgressDialogOpen}
             files={filesWithProgress}
             isUploading={isUploading}
             overallProgress={overallProgress}
+          />
+
+          {/* Available Days */}
+          <FormField
+            control={form.control}
+            name="availableDays"
+            render={({ field }) => (
+              <FormItem className="col-span-1 md:col-span-2">
+                <FormLabel>Available Days</FormLabel>
+                <FormControl>
+                  <ToggleGroup
+                    variant="outline"
+                    className="justify-start"
+                    onValueChange={field.onChange}
+                    type="multiple"
+                  >
+                    {days.map((day) => (
+                      <ToggleGroupItem value={day} key={day}>
+                        {day}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
           {/* Travel Time */}
@@ -418,28 +411,23 @@ export function TripForm({ initialData, isUpdate }: TripFormProps) {
             )}
           />
 
-          {/* Status */}
+          {/* Duration */}
           <FormField
             control={form.control}
-            name="status"
+            name="duration"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="full">Full</SelectItem>
-                    <SelectItem value="ended">Ended</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel>Duration</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter Duration" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Use <span className="text-foreground">day</span>,{" "}
+                  <span className="text-foreground">days</span>,{" "}
+                  <span className="text-foreground">hour</span> and{" "}
+                  <span className="text-foreground">hours</span> for
+                  translation, (e.g. 1 day, 3 hours)
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -482,24 +470,62 @@ export function TripForm({ initialData, isUpdate }: TripFormProps) {
           {/* Trip Price */}
           <FormField
             control={form.control}
-            name="tripPriceInCents"
+            name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price (in cents)</FormLabel>
+                <FormLabel>Price</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="Enter price in cents"
+                    placeholder="Enter price"
                     {...field}
-                    onChange={(e) =>
-                      field.onChange(Number.parseInt(e.target.value) || 0)
-                    }
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
-                <FormDescription>
-                  Enter the price in cents (e.g., $10.00 = 1000)
-                </FormDescription>
+                <FormDescription>Enter the price (e.g. 10.00)</FormDescription>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Is it available */}
+          <FormField
+            control={form.control}
+            name="isAvailable"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2 -mt-2">
+                <FormControl>
+                  <Switch
+                    className="mt-2"
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={field.disabled}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Available</FormLabel>
+              </FormItem>
+            )}
+          />
+
+          {/* Is it featured */}
+          <FormField
+            control={form.control}
+            name="isFeatured"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2 -mt-2">
+                <FormControl>
+                  <Switch
+                    className="mt-2"
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={field.disabled}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Featured</FormLabel>
               </FormItem>
             )}
           />
@@ -509,6 +535,6 @@ export function TripForm({ initialData, isUpdate }: TripFormProps) {
           Save Trip
         </Button>
       </form>
-      </Form>
+    </Form>
   );
 }

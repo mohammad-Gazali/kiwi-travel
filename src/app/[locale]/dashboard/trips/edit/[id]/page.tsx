@@ -12,4 +12,3 @@ export default async function EditTripPage({ params }: PageParams<{ id: string }
     </div>
   )
 }
-

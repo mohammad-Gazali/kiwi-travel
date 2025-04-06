@@ -11,10 +11,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { destination } from "./destination";
 
-// TODO: handle availability dates for trips
-
-
-// TODO: add allowed days
 export const trip = pgTable("trips", {
   id: integer("id").primaryKey(),
   titleEn: text("title_en").notNull(),
@@ -30,18 +26,33 @@ export const trip = pgTable("trips", {
    */
   assetsUrls: text("assets_urls").array().notNull(),
   travelTime: time("travel_time").notNull(),
-  status: text("status", { enum: ["available", "full", "ended"] }).notNull(),
   destinationId: integer("destination_id")
     .notNull()
     .references(() => destination.id, { onDelete: "restrict" }),
   tripPriceInCents: integer("trip_price_in_cents").notNull(),
+  isAvailable: boolean("is_available").notNull(),
+  isFeatured: boolean("is_featured").notNull(),
+  bookingsLimitCount: integer("bookings_limit_count").notNull(),
+  duration: text("duration").notNull(),
+  availableDays: text("available_days", {
+    enum: [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ],
+  })
+    .array()
+    .notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
     () => new Date(),
   ),
-  isFeatured: boolean("is_featured").notNull(),
 });
 
 export const tripBooking = pgTable(
