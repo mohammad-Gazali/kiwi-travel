@@ -176,7 +176,7 @@ export function TripForm({ initialData }: TripFormProps) {
       travelTime: initialData?.travelTime || "00:00",
       destinationId: initialData?.destinationId || ("" as any),
       price: initialData?.price || 0,
-      availableDays: initialData?.availableDays || [],
+      availableDays: initialData?.availableDays || ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       bookingsLimitCount: initialData?.bookingsLimitCount,
       duration: initialData?.duration || "",
       isAvailable: initialData?.isAvailable || true,
@@ -380,6 +380,7 @@ export function TripForm({ initialData }: TripFormProps) {
                   <ToggleGroup
                     variant="outline"
                     className="justify-start"
+                    defaultValue={field.value}
                     onValueChange={field.onChange}
                     type="multiple"
                   >

@@ -124,6 +124,8 @@ type Trip = {
   image: string
 }
 
+// TODO: add more filters by destination for example
+
 export function TripsList() {
   const [trips, setTrips] = useState(mockTrips)
   const [tripToDelete, setTripToDelete] = useState<string | null>(null)

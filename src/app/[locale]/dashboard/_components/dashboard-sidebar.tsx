@@ -13,6 +13,7 @@ import {
   Users,
   CircleGauge,
   Flag,
+  Sparkles,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -23,6 +24,11 @@ const sidebarNavItems = [
     title: "Trips",
     href: "/dashboard/trips",
     icon: Map,
+  },
+  {
+    title: "Trips Features",
+    href: "/dashboard/trips-features",
+    icon: Sparkles,
   },
   {
     title: "Countries",

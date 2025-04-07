@@ -1,13 +1,14 @@
 import { Link } from "@/i18n/routing";
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Plus } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Plus } from "lucide-react";
 
 interface PageHeaderProps {
-  title: string
-  description?: string
-  createButtonLabel?: string
-  createButtonLink?: string
-  backButtonLink?: string
+  title: string;
+  description?: string;
+  createButtonLabel?: string;
+  createButtonLink?: string;
+  backButtonLink?: string;
+  onCreateClick?: () => void;
 }
 
 export function PageHeader({
@@ -16,14 +17,15 @@ export function PageHeader({
   createButtonLabel,
   createButtonLink,
   backButtonLink,
+  onCreateClick,
 }: PageHeaderProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-1">
         {backButtonLink && (
-          <Button variant="ghost" size="sm" className="mb-2 h-7 -ml-2" asChild>
+          <Button variant="ghost" size="sm" className="-ml-2 mb-2 h-7" asChild>
             <Link href={backButtonLink}>
-              <ArrowLeft className="mr-1 h-4 w-4" />
+              <ArrowLeft className="h-4 w-4" />
               Back
             </Link>
           </Button>
@@ -31,15 +33,19 @@ export function PageHeader({
         <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
         {description && <p className="text-muted-foreground">{description}</p>}
       </div>
-      {createButtonLabel && createButtonLink && (
+      {onCreateClick ? (
+        <Button onClick={onCreateClick}>
+          <Plus className="h-4 w-4" />
+          {createButtonLabel}
+        </Button>
+      ) : createButtonLabel && createButtonLink ? (
         <Button asChild>
           <Link href={createButtonLink}>
-            <Plus className="mr-1 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             {createButtonLabel}
           </Link>
         </Button>
-      )}
+      ) : null}
     </div>
-  )
+  );
 }
-
