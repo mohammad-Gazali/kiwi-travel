@@ -19,42 +19,42 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
 import { useUploadThing } from "@/hooks/use-upload-thing";
+import { api } from "@/trpc/react";
 import { destinationFormSchema } from "@/validators/destination-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const mockCountries = [
-  { id: 1, nameEn: "United States", nameRu: "Соединенные Штаты" },
-  { id: 2, nameEn: "Russia", nameRu: "Россия" },
-  { id: 3, nameEn: "Japan", nameRu: "Япония" },
-  { id: 4, nameEn: "Germany", nameRu: "Германия" },
-  { id: 5, nameEn: "France", nameRu: "Франция" },
-  { id: 6, nameEn: "China", nameRu: "Китай" },
-  { id: 7, nameEn: "Brazil", nameRu: "Бразилия" },
-  { id: 8, nameEn: "Italy", nameRu: "Италия" },
-  { id: 9, nameEn: "India", nameRu: "Индия" },
-  { id: 10, nameEn: "Egypt", nameRu: "Египет" },
-];
-
 interface DestinationFormProps {
+  id?: number;
   initialData?: Partial<DestinationFormValues & { imageUrl: string }>;
-  isUpdate?: boolean;
 }
 
 const clientFormSchema = destinationFormSchema.omit({ imageUrl: true });
 
 type DestinationFormValues = z.infer<typeof clientFormSchema>;
 
-export function DestinationForm({
-  initialData,
-  isUpdate,
-}: DestinationFormProps) {
+export function DestinationForm({ initialData, id }: DestinationFormProps) {
   const [imagePreview, setImagePreview] = useState(initialData?.imageUrl ?? "");
   const [image, setImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { data: countries, isLoading: isCountriesLoading } =
+    api.country.list.useQuery();
+
+  const { invalidate } = api.useUtils().destination.adminList;
+  const mutationResponse = useCommonMutationResponse(
+    "/dashboard/destinations",
+    invalidate,
+  );
+
+  const { mutate: create } =
+    api.destination.adminCreate.useMutation(mutationResponse);
+  const { mutate: update } =
+    api.destination.adminUpdate.useMutation(mutationResponse);
 
   // Define form with default values
   const form = useForm<DestinationFormValues>({
@@ -78,7 +78,18 @@ export function DestinationForm({
       imageUrl = res!.at(0)!.ufsUrl!;
     }
 
-    // TODO: handle submit
+    if (initialData && id) {
+      update({
+        ...value,
+        imageUrl,
+        id,
+      });
+    } else {
+      create({
+        ...value,
+        imageUrl,
+      });
+    }
   };
 
   useEffect(() => {
@@ -131,6 +142,7 @@ export function DestinationForm({
               <FormItem className="col-span-1 md:col-span-2">
                 <FormLabel>Country</FormLabel>
                 <Select
+                  disabled={isCountriesLoading}
                   defaultValue={field.value.toString()}
                   onValueChange={(value) => field.onChange(Number(value))}
                 >
@@ -140,7 +152,7 @@ export function DestinationForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {mockCountries.map((country) => (
+                    {countries?.map((country) => (
                       <SelectItem
                         key={country.id}
                         value={country.id.toString()}
@@ -200,7 +212,7 @@ export function DestinationForm({
             control={form.control}
             name="isPopular"
             render={({ field }) => (
-              <FormItem className="flex items-center gap-2 -mt-2">
+              <FormItem className="-mt-2 flex items-center gap-2">
                 <FormControl>
                   <Switch
                     className="mt-2"

@@ -14,7 +14,7 @@ import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response"
 import { api } from "@/trpc/react";
 import {
   TripFeatureFormValues,
-  tripFeatureSchema,
+  tripFeatureFormSchema,
 } from "@/validators/trip-feature-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -37,7 +37,7 @@ export function TripFeatureForm({
     api.tripFeature.adminUpdate.useMutation(mutationResponse);
 
   const form = useForm<TripFeatureFormValues>({
-    resolver: zodResolver(tripFeatureSchema),
+    resolver: zodResolver(tripFeatureFormSchema),
     values: {
       contentEn: initialData?.contentEn || "",
       contentRu: initialData?.contentRu || "",

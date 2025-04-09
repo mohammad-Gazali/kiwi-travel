@@ -15,123 +15,44 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash } from "lucide-react";
-
-// Mock data for destinations
-const mockDestinations = [
-  {
-    id: 1,
-    nameEn: "Paris",
-    nameRu: "Paris",
-    country: {
-      id: 1,
-      name: "France",
-    },
-    isPopular: true,
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: 2,
-    nameEn: "Tokyo",
-    nameRu: "Tokyo",
-    country: {
-      id: 2,
-      name: "Japan",
-    },
-    isPopular: true,
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: 3,
-    nameEn: "New York",
-    nameRu: "New York",
-    country: {
-      id: 3,
-      name: "USA",
-    },
-    isPopular: true,
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: 4,
-    nameEn: "Bali",
-    nameRu: "Bali",
-    country: {
-      id: 4,
-      name: "Indonesia",
-    },
-    isPopular: false,
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: 5,
-    nameEn: "Nairobi",
-    nameRu: "Nairobi",
-    country: {
-      id: 5,
-      name: "Kenya",
-    },
-    isPopular: false,
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: 6,
-    nameEn: "Athens",
-    nameRu: "Athens",
-    country: {
-      id: 6,
-      name: "Greece",
-    },
-    isPopular: false,
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: 7,
-    nameEn: "Barcelona",
-    nameRu: "Barcelona",
-    country: {
-      id: 7,
-      name: "Spain",
-    },
-    isPopular: true,
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: 8,
-    nameEn: "Zurich",
-    nameRu: "Zurich",
-    country: {
-      id: 8,
-      name: "Switzerland",
-    },
-    isPopular: false,
-    image: "https://placehold.co/300x200",
-  },
-];
-
-type Destination = {
-  id: number;
-  nameEn: string;
-  nameRu: string;
-  country: {
-    id: number;
-    name: string;
-  };
-  isPopular: boolean;
-  image: string;
-};
+import { api } from "@/trpc/react";
+import { useToast } from "@/hooks/use-toast";
 
 export function DestinationsList() {
+  const { toast } = useToast();
+
   const [destinationToDelete, setDestinationToDelete] = useState<number | null>(
     null,
   );
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleDelete = () => {
-    // TODO: handle delete
+  const { data, refetch } = api.destination.adminList.useQuery();
+  const { mutate: deleteDestination } = api.tripFeature.adminDelete.useMutation({
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        setDestinationToDelete(null);
+        setDialogOpen(false);
+      },
+      onSuccess: ({ message }) => {
+        toast({
+          title: "Success",
+          description: message,
+        });
+        setDestinationToDelete(null);
+        setDialogOpen(false);
+        refetch();
+      },
+    });
 
+  type Destination = NonNullable<typeof data>[number];
+
+  const handleDelete = () => {
     if (destinationToDelete) {
-      setDestinationToDelete(null);
-      setDialogOpen(false);
+      deleteDestination(destinationToDelete)
     }
   };
 
@@ -145,7 +66,7 @@ export function DestinationsList() {
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 overflow-hidden rounded-md">
               <img
-                src={destination.image || "/placeholder.svg"}
+                src={destination.imageUrl || "/placeholder.svg"}
                 alt={destination.nameEn}
                 className="h-full w-full object-cover"
               />
@@ -162,7 +83,7 @@ export function DestinationsList() {
     {
       accessorKey: "country",
       header: "Country",
-      cell: ({ row }) => row.original.country.name,
+      cell: ({ row }) => row.original.country.nameEn,
     },
     {
       accessorKey: "isPopular",
@@ -207,7 +128,7 @@ export function DestinationsList() {
     <div>
       <DataTable
         columns={columns}
-        data={mockDestinations}
+        data={data ?? []}
         searchColumn="nameEn"
         searchPlaceholder="Search destinations..."
       />

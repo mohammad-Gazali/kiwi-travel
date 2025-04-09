@@ -2,7 +2,7 @@ import { z } from "zod";
 import { adminProcedure, createTRPCRouter } from "../trpc";
 import { tripFeature } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
-import { tripFeatureSchema } from "@/validators/trip-feature-schema";
+import { tripFeatureFormSchema } from "@/validators/trip-feature-schema";
 
 export const tripFeatureRouter = createTRPCRouter({
   adminList: adminProcedure.query(
@@ -24,7 +24,7 @@ export const tripFeatureRouter = createTRPCRouter({
       };
     }),
   adminCreate: adminProcedure
-    .input(tripFeatureSchema)
+    .input(tripFeatureFormSchema)
     .mutation(async ({ input, ctx }) => {
       await ctx.db.insert(tripFeature).values(input);
 
@@ -33,7 +33,7 @@ export const tripFeatureRouter = createTRPCRouter({
       };
     }),
   adminUpdate: adminProcedure
-    .input(tripFeatureSchema.extend({ id: z.number().int() }))
+    .input(tripFeatureFormSchema.extend({ id: z.number().int() }))
     .mutation(async ({ input, ctx }) => {
       await ctx.db
         .update(tripFeature)
