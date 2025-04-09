@@ -1,5 +1,5 @@
 import { createTRPCRouter, adminProcedure } from "@/server/api/trpc";
-import { trip } from "@/server/db/schema";
+import { trip, tripToFeature } from "@/server/db/schema";
 import { tripFormSchema } from "@/validators/trip-schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -54,10 +54,24 @@ export const tripRouter = createTRPCRouter({
   adminCreate: adminProcedure
     .input(tripFormSchema)
     .mutation(async ({ input, ctx }) => {
-      await ctx.db.insert(trip).values({
-        ...input,
-        assetsUrls: input.assets,
-        tripPriceInCents: Math.floor(input.price * 100),
+      await ctx.db.transaction(async (tx) => {
+        const result = await tx
+          .insert(trip)
+          .values({
+            ...input,
+            assetsUrls: input.assets,
+            tripPriceInCents: Math.floor(input.price * 100),
+          })
+          .returning({ id: trip.id });
+
+        const tripId = result[0]!.id;
+
+        await tx.insert(tripToFeature).values(
+          input.features.map((featureId) => ({
+            tripId,
+            featureId,
+          })),
+        );
       });
 
       return {
@@ -67,14 +81,27 @@ export const tripRouter = createTRPCRouter({
   adminUpdate: adminProcedure
     .input(tripFormSchema.extend({ id: z.number().int() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(trip)
-        .set({
-          ...input,
-          assetsUrls: input.assets,
-          tripPriceInCents: Math.floor(input.price * 100),
-        })
-        .where(eq(trip.id, input.id));
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(trip)
+          .set({
+            ...input,
+            assetsUrls: input.assets,
+            tripPriceInCents: Math.floor(input.price * 100),
+          })
+          .where(eq(trip.id, input.id));
+
+        await tx
+          .delete(tripToFeature)
+          .where(eq(tripToFeature.tripId, input.id));
+
+        await tx.insert(tripToFeature).values(
+          input.features.map((featureId) => ({
+            tripId: input.id,
+            featureId,
+          })),
+        );
+      });
 
       return {
         message: "Updated successfully",

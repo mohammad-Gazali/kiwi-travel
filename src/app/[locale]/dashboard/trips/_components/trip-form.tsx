@@ -480,6 +480,27 @@ export function TripForm({ initialData, id }: TripFormProps) {
             )}
           />
 
+          {/* Bookings Limit */}
+          <FormField
+            control={form.control}
+            name="bookingsLimitCount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bookings limit</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter limit"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
+                  />
+                </FormControl>
+                <FormDescription>The maximum number of bookings per one day</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Trip Price */}
           <FormField
             control={form.control}
@@ -492,7 +513,7 @@ export function TripForm({ initialData, id }: TripFormProps) {
                     type="number"
                     placeholder="Enter price"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
                   />
                 </FormControl>
                 <FormDescription>Enter the price (e.g. 10.00)</FormDescription>

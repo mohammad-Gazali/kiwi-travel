@@ -31,16 +31,12 @@ export function TripsFeaturesList() {
         description: error.message,
         variant: "destructive",
       });
-      setFeatureToDelete(null);
-      setDialogOpen(false);
     },
     onSuccess: ({ message }) => {
       toast({
         title: "Success",
         description: message,
       });
-      setFeatureToDelete(null);
-      setDialogOpen(false);
       refetch();
     },
   });
@@ -51,6 +47,9 @@ export function TripsFeaturesList() {
     if (featureToDelete) {
       deleteFeature(featureToDelete);
     }
+
+    setFeatureToDelete(null);
+    setDialogOpen(false);
   };
 
   const columns: ColumnDef<Feature>[] = [

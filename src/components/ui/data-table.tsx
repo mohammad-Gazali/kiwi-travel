@@ -23,6 +23,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   searchColumn?: string
   searchPlaceholder?: string
+  hiddenColumns?: string[]
 }
 
 export function DataTable<TData, TValue>({
@@ -30,6 +31,7 @@ export function DataTable<TData, TValue>({
   data,
   searchColumn,
   searchPlaceholder = "Search...",
+  hiddenColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -46,6 +48,7 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
+      columnVisibility: Object.fromEntries(hiddenColumns?.map(col => [col, false]) ?? []),
     },
     initialState: {
       pagination: {

@@ -30,8 +30,6 @@ export function TripsList() {
         description: error.message,
         variant: "destructive",
       })
-      setTripToDelete(null)
-      setDialogOpen(false)
       refetch()
     },
     onSuccess: ({ message }) => {
@@ -39,8 +37,6 @@ export function TripsList() {
         title: "Success",
         description: message,
       })
-      setTripToDelete(null)
-      setDialogOpen(false)
     },
   })
 
@@ -53,6 +49,9 @@ export function TripsList() {
     if (tripToDelete) {
       deleteTrip(tripToDelete)
     }
+
+    setTripToDelete(null)
+    setDialogOpen(false)
   }
 
   const columns: ColumnDef<Trip>[] = [
@@ -70,6 +69,10 @@ export function TripsList() {
           </div>
         )
       },
+    },
+    // for search ability
+    {
+      accessorKey: "titleEn",
     },
     {
       id: "destination",
@@ -126,7 +129,7 @@ export function TripsList() {
 
   return (
     <div>
-      <DataTable columns={columns} data={data ?? []} searchColumn="title" searchPlaceholder="Search trips..." />
+      <DataTable columns={columns} hiddenColumns={['titleEn']} data={data ?? []} searchColumn="titleEn" searchPlaceholder="Search trips..." />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>

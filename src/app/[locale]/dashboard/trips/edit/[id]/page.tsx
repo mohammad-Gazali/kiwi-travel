@@ -13,6 +13,9 @@ export default async function EditTripPage({
 
   if (!trip) notFound();
 
+  // remove seconds from travelTime
+  trip.travelTime = trip.travelTime.slice(0, 5);
+
   return (
     <div className="space-y-6">
       <PageHeader

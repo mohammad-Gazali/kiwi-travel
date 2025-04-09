@@ -34,16 +34,12 @@ export function DestinationsList() {
           description: error.message,
           variant: "destructive",
         });
-        setDestinationToDelete(null);
-        setDialogOpen(false);
       },
       onSuccess: ({ message }) => {
         toast({
           title: "Success",
           description: message,
         });
-        setDestinationToDelete(null);
-        setDialogOpen(false);
         refetch();
       },
     });
@@ -54,6 +50,9 @@ export function DestinationsList() {
     if (destinationToDelete) {
       deleteDestination(destinationToDelete)
     }
+
+    setDestinationToDelete(null);
+    setDialogOpen(false);
   };
 
   const columns: ColumnDef<Destination>[] = [

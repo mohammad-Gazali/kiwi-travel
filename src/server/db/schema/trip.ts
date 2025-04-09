@@ -90,7 +90,7 @@ export const tripToFeature = pgTable(
 
 // ======================== relations ========================
 export const tripRelations = relations(trip, ({ many, one }) => ({
-  bookings: many(trip),
+  bookings: many(tripBooking),
   features: many(tripToFeature),
   destination: one(destination, {
     fields: [trip.destinationId],
@@ -110,4 +110,8 @@ export const tripToFeatureRelations = relations(tripToFeature, ({ one }) => ({
     fields: [tripToFeature.featureId],
     references: [tripFeature.id],
   }),
+  trip: one(trip, {
+    fields: [tripToFeature.tripId],
+    references: [trip.id],
+  })
 }));

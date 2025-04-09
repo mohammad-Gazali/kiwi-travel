@@ -24,16 +24,12 @@ export function CountriesList() {
         description: error.message,
         variant: "destructive",
       })
-      setCountryToDelete(null)
-      setDialogOpen(false)
     },
     onSuccess: ({ message }) => {
       toast({
         title: "Success",
         description: message,
       })
-      setCountryToDelete(null)
-      setDialogOpen(false)
       refetch()
     },
   });
@@ -44,6 +40,8 @@ export function CountriesList() {
     if (countryToDelete) {
       deleteCountry(countryToDelete)
     }
+    setCountryToDelete(null)
+    setDialogOpen(false)
   };
 
   const columns: ColumnDef<Country>[] = [

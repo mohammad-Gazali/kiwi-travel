@@ -21,7 +21,7 @@ export const tripFormSchema = z.object({
     ),
   availableDays: z.array(z.enum(days)).min(1, "At least one day must be an available day"),
   duration: z.string().min(1, "Duration is required"),
-  bookingsLimitCount: z.number().int().positive("Bookings limit count must be a positive integer"),
+  bookingsLimitCount: z.number({ message: "Bookings limit is required" }).int().positive("Bookings limit count must be a positive integer"),
   isAvailable: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
   destinationId: z
@@ -29,7 +29,7 @@ export const tripFormSchema = z.object({
     .int()
     .positive("Destination ID must be a positive integer"),
   price: z
-    .number()
+    .number({ message: "Price is required" })
     .positive("Price must be a positive number"),
 });
 
