@@ -16,7 +16,7 @@ export function CountriesList() {
   const [countryToDelete, setCountryToDelete] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const { data } = api.country.list.useQuery();
+  const { data, refetch } = api.country.list.useQuery();
   const { mutate: deleteCountry } = api.country.adminDelete.useMutation({
     onError: (error) => {
       toast({
@@ -34,6 +34,7 @@ export function CountriesList() {
       })
       setCountryToDelete(null)
       setDialogOpen(false)
+      refetch()
     },
   });
 

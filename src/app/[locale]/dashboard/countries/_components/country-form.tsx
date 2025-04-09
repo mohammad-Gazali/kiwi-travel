@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
+import { api } from "@/trpc/react";
 import {
   countryFormSchema,
   CountryFormValues,
@@ -24,7 +25,12 @@ interface CountryFormProps {
 }
 
 export function CountryForm({ initialData, id }: CountryFormProps) {
-  const mutationResponse = useCommonMutationResponse("/dashboard/countries");
+  const { invalidate } = api.useUtils().country.list;
+  const mutationResponse = useCommonMutationResponse("/dashboard/countries", invalidate);
+  const { mutate: create } =
+      api.country.adminCreate.useMutation(mutationResponse);
+    const { mutate: update } =
+      api.country.adminUpdate.useMutation(mutationResponse);
 
   // Define form with default values
   const form = useForm<CountryFormValues>({
@@ -36,7 +42,14 @@ export function CountryForm({ initialData, id }: CountryFormProps) {
   });
 
   const handleSubmit = (value: CountryFormValues) => {
-    // TODO: handle submit
+    if (initialData && id) {
+      update({
+        ...value,
+        id,
+      });
+    } else {
+      create(value);
+    }
   };
 
   return (
