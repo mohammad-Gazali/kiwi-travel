@@ -52,7 +52,10 @@ export function TripForm({ initialData, id }: TripFormProps) {
     api.destination.adminList.useQuery();
   const { data: tripFeatures, isLoading: isTripFeaturesLoading } =
     api.tripFeature.adminList.useQuery();
-  const mutationResponse = useCommonMutationResponse("/dashboard/trips");
+
+  const { invalidate } = api.useUtils().trip.adminList;
+
+  const mutationResponse = useCommonMutationResponse("/dashboard/trips", invalidate);
   const { mutate: create } = api.trip.adminCreate.useMutation(mutationResponse);
   const { mutate: update } = api.trip.adminUpdate.useMutation(mutationResponse);
 

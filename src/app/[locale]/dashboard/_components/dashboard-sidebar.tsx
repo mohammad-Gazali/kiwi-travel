@@ -14,6 +14,7 @@ import {
   CircleGauge,
   Flag,
   Sparkles,
+  CircleHelp,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -49,6 +50,11 @@ const sidebarNavItems = [
     title: "Trip Bookings",
     href: "/dashboard/bookings",
     icon: ShoppingCart,
+  },
+  {
+    title: "F.A.Q.",
+    href: "/dashboard/faqs",
+    icon: CircleHelp,
   },
   {
     title: "Website Constants",

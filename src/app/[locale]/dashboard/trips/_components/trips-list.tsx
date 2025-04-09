@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import { Link } from "@/i18n/routing";
-import { Button } from "@/components/ui/button"
-import { DataTable } from "@/components/ui/data-table"
-import type { ColumnDef } from "@tanstack/react-table"
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Edit, Eye, Trash } from "lucide-react"
+} from "@/components/ui/dialog";
+import { Check, Edit, Eye, Trash, X } from "lucide-react";
 import { api } from "@/trpc/react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,45 +29,49 @@ export function TripsList() {
         title: "Error",
         description: error.message,
         variant: "destructive",
-      })
-      refetch()
+      });
     },
     onSuccess: ({ message }) => {
       toast({
         title: "Success",
         description: message,
-      })
+      });
+      refetch();
     },
-  })
+  });
 
   type Trip = NonNullable<typeof data>[number];
 
   const [tripToDelete, setTripToDelete] = useState<number | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleDelete = () => {
     if (tripToDelete) {
-      deleteTrip(tripToDelete)
+      deleteTrip(tripToDelete);
     }
 
-    setTripToDelete(null)
-    setDialogOpen(false)
-  }
+    setTripToDelete(null);
+    setDialogOpen(false);
+  };
 
   const columns: ColumnDef<Trip>[] = [
     {
       accessorKey: "title",
       header: "Trip",
       cell: ({ row }) => {
-        const trip = row.original
+        const trip = row.original;
         return (
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-md overflow-hidden">
-              <img src={trip.assetsUrls[0] || "/placeholder.svg"} alt={trip.titleEn} className="h-full w-full object-cover" />
+            <div className="h-10 w-10 overflow-hidden rounded-md">
+              <img
+                src={trip.assetsUrls[0] || "/placeholder.svg"}
+                alt={trip.titleEn}
+                className="h-full w-full object-cover"
+              />
             </div>
             <span className="font-medium">{trip.titleEn}</span>
           </div>
-        )
+        );
       },
     },
     // for search ability
@@ -90,12 +94,38 @@ export function TripsList() {
     {
       accessorKey: "price",
       header: "Price",
-      cell: ({ row }) => '$' + (row.original.tripPriceInCents / 100).toFixed(2)
+      cell: ({ row }) => "$" + row.original.tripPriceInCents / 100,
+    },
+    {
+      accessorKey: "isAvailable",
+      header: "Available",
+      cell: ({ row }) => (
+        <div className="ml-5">
+          {row.original.isAvailable ? (
+            <Check className="text-green-500" />
+          ) : (
+            <X className="text-destructive" />
+          )}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "isFeatured",
+      header: "Featured",
+      cell: ({ row }) => (
+        <div className="ml-5">
+          {row.original.isFeatured ? (
+            <Check className="text-green-500" />
+          ) : (
+            <X className="text-destructive" />
+          )}
+        </div>
+      ),
     },
     {
       id: "actions",
       cell: ({ row }) => {
-        const trip = row.original
+        const trip = row.original;
         return (
           <div className="flex justify-end gap-2">
             <Button variant="outline" size="sm" asChild>
@@ -114,29 +144,36 @@ export function TripsList() {
               variant="destructive"
               size="sm"
               onClick={() => {
-                setTripToDelete(trip.id)
-                setDialogOpen(true)
+                setTripToDelete(trip.id);
+                setDialogOpen(true);
               }}
             >
               <Trash className="mr-1 h-4 w-4" />
               Delete
             </Button>
           </div>
-        )
+        );
       },
     },
-  ]
+  ];
 
   return (
     <div>
-      <DataTable columns={columns} hiddenColumns={['titleEn']} data={data ?? []} searchColumn="titleEn" searchPlaceholder="Search trips..." />
+      <DataTable
+        columns={columns}
+        hiddenColumns={["titleEn"]}
+        data={data ?? []}
+        searchColumn="titleEn"
+        searchPlaceholder="Search trips..."
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this trip? This action cannot be undone.
+              Are you sure you want to delete this trip? This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -150,6 +187,5 @@ export function TripsList() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
-

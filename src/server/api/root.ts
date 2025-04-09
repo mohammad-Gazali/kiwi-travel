@@ -3,6 +3,7 @@ import { tripRouter } from "./routers/trip";
 import { destinationRouter } from "./routers/destination";
 import { tripFeatureRouter } from "./routers/trip-feature";
 import { countryRouter } from "./routers/country";
+import { faqRouter } from "./routers/faq";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   destination: destinationRouter,
   tripFeature: tripFeatureRouter,
   country: countryRouter,
+  faq: faqRouter,
 });
 
 // export type definition of API

@@ -23,6 +23,8 @@ export const tripRouter = createTRPCRouter({
         titleEn: true,
         duration: true,
         tripPriceInCents: true,
+        isAvailable: true,
+        isFeatured: true,
       },
     });
   }),
