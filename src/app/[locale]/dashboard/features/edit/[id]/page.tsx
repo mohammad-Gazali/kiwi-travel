@@ -18,7 +18,7 @@ export default async function EditTripPage({
       <PageHeader
         title="Edit Feature"
         description="Update trip feature information"
-        backButtonLink="/dashboard/trips-features"
+        backButtonLink="/dashboard/features"
       />
       <TripFeatureForm
         id={Number(id)}

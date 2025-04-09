@@ -30,7 +30,7 @@ export function TripFeatureForm({
 }: TripFeatureFormDialogProps) {
   const { invalidate } = api.useUtils().tripFeature.adminList;
 
-  const mutationResponse = useCommonMutationResponse("/dashboard/trips-features", invalidate);
+  const mutationResponse = useCommonMutationResponse("/dashboard/features", invalidate);
   const { mutate: create } =
     api.tripFeature.adminCreate.useMutation(mutationResponse);
   const { mutate: update } =

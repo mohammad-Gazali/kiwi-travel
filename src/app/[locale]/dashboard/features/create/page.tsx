@@ -7,7 +7,7 @@ export default function NewFeaturePage() {
       <PageHeader
         title="Create Feature"
         description="Add a new feature for your trips"
-        backButtonLink="/dashboard/trips-features"
+        backButtonLink="/dashboard/features"
       />
       <TripFeatureForm />
     </div>

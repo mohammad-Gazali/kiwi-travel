@@ -15,6 +15,8 @@ import {
   Flag,
   Sparkles,
   CircleHelp,
+  SquareArrowOutUpRight,
+  Folder,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -28,7 +30,7 @@ const sidebarNavItems = [
   },
   {
     title: "Trips Features",
-    href: "/dashboard/trips-features",
+    href: "/dashboard/features",
     icon: Sparkles,
   },
   {
@@ -40,11 +42,6 @@ const sidebarNavItems = [
     title: "Destinations",
     href: "/dashboard/destinations",
     icon: Globe,
-  },
-  {
-    title: "Users",
-    href: "/dashboard/users",
-    icon: Users,
   },
   {
     title: "Trip Bookings",
@@ -111,7 +108,7 @@ export function DashboardSidebar() {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                  pathname === item.href || pathname.startsWith(`${item.href}/`)
+                  pathname.includes(item.href)
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground",
                 )}
@@ -120,6 +117,16 @@ export function DashboardSidebar() {
                 <span>{item.title}</span>
               </Link>
             ))}
+            <a className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground text-muted-foreground" href="https://dashboard.clerk.com" target="_blank">
+              <Users className="size-4" />
+              Users
+              <SquareArrowOutUpRight className="size-4 ml-auto" />
+            </a>
+            <a className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground text-muted-foreground" href="https://uploadthing.com/dashboard" target="_blank">
+              <Folder className="size-4" />
+              Files
+              <SquareArrowOutUpRight className="size-4 ml-auto" />
+            </a>
           </nav>
         </ScrollArea>
       </aside>

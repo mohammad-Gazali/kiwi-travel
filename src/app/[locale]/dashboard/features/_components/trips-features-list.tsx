@@ -68,7 +68,7 @@ export function TripsFeaturesList() {
         return (
           <div className="flex justify-end gap-2">
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/trips-features/edit/${feature.id}`}>
+              <Link href={`/dashboard/features/edit/${feature.id}`}>
                 <Edit className="mr-1 h-4 w-4" />
                 Edit
               </Link>

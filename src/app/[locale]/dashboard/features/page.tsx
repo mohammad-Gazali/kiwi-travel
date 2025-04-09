@@ -8,7 +8,7 @@ export default function TripsFeaturesPage() {
         title="Trips Features"
         description="Manage trips features"
         createButtonLabel="Add Feature"
-        createButtonLink="/dashboard/trips-features/create"
+        createButtonLink="/dashboard/features/create"
       />
       <TripsFeaturesList />
     </div>
