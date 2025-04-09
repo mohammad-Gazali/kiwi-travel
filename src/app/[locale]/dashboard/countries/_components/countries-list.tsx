@@ -3,39 +3,45 @@
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "@/i18n/routing";
+import { api } from "@/trpc/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash } from "lucide-react";
 import { useState } from "react";
 
-interface Country {
-  id: number;
-  nameEn: string;
-  nameRu: string;
-}
-
-const mockCountries: Country[] = [
-  { id: 1, nameEn: "United States", nameRu: "Соединенные Штаты" },
-  { id: 2, nameEn: "Russia", nameRu: "Россия" },
-  { id: 3, nameEn: "Japan", nameRu: "Япония" },
-  { id: 4, nameEn: "Germany", nameRu: "Германия" },
-  { id: 5, nameEn: "France", nameRu: "Франция" },
-  { id: 6, nameEn: "China", nameRu: "Китай" },
-  { id: 7, nameEn: "Brazil", nameRu: "Бразилия" },
-  { id: 8, nameEn: "Italy", nameRu: "Италия" },
-  { id: 9, nameEn: "India", nameRu: "Индия" },
-  { id: 10, nameEn: "Egypt", nameRu: "Египет" },
-];
-
 export function CountriesList() {
+  const { toast } = useToast();
+
   const [countryToDelete, setCountryToDelete] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const { data } = api.country.list.useQuery();
+  const { mutate: deleteCountry } = api.country.adminDelete.useMutation({
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      })
+      setCountryToDelete(null)
+      setDialogOpen(false)
+    },
+    onSuccess: ({ message }) => {
+      toast({
+        title: "Success",
+        description: message,
+      })
+      setCountryToDelete(null)
+      setDialogOpen(false)
+    },
+  });
+
+  type Country = NonNullable<typeof data>[number];
+
   const handleDelete = () => {
-    // TODO: handle delete
     if (countryToDelete) {
-      setCountryToDelete(null);
-      setDialogOpen(false);
+      deleteCountry(countryToDelete)
     }
   };
 
@@ -79,7 +85,7 @@ export function CountriesList() {
 
   return (
     <>
-      <DataTable columns={columns} data={mockCountries} />
+      <DataTable columns={columns} data={data ?? []} />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>

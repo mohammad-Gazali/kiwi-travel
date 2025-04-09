@@ -1,10 +1,10 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter } from "../trpc";
 
 export const destinationRouter = createTRPCRouter({
-  list: publicProcedure.query(
-    async ({ ctx }) => await ctx.db.query.country.findMany({
+  adminList: adminProcedure.query(
+    async ({ ctx }) => await ctx.db.query.destination.findMany({
       with: {
-        destinations: true,
+        country: true,
       }
     }),
   ),

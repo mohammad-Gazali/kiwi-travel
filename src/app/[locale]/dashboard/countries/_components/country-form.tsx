@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
 import {
   countryFormSchema,
   CountryFormValues,
@@ -18,11 +19,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 interface CountryFormProps {
+  id?: number;
   initialData?: Partial<CountryFormValues>;
-  isUpdate?: boolean;
 }
 
-export function CountryForm({ initialData, isUpdate }: CountryFormProps) {
+export function CountryForm({ initialData, id }: CountryFormProps) {
+  const mutationResponse = useCommonMutationResponse("/dashboard/countries");
+
   // Define form with default values
   const form = useForm<CountryFormValues>({
     resolver: zodResolver(countryFormSchema),

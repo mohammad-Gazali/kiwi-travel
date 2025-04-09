@@ -1,5 +1,5 @@
-import { integer, pgTable } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
 
-export const faq = pgTable("faqs", {
-  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-})
+export const faq = pgTable("faqs", (c) => ({
+  id: c.integer("id").primaryKey().generatedByDefaultAsIdentity(),
+}))

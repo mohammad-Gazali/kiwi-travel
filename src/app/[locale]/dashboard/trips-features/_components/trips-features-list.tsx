@@ -13,52 +13,54 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash } from "lucide-react";
 import { useState } from "react";
-import type { Feature } from "../page";
+import { Link } from "@/i18n/routing";
+import { api } from "@/trpc/react";
+import { useToast } from "@/hooks/use-toast";
 
-// Mock features for select dropdown
-const mockFeatures = [
-  { id: 1, nameEn: "Private beach access", nameRu: "Private beach access" },
-  { id: 2, nameEn: "Infinity pool", nameRu: "Infinity pool" },
-  { id: 3, nameEn: "Daily breakfast", nameRu: "Daily breakfast" },
-  { id: 4, nameEn: "Airport transfers", nameRu: "Airport transfers" },
-  {
-    id: 5,
-    nameEn: "Complimentary spa session",
-    nameRu: "Complimentary spa session",
-  },
-  { id: 6, nameEn: "24/7 concierge service", nameRu: "24/7 concierge service" },
-  {
-    id: 7,
-    nameEn: "WiFi throughout the property",
-    nameRu: "WiFi throughout the property",
-  },
-  { id: 8, nameEn: "Air conditioning", nameRu: "Air conditioning" },
-];
+export function TripsFeaturesList() {
+  const { toast } = useToast();
 
-interface TripsFeaturesListProps {
-  openEditDialog: (initial: Feature) => void;
-}
-
-export function TripsFeaturesList({ openEditDialog }: TripsFeaturesListProps) {
   const [featureToDelete, setFeatureToDelete] = useState<number | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const { data, refetch } = api.tripFeature.adminList.useQuery();
+  const { mutate: deleteFeature } = api.tripFeature.adminDelete.useMutation({
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      setFeatureToDelete(null);
+      setDialogOpen(false);
+    },
+    onSuccess: ({ message }) => {
+      toast({
+        title: "Success",
+        description: message,
+      });
+      setFeatureToDelete(null);
+      setDialogOpen(false);
+      refetch();
+    },
+  });
+
+  type Feature = NonNullable<typeof data>[number];
 
   const handleDelete = () => {
-    // TODO: handle delete
     if (featureToDelete) {
-      setFeatureToDelete(null);
-      setDeleteDialogOpen(false);
+      deleteFeature(featureToDelete);
     }
   };
 
   const columns: ColumnDef<Feature>[] = [
     {
-      accessorKey: "nameEn",
-      header: "English Name",
+      accessorKey: "contentEn",
+      header: "English Content",
     },
     {
-      accessorKey: "nameRu",
-      header: "Russian Name",
+      accessorKey: "contentRu",
+      header: "Russian Content",
     },
     {
       id: "actions",
@@ -66,18 +68,18 @@ export function TripsFeaturesList({ openEditDialog }: TripsFeaturesListProps) {
         const feature = row.original;
         return (
           <div className="flex justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => {
-              openEditDialog(feature);
-            }}>
-              <Edit className="mr-1 h-4 w-4" />
-              Edit
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/dashboard/trips-features/edit/${feature.id}`}>
+                <Edit className="mr-1 h-4 w-4" />
+                Edit
+              </Link>
             </Button>
             <Button
               variant="destructive"
               size="sm"
               onClick={() => {
                 setFeatureToDelete(feature.id);
-                setDeleteDialogOpen(true);
+                setDialogOpen(true);
               }}
             >
               <Trash className="mr-1 h-4 w-4" />
@@ -91,8 +93,9 @@ export function TripsFeaturesList({ openEditDialog }: TripsFeaturesListProps) {
 
   return (
     <>
-      <DataTable columns={columns} data={mockFeatures} />
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <DataTable columns={columns} data={data ?? []} />
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
@@ -102,10 +105,7 @@ export function TripsFeaturesList({ openEditDialog }: TripsFeaturesListProps) {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete}>

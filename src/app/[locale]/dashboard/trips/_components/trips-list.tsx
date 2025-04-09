@@ -14,129 +14,44 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Edit, Eye, Trash } from "lucide-react"
-
-// Mock data for trips
-const mockTrips = [
-  {
-    id: "1",
-    title: "Paris Adventure",
-    destination: "Paris, France",
-    duration: "7 days",
-    price: "$1,299",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "2",
-    title: "Tokyo Explorer",
-    destination: "Tokyo, Japan",
-    duration: "10 days",
-    price: "$2,499",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "3",
-    title: "New York City Break",
-    destination: "New York, USA",
-    duration: "5 days",
-    price: "$999",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "4",
-    title: "Bali Retreat",
-    destination: "Bali, Indonesia",
-    duration: "14 days",
-    price: "$1,899",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "5",
-    title: "Safari Adventure",
-    destination: "Nairobi, Kenya",
-    duration: "8 days",
-    price: "$3,299",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "6",
-    title: "Greek Island Hopping",
-    destination: "Athens, Greece",
-    duration: "12 days",
-    price: "$2,199",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "7",
-    title: "Barcelona City Tour",
-    destination: "Barcelona, Spain",
-    duration: "6 days",
-    price: "$1,499",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "8",
-    title: "Swiss Alps Adventure",
-    destination: "Zurich, Switzerland",
-    duration: "9 days",
-    price: "$2,799",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "9",
-    title: "Dubai Luxury Escape",
-    destination: "Dubai, UAE",
-    duration: "7 days",
-    price: "$3,499",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "10",
-    title: "Rome Historical Tour",
-    destination: "Rome, Italy",
-    duration: "8 days",
-    price: "$1,899",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "11",
-    title: "Cancun Beach Vacation",
-    destination: "Cancun, Mexico",
-    duration: "10 days",
-    price: "$2,099",
-    image: "https://placehold.co/300x200",
-  },
-  {
-    id: "12",
-    title: "Sydney Explorer",
-    destination: "Sydney, Australia",
-    duration: "14 days",
-    price: "$3,899",
-    image: "https://placehold.co/300x200",
-  },
-]
-
-type Trip = {
-  id: string
-  title: string
-  destination: string
-  duration: string
-  price: string
-  image: string
-}
+import { api } from "@/trpc/react";
+import { useToast } from "@/hooks/use-toast";
 
 // TODO: add more filters by destination for example
 
 export function TripsList() {
-  const [trips, setTrips] = useState(mockTrips)
-  const [tripToDelete, setTripToDelete] = useState<string | null>(null)
+  const { toast } = useToast();
+
+  const { data, refetch } = api.trip.adminList.useQuery();
+  const { mutate: deleteTrip } = api.trip.adminDelete.useMutation({
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      })
+      setTripToDelete(null)
+      setDialogOpen(false)
+      refetch()
+    },
+    onSuccess: ({ message }) => {
+      toast({
+        title: "Success",
+        description: message,
+      })
+      setTripToDelete(null)
+      setDialogOpen(false)
+    },
+  })
+
+  type Trip = NonNullable<typeof data>[number];
+
+  const [tripToDelete, setTripToDelete] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const handleDelete = () => {
-    // TODO: handle delete
     if (tripToDelete) {
-      setTrips(trips.filter((trip) => trip.id !== tripToDelete))
-      setTripToDelete(null)
-      setDialogOpen(false)
+      deleteTrip(tripToDelete)
     }
   }
 
@@ -149,16 +64,21 @@ export function TripsList() {
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-md overflow-hidden">
-              <img src={trip.image || "/placeholder.svg"} alt={trip.title} className="h-full w-full object-cover" />
+              <img src={trip.assetsUrls[0] || "/placeholder.svg"} alt={trip.titleEn} className="h-full w-full object-cover" />
             </div>
-            <span className="font-medium">{trip.title}</span>
+            <span className="font-medium">{trip.titleEn}</span>
           </div>
         )
       },
     },
     {
-      accessorKey: "destination",
+      id: "destination",
       header: "Destination",
+      cell: ({ row }) => {
+        const feature = row.original;
+
+        return `${feature.destination.country.nameEn}, ${feature.destination.nameEn}`;
+      },
     },
     {
       accessorKey: "duration",
@@ -167,6 +87,7 @@ export function TripsList() {
     {
       accessorKey: "price",
       header: "Price",
+      cell: ({ row }) => '$' + (row.original.tripPriceInCents / 100).toFixed(2)
     },
     {
       id: "actions",
@@ -181,7 +102,7 @@ export function TripsList() {
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/trips/${trip.id}/edit`}>
+              <Link href={`/dashboard/trips/edit/${trip.id}`}>
                 <Edit className="mr-1 h-4 w-4" />
                 Edit
               </Link>
@@ -205,7 +126,7 @@ export function TripsList() {
 
   return (
     <div>
-      <DataTable columns={columns} data={trips} searchColumn="title" searchPlaceholder="Search trips..." />
+      <DataTable columns={columns} data={data ?? []} searchColumn="title" searchPlaceholder="Search trips..." />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>

@@ -35,38 +35,27 @@ import {
 import { MultiSelect } from "@/components/multi-select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
-
-// Mock destinations for select dropdown
-const mockDestinations = [
-  { id: 1, name: "Paris, France" },
-  { id: 2, name: "Tokyo, Japan" },
-  { id: 3, name: "New York, USA" },
-  { id: 4, name: "Bali, Indonesia" },
-  { id: 5, name: "Nairobi, Kenya" },
-  { id: 6, name: "Athens, Greece" },
-];
-
-// Mock features for select dropdown
-const mockFeatures = [
-  { id: 1, name: "Private beach access" },
-  { id: 2, name: "Infinity pool" },
-  { id: 3, name: "Daily breakfast" },
-  { id: 4, name: "Airport transfers" },
-  { id: 5, name: "Complimentary spa session" },
-  { id: 6, name: "24/7 concierge service" },
-  { id: 7, name: "WiFi throughout the property" },
-  { id: 8, name: "Air conditioning" },
-];
+import { api } from "@/trpc/react";
+import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
 
 const clientFormSchema = tripFormSchema.omit({ assets: true });
 
 type TripFormValues = z.infer<typeof clientFormSchema>;
 
 interface TripFormProps {
+  id?: number;
   initialData?: Partial<TripFormValues & { assets: string[] }>;
 }
 
-export function TripForm({ initialData }: TripFormProps) {
+export function TripForm({ initialData, id }: TripFormProps) {
+  const { data: destinations, isLoading: isDestinationsLoading } =
+    api.destination.adminList.useQuery();
+  const { data: tripFeatures, isLoading: isTripFeaturesLoading } =
+    api.tripFeature.adminList.useQuery();
+  const mutationResponse = useCommonMutationResponse("/dashboard/trips");
+  const { mutate: create } = api.trip.adminCreate.useMutation(mutationResponse);
+  const { mutate: update } = api.trip.adminUpdate.useMutation(mutationResponse);
+
   const [currentUploadingFileIndex, setCurrentUploadingFileIndex] = useState(0);
   const [filesWithProgress, setFilesWithProgress] = useState<
     FileWithProgress[]
@@ -176,7 +165,15 @@ export function TripForm({ initialData }: TripFormProps) {
       travelTime: initialData?.travelTime || "00:00",
       destinationId: initialData?.destinationId || ("" as any),
       price: initialData?.price || 0,
-      availableDays: initialData?.availableDays || ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      availableDays: initialData?.availableDays || [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ],
       bookingsLimitCount: initialData?.bookingsLimitCount,
       duration: initialData?.duration || "",
       isAvailable: initialData?.isAvailable || true,
@@ -225,7 +222,18 @@ export function TripForm({ initialData }: TripFormProps) {
       return;
     }
 
-    // TODO: handle submit here
+    if (initialData && id) {
+      update({
+        ...value,
+        id,
+        assets,
+      })
+    } else {
+      create({
+        ...value,
+        assets,
+      })
+    }
   };
 
   return (
@@ -345,10 +353,13 @@ export function TripForm({ initialData }: TripFormProps) {
                 <FormLabel>Features</FormLabel>
                 <FormControl>
                   <MultiSelect
-                    options={mockFeatures.map((f) => ({
-                      label: f.name,
-                      value: f.id.toString(),
-                    }))}
+                    disabled={isTripFeaturesLoading}
+                    options={
+                      tripFeatures?.map((f) => ({
+                        label: f.contentEn,
+                        value: f.id.toString(),
+                      })) ?? []
+                    }
                     defaultValue={field.value.map((v) => v.toString())}
                     onValueChange={(value) => field.onChange(value.map(Number))}
                     placeholder="Select features"
@@ -446,6 +457,7 @@ export function TripForm({ initialData }: TripFormProps) {
                     field.onChange(Number.parseInt(value))
                   }
                   defaultValue={field.value.toString()}
+                  disabled={isDestinationsLoading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -453,12 +465,12 @@ export function TripForm({ initialData }: TripFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {mockDestinations.map((destination) => (
+                    {destinations?.map((destination) => (
                       <SelectItem
                         key={destination.id}
                         value={destination.id.toString()}
                       >
-                        {destination.name}
+                        {`${destination.country.nameEn}, ${destination.nameEn}`}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -494,7 +506,7 @@ export function TripForm({ initialData }: TripFormProps) {
             control={form.control}
             name="isAvailable"
             render={({ field }) => (
-              <FormItem className="flex items-center gap-2 -mt-2">
+              <FormItem className="-mt-2 flex items-center gap-2">
                 <FormControl>
                   <Switch
                     className="mt-2"
@@ -515,7 +527,7 @@ export function TripForm({ initialData }: TripFormProps) {
             control={form.control}
             name="isFeatured"
             render={({ field }) => (
-              <FormItem className="flex items-center gap-2 -mt-2">
+              <FormItem className="-mt-2 flex items-center gap-2">
                 <FormControl>
                   <Switch
                     className="mt-2"
