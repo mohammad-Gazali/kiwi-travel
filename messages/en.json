@@ -54,6 +54,23 @@
       "dark": "Dark",
       "system": "System"
     },
+    "tripType": {
+      "adventure": "Adventure",
+      "cultural": "Cultural",
+      "beach": "Beach Vacation",
+      "nature": "Nature Retreat",
+      "road": "Road Trip",
+      "cruise": "Cruise Vacation",
+      "wellness": "Wellness Trip",
+      "city": "City Escape",
+      "food_wine": "Food & Wine Journey",
+      "volunteer": "Volunteer Vacation",
+      "family": "Family Getaway",
+      "romantic": "Romantic Escape",
+      "solo": "Solo Adventure",
+      "eco_tourism": "Eco-Tourism",
+      "festival": "Festival Tour"
+    },
     "header": {
       "signIn": "Sign In",
       "signUp": "Sign Up",

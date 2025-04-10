@@ -25,6 +25,7 @@ export const tripRouter = createTRPCRouter({
         tripPriceInCents: true,
         isAvailable: true,
         isFeatured: true,
+        tripType: true,
       },
     });
   }),

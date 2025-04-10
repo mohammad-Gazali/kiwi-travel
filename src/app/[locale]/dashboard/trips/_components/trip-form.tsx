@@ -21,9 +21,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useUploadThing } from "@/hooks/use-upload-thing";
-import { days, tripFormSchema } from "@/validators/trip-schema";
+import { days, tripFormSchema, tripTypes } from "@/validators/trip-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,6 +36,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
 import { api } from "@/trpc/react";
 import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
+import { useTranslations } from "next-intl";
 
 const clientFormSchema = tripFormSchema.omit({ assets: true });
 
@@ -48,6 +48,8 @@ interface TripFormProps {
 }
 
 export function TripForm({ initialData, id }: TripFormProps) {
+  const t = useTranslations("General.tripType");
+
   const { data: destinations, isLoading: isDestinationsLoading } =
     api.destination.adminList.useQuery();
   const { data: tripFeatures, isLoading: isTripFeaturesLoading } =
@@ -177,10 +179,11 @@ export function TripForm({ initialData, id }: TripFormProps) {
         "Friday",
         "Saturday",
       ],
-      bookingsLimitCount: initialData?.bookingsLimitCount,
+      bookingsLimitCount: initialData?.bookingsLimitCount || 0,
       duration: initialData?.duration || "",
       isAvailable: initialData?.isAvailable || true,
       isFeatured: initialData?.isFeatured || false,
+      tripType: initialData?.tripType,
     },
   });
 
@@ -474,6 +477,39 @@ export function TripForm({ initialData, id }: TripFormProps) {
                         value={destination.id.toString()}
                       >
                         {`${destination.country.nameEn}, ${destination.nameEn}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Trip Type */}
+          <FormField
+            control={form.control}
+            name="tripType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Trip Type</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(value)
+                  }
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {tripTypes.map((type) => (
+                      <SelectItem
+                        key={type}
+                        value={type}
+                      >
+                        {t(type)}
                       </SelectItem>
                     ))}
                   </SelectContent>

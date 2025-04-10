@@ -75,61 +75,58 @@ export function Search({ initialValue }: { initialValue?: string }) {
                 defaultValue={initialValue}
               />
             </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div className="grid gap-2">
-                <Label>{t("dateLabel")}</Label>
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "h-12 justify-start text-left font-normal",
-                        !date && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : t("datePlaceholder")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      disabled={date => date < new Date()}
-                      onSelect={date => {
-                        setDate(date);
-                        setIsCalendarOpen(false);
-                      }}
-                      autoFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="travelers">{t("travelersLabel")}</Label>
-                <div className="relative">
-                  <Input
-                    id="travelers"
-                    type="number"
-                    min="1"
-                    defaultValue="2"
-                    className="h-12 pl-10"
+            <div className="grid gap-2">
+              <Label>{t("dateLabel")}</Label>
+              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "h-12 justify-start text-left font-normal",
+                      !date && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : t("datePlaceholder")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    disabled={(date) => date < new Date()}
+                    onSelect={(date) => {
+                      setDate(date);
+                      setIsCalendarOpen(false);
+                    }}
+                    autoFocus
                   />
-                  <Users className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
-                </div>
-              </div>
+                </PopoverContent>
+              </Popover>
+            </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="budget">{t("budgetLabel")}</Label>
+            <div className="grid gap-2">
+              <Label htmlFor="travelers">{t("travelersLabel")}</Label>
+              <div className="relative">
                 <Input
-                  id="budget"
-                  type="text"
-                  placeholder={t("budgetPlaceholder")}
-                  className="h-12"
+                  id="travelers"
+                  type="number"
+                  min="1"
+                  defaultValue="2"
+                  className="h-12 pl-10"
                 />
+                <Users className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="budget">{t("budgetLabel")}</Label>
+              <Input
+                id="budget"
+                type="text"
+                placeholder={t("budgetPlaceholder")}
+                className="h-12"
+              />
             </div>
 
             <Button
@@ -143,9 +140,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
             {isFilterOpen && (
               <div className="mt-4 grid gap-6 border-t pt-4">
                 <div>
-                  <Label className="mb-3 block">
-                    {t("priceRangeLabel")}
-                  </Label>
+                  <Label className="mb-3 block">{t("priceRangeLabel")}</Label>
                   <div className="px-2">
                     <Slider
                       twoThumbs
@@ -163,30 +158,43 @@ export function Search({ initialValue }: { initialValue?: string }) {
                   </div>
                 </div>
 
-                <div>
-                  <Label className="mb-3 block">{t("popularDestinationsLabel")}</Label>
-                  <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
-                    {popularDestinations.map((destination) => (
-                      <div
-                        key={destination}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox id={`destination-${destination}`} />
-                        <label
-                          htmlFor={`destination-${destination}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                <div className="grid gap-6">
+                  <div>
+                    <Label className="mb-3 block">
+                      {t("popularDestinationsLabel")}
+                    </Label>
+                    <div
+                      className="grid gap-2"
+                      style={{
+                        gridTemplateColumns:
+                          "repeat(auto-fill, minmax(120px, 1fr))",
+                      }}
+                    >
+                      {popularDestinations.map((destination) => (
+                        <div
+                          key={destination}
+                          className="flex items-center space-x-2"
                         >
-                          {destination}
-                        </label>
-                      </div>
-                    ))}
+                          <Checkbox id={`destination-${destination}`} />
+                          <label
+                            htmlFor={`destination-${destination}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {destination}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <Label className="mb-3 block">{t("regionsLabel")}</Label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div
+                      className="grid gap-2"
+                      style={{
+                        gridTemplateColumns:
+                          "repeat(auto-fill, minmax(120px, 1fr))",
+                      }}
+                    >
                       {regions.map((region) => (
                         <div
                           key={region}
@@ -206,7 +214,13 @@ export function Search({ initialValue }: { initialValue?: string }) {
 
                   <div>
                     <Label className="mb-3 block">{t("tripTypesLabel")}</Label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div
+                      className="grid gap-2"
+                      style={{
+                        gridTemplateColumns:
+                          "repeat(auto-fill, minmax(120px, 1fr))",
+                      }}
+                    >
                       {tripTypes.map((type) => (
                         <div key={type} className="flex items-center space-x-2">
                           <Checkbox id={`type-${type}`} />

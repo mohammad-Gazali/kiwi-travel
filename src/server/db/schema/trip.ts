@@ -1,6 +1,7 @@
 import { sql, relations } from "drizzle-orm";
 import { index, pgTable, primaryKey } from "drizzle-orm/pg-core";
 import { destination } from "./destination";
+import { days, tripTypes } from "@/validators/trip-schema";
 
 export const trip = pgTable("trips", (c) => ({
   id: c.integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -26,18 +27,13 @@ export const trip = pgTable("trips", (c) => ({
   bookingsLimitCount: c.integer("bookings_limit_count").notNull(),
   duration: c.text("duration").notNull(),
   availableDays: c.text("available_days", {
-    enum: [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ],
+    enum: days,
   })
     .array()
     .notNull(),
+  tripType: c.text("trip_type", {
+    enum: tripTypes
+  }).notNull(),
   createdAt: c.timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

@@ -89,7 +89,7 @@ export function TripResults() {
   const t = useTranslations("TripsPage");
 
   return (
-    <div>
+    <div className="col-span-2">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">{t("tripsFoundHeader", { count: trips.length })}</h2>
       </div>
@@ -107,7 +107,7 @@ export function TripResults() {
         </div>
 
         <TabsContent value="grid" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {trips.map((trip) => (
               <Card key={trip.id} className="overflow-hidden">
                 <div className="relative h-48">

@@ -16,9 +16,9 @@ export default async function Page({
         : undefined;
 
   return (
-    <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
-      <Search initialValue={initialSearchValue} />
+    <main className="container flex flex-col-reverse lg:grid grid-cols-3 gap-4 mx-auto mt-14 px-4 py-8 lg:px-0">
       <TripResults />
+      <Search initialValue={initialSearchValue} />
     </main>
   );
 }

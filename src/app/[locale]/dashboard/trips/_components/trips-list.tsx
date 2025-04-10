@@ -13,13 +13,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Check, Edit, Eye, Trash, X } from "lucide-react";
+import { CheckCircle, CircleX, Edit, Eye, Trash } from "lucide-react";
 import { api } from "@/trpc/react";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
 
-// TODO: add more filters by destination for example
 
 export function TripsList() {
+  const t = useTranslations("General.tripType");
+
   const { toast } = useToast();
 
   const { data, refetch } = api.trip.adminList.useQuery();
@@ -88,6 +91,11 @@ export function TripsList() {
       },
     },
     {
+      accessorKey: "tripType",
+      header: "Type",
+      cell: ({ row }) => <Badge>{t(row.original.tripType)}</Badge>
+    },
+    {
       accessorKey: "duration",
       header: "Duration",
     },
@@ -102,9 +110,9 @@ export function TripsList() {
       cell: ({ row }) => (
         <div className="ml-5">
           {row.original.isAvailable ? (
-            <Check className="text-green-500" />
+            <CheckCircle className="text-green-500" />
           ) : (
-            <X className="text-destructive" />
+            <CircleX className="text-destructive" />
           )}
         </div>
       ),
@@ -115,9 +123,9 @@ export function TripsList() {
       cell: ({ row }) => (
         <div className="ml-5">
           {row.original.isFeatured ? (
-            <Check className="text-green-500" />
+            <CheckCircle className="text-green-500" />
           ) : (
-            <X className="text-destructive" />
+            <CircleX className="text-destructive" />
           )}
         </div>
       ),
