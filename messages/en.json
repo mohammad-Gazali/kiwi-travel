@@ -47,6 +47,32 @@
     "viewDetailsButton": "View Details",
     "loadMoreResultsButton": "Load More Results"
   },
+  "TripDetailsPage": {
+    "tripFeatures": "Trip Features",
+    "amenities": "Amenities",
+    "tripInformation": "Trip Information",
+    "country": "Country:",
+    "destination": "Destination:",
+    "duration": "Duration:",
+    "type": "Type:",
+    "travelTime": "Travel time:",
+    "askQuestion": "Ask a Question",
+    "tabs": {
+      "description": "Description",
+      "details": "Details & Features"
+    },
+    "bookingForm": {
+      "perPerson": "per person",
+      "bookingDate": "Booking Date",
+      "selectDate": "Select date",
+      "travelersCount": "Travelers count",
+      "basePrice": "Base price",
+      "total": "Total",
+      "bookNow": "Book Now",
+      "noCharge": "No charge for reservation. Pay later.",
+      "reviews": "reviews"
+    }
+  },
   "General": {
     "themeToggle": {
       "toggleTheme": "Toggle theme",
@@ -70,6 +96,18 @@
       "solo": "Solo Adventure",
       "eco_tourism": "Eco-Tourism",
       "festival": "Festival Tour"
+    },
+    "amenities": {
+      "transfer": "Transfers from/to Hotel ",
+      "guide": "Professional Tour Guide",
+      "free_cancel": "Free cancellation",
+      "online_payment": "Available Online payment"
+    },
+    "timeUnits": {
+      "hour": "hour",
+      "hours": "hours",
+      "day": "day",
+      "days": "days"
     },
     "header": {
       "signIn": "Sign In",

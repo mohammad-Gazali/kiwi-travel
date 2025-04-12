@@ -1,4 +1,4 @@
-import "./src/env.js";
+import { env } from "./src/env.js";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
@@ -13,6 +13,10 @@ const config = {
         hostname: 'placehold.co',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: env.UPLOADTHING_HOST,
+      }
     ],
   },
 };

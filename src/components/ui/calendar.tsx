@@ -4,6 +4,8 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { differenceInCalendarDays } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useLocale } from "next-intl"
+import { ru } from "react-day-picker/locale";
 import * as React from "react"
 import {
   DayPicker,
@@ -66,6 +68,8 @@ function Calendar({
   numberOfMonths,
   ...props
 }: CalendarProps) {
+  const locale = useLocale();
+
   const [navView, setNavView] = React.useState<NavView>("days")
   const [displayYears, setDisplayYears] = React.useState<{
     from: number
@@ -171,6 +175,7 @@ function Calendar({
       style={{
         width: 248.8 * (columnsDisplayed ?? 1) + "px",
       }}
+      locale={locale === 'ru' ? ru : undefined}
       classNames={{
         months: _monthsClassName,
         month_caption: _monthCaptionClassName,

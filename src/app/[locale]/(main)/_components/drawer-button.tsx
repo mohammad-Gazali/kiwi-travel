@@ -23,6 +23,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
 import { Link } from "@/i18n/routing";;
 import { useTranslations } from "next-intl";
+import LanguageToggle from "./language-toggle";
 
 export const DrawerButton = () => {
   const [open, setOpen] = useState(false);
@@ -43,6 +44,7 @@ export const DrawerButton = () => {
             Kiwi Travel
             <div className="flex items-center gap-4">
               <ThemeToggle />
+              <LanguageToggle />
               <Button
                 variant="outline"
                 size="icon"

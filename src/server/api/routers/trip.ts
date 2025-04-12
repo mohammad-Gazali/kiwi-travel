@@ -1,4 +1,8 @@
-import { createTRPCRouter, adminProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  adminProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { trip, tripToFeature } from "@/server/db/schema";
 import { tripFormSchema } from "@/validators/trip-schema";
 import { eq } from "drizzle-orm";
@@ -119,4 +123,38 @@ export const tripRouter = createTRPCRouter({
         message: "Deleted successfully",
       };
     }),
+  view: publicProcedure.input(z.number().int()).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.trip.findFirst({
+        where: ({ id }, { eq }) => eq(id, input),
+        with: {
+          destination: {
+            with: {
+              country: true,
+            },
+          },
+          features: {
+            with: {
+              feature: true,
+            }
+          },
+        },
+      }),
+  ),
 });
+
+interface A {
+  id: string;
+  title: string;
+  description: string;
+  longDescription: string;
+  images: string[];
+  features: string[];
+  status: string;
+  country: string;
+  location: string;
+  price: number;
+  duration: number;
+  rating: number;
+  reviewCount: number;
+}

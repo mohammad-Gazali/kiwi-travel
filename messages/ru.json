@@ -47,6 +47,32 @@
     "viewDetailsButton": "Подробнее",
     "loadMoreResultsButton": "Загрузить ещё"
   },
+  "TripDetailsPage": {
+    "tripFeatures": "Особенности тура",
+    "amenities": "Удобства",
+    "tripInformation": "Информация о туре",
+    "country": "Страна:",
+    "destination": "Направление:",
+    "duration": "Продолжительность:",
+    "type": "Тип:",
+    "travelTime": "Время отправления:",
+    "askQuestion": "Задать вопрос",
+    "tabs": {
+      "description": "Описание",
+      "details": "Детали и особенности"
+    },
+    "bookingForm": {
+      "perPerson": "за человека",
+      "bookingDate": "Дата бронирования",
+      "selectDate": "Выберите дату",
+      "travelersCount": "Количество путешественников",
+      "basePrice": "Базовая цена",
+      "total": "Итого",
+      "bookNow": "Забронировать",
+      "noCharge": "Без предоплаты. Оплата позже.",
+      "reviews": "отзывов"
+    }
+  },
   "General": {
     "themeToggle": {
       "toggleTheme": "Переключить тему",
@@ -70,6 +96,18 @@
       "solo": "Одиночное путешествие",
       "eco_tourism": "Экологический туризм",
       "festival": "Фестивальный тур"
+    },
+    "amenities": {
+      "transfer": "Трансфер от/в отель",
+      "guide": "Услуги гида",
+      "free_cancel": "Бесплатно отмена ",
+      "online_payment": "Можно Оплата по валюте вашей страны"
+    },
+    "timeUnits": {
+      "hour": "час",
+      "hours": "часа",
+      "day": "день",
+      "days": "дня"
     },
     "header": {
       "signIn": "Войти",
