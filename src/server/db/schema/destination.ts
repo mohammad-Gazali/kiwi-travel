@@ -13,7 +13,7 @@ export const destination = pgTable("destinations", (c) => ({
   nameRu: c.text("name_ru").notNull(),
   imageUrl: c.text("image_url").notNull(),
   isPopular: c.boolean("is_popular").notNull(),
-  country: c.integer("country_id")
+  countryId: c.integer("country_id")
     .notNull()
     .references(() => country.id, { onDelete: "restrict" }),
 }));
@@ -26,7 +26,7 @@ export const countryRelations = relations(country, ({ many }) => ({
 
 export const destinationRelations = relations(destination, ({ one }) => ({
   country: one(country, {
-    fields: [destination.country],
+    fields: [destination.countryId],
     references: [country.id],
   }),
 }))

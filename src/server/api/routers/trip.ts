@@ -1,11 +1,31 @@
+import { mainImage } from "@/lib/utils";
 import {
   createTRPCRouter,
   adminProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { trip, tripToFeature } from "@/server/db/schema";
-import { tripFormSchema } from "@/validators/trip-schema";
-import { eq } from "drizzle-orm";
+import {
+  country,
+  destination,
+  trip,
+  tripBooking,
+  tripToFeature,
+} from "@/server/db/schema";
+import { tripFormSchema, tripSearchFormSchema } from "@/validators/trip-schema";
+import { format } from "date-fns";
+import {
+  and,
+  eq,
+  isNotNull,
+  isNull,
+  or,
+  sql,
+  inArray,
+  gte,
+  lte,
+  sum,
+  ilike,
+} from "drizzle-orm";
 import { z } from "zod";
 
 export const tripRouter = createTRPCRouter({
@@ -123,6 +143,134 @@ export const tripRouter = createTRPCRouter({
         message: "Deleted successfully",
       };
     }),
+  listSearch: publicProcedure
+    .input(tripSearchFormSchema)
+    .query(async ({ ctx, input }) => {
+      // ========= query conditions =========
+      const dateCondition = input.date
+        ? sql`${tripBooking.tripStartDate} = ${format(input.date, "yyyy-MM-dd")}::date`
+        : undefined;
+
+      const typeCondition = input.type
+        ? inArray(trip.tripType, input.type)
+        : undefined;
+
+      const priceLowerCondition =
+        input.priceLower !== null && input.priceLower !== undefined
+          ? gte(trip.tripPriceInCents, input.priceLower * 100)
+          : undefined;
+
+      const priceGreaterCondition =
+        input.priceGreater !== null && input.priceGreater !== undefined
+          ? lte(trip.tripPriceInCents, input.priceGreater * 100)
+          : undefined;
+
+      const destinationsCondition =
+        input.destinations && input.destinations.length !== 0
+          ? inArray(destination.id, input.destinations)
+          : undefined;
+
+      const countriesCondition =
+        input.countries && input.countries.length !== 0
+          ? inArray(country.id, input.countries)
+          : undefined;
+
+      const travelersCountNullBookingCountCondition =
+        input.travelersCount !== null && input.travelersCount !== undefined
+          ? gte(trip.bookingsLimitCount, input.travelersCount)
+          : undefined;
+
+      const searchCondition = input.search
+        ? or(
+            ilike(trip.titleEn, `%${input.search}%`),
+            ilike(trip.titleRu, `%${input.search}%`),
+            ilike(destination.nameEn, `%${input.search}%`),
+            ilike(destination.nameRu, `%${input.search}%`),
+            ilike(country.nameEn, `%${input.search}%`),
+            ilike(country.nameRu, `%${input.search}%`),
+          )
+        : undefined;
+
+      // ========= query itself =========
+      const subquery = ctx.db
+        .select({
+          tripId: tripBooking.tripId,
+          bookingCount: sum(tripBooking.travelersCount).as("booking_count"),
+        })
+        .from(tripBooking)
+        .where(dateCondition)
+        .groupBy(tripBooking.tripId)
+        .as("bookings_count");
+
+      // ========= depending on subquery condition =========
+      const travelersCountNotNullBookingCountCondition =
+        input.travelersCount !== null && input.travelersCount !== undefined
+          ? sql`${subquery.bookingCount} + ${input.travelersCount} <= ${trip.bookingsLimitCount}`
+          : undefined;
+
+      // ========= pagination control ==========
+      const PAGE_SIZE = 6;
+      const pageIndex = input.page ?? 0;
+
+      return await ctx.db
+        .select({
+          id: trip.id,
+          titleEn: trip.titleEn,
+          titleRu: trip.titleRu,
+          assets: trip.assetsUrls,
+          type: trip.tripType,
+          priceInCents: trip.tripPriceInCents,
+          duration: trip.duration,
+          isFeatured: trip.isFeatured,
+          countryEn: country.nameEn,
+          countryRu: country.nameRu,
+          destinationEn: destination.nameEn,
+          destinationRu: destination.nameRu,
+        })
+        .from(trip)
+        .leftJoin(subquery, eq(trip.id, subquery.tripId))
+        .innerJoin(destination, eq(trip.destinationId, destination.id))
+        .innerJoin(country, eq(destination.countryId, country.id))
+        .where(
+          and(
+            eq(trip.isAvailable, true),
+            or(
+              and(
+                isNull(subquery.bookingCount),
+                travelersCountNullBookingCountCondition,
+              ),
+              and(
+                isNotNull(subquery.bookingCount),
+                lte(subquery.bookingCount, trip.bookingsLimitCount),
+                travelersCountNotNullBookingCountCondition,
+              ),
+            ),
+            typeCondition,
+            priceLowerCondition,
+            priceGreaterCondition,
+            destinationsCondition,
+            countriesCondition,
+            searchCondition,
+          ),
+        )
+        .orderBy(trip.isFeatured)
+        .limit(PAGE_SIZE)
+        .offset(pageIndex * PAGE_SIZE)
+        .then(result => result.map(item => ({
+          id: item.id,
+          titleEn: item.titleEn,
+          titleRu: item.titleRu,
+          locationEn: `${item.countryEn}, ${item.destinationEn}`,
+          locationRu: `${item.countryRu}, ${item.destinationRu}`,
+          price: Math.floor(item.priceInCents / 100),
+          type: item.type,
+          duration: item.duration,
+          isFeatured: item.isFeatured,
+          image: mainImage(item.assets),
+          reviewsValue: 4.7, // TODO: continue after finishing reviews
+          reviewsCount: 128, // TODO: continue after finishing reviews
+        })));
+    }),
   view: publicProcedure.input(z.number().int()).query(
     async ({ ctx, input }) =>
       await ctx.db.query.trip.findFirst({
@@ -136,7 +284,7 @@ export const tripRouter = createTRPCRouter({
           features: {
             with: {
               feature: true,
-            }
+            },
           },
         },
       }),

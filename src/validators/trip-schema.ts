@@ -53,6 +53,20 @@ export const tripFormSchema = z.object({
     .positive("Price must be a positive number"),
 });
 
+export const tripSearchFormSchema = z.object({
+  search: z.string().nullish(),
+  date: z.date().min(new Date()).nullish(),
+  travelersCount: z.number().nullish(),
+  priceLower: z.number().nullish(),
+  priceGreater: z.number().nullish(),
+  destinations: z.array(z.number()).nullish(),
+  countries: z.array(z.number()).nullish(),
+  type: z.array(z.enum(tripTypes)).nullish(),
+  page: z.number().nullish(),
+})
+
 export type TripFormValues = z.infer<typeof tripFormSchema>;
+
+export type TripSearchFormValues = z.infer<typeof tripSearchFormSchema>;
 
 export type Day = typeof days[number];

@@ -26,6 +26,7 @@ interface BookingFormProps {
 }
 
 // TODO: handle submit to navigate to booking with initial values
+// TODO: mark disabled fields in the picker via full limit or available days
 
 const BookingForm = ({ price, duration }: BookingFormProps) => {
   const t = useTranslations("TripDetailsPage.bookingForm");

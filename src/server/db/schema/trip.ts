@@ -51,7 +51,8 @@ export const tripBooking = pgTable(
     tripId: c.integer("trip_id")
       .notNull()
       .references(() => trip.id, { onDelete: "cascade" }),
-    tripStartTime: c.timestamp("trip_start_time", { withTimezone: true }),
+    tripStartDate: c.date("trip_start_date"),
+    travelersCount: c.integer("travelers_count").notNull(),
     status: c.text("status", {
       enum: ["pending", "cancelled", "done", "missed"],
     }),

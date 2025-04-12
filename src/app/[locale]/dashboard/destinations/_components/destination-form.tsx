@@ -63,7 +63,7 @@ export function DestinationForm({ initialData, id }: DestinationFormProps) {
       nameEn: initialData?.nameEn || "",
       nameRu: initialData?.nameRu || "",
       isPopular: initialData?.isPopular || false,
-      country: initialData?.country || ("" as any),
+      countryId: initialData?.countryId || ("" as any),
     },
   });
 
@@ -137,7 +137,7 @@ export function DestinationForm({ initialData, id }: DestinationFormProps) {
           {/* Country */}
           <FormField
             control={form.control}
-            name="country"
+            name="countryId"
             render={({ field }) => (
               <FormItem className="col-span-1 md:col-span-2">
                 <FormLabel>Country</FormLabel>
