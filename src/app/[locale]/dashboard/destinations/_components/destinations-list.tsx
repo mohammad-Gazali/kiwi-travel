@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash } from "lucide-react";
+import { CheckCircle, CircleX, Edit, Trash } from "lucide-react";
 import { api } from "@/trpc/react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,7 +27,8 @@ export function DestinationsList() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data, refetch } = api.destination.adminList.useQuery();
-  const { mutate: deleteDestination } = api.tripFeature.adminDelete.useMutation({
+  const { mutate: deleteDestination } = api.tripFeature.adminDelete.useMutation(
+    {
       onError: (error) => {
         toast({
           title: "Error",
@@ -42,13 +43,14 @@ export function DestinationsList() {
         });
         refetch();
       },
-    });
+    },
+  );
 
   type Destination = NonNullable<typeof data>[number];
 
   const handleDelete = () => {
     if (destinationToDelete) {
-      deleteDestination(destinationToDelete)
+      deleteDestination(destinationToDelete);
     }
 
     setDestinationToDelete(null);
@@ -86,13 +88,16 @@ export function DestinationsList() {
     },
     {
       accessorKey: "isPopular",
-      header: "Status",
-      cell: ({ row }) =>
-        row.original.isPopular ? (
-          <Badge>Popular</Badge>
-        ) : (
-          <Badge variant="secondary">Regular</Badge>
-        ),
+      header: "Popular",
+      cell: ({ row }) => (
+        <div className="ml-4">
+          {row.original.isPopular ? (
+            <CheckCircle className="text-green-500" />
+          ) : (
+            <CircleX className="text-destructive" />
+          )}
+        </div>
+      ),
     },
     {
       id: "actions",

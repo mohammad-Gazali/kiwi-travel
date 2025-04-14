@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { adminProcedure, createTRPCRouter } from "../trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { destination } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { destinationFormSchema } from "@/validators/destination-schema";
@@ -49,4 +49,11 @@ export const destinationRouter = createTRPCRouter({
         message: "Updated successfully",
       };
     }),
+  list: publicProcedure.input(z.object({ isPopularOnly: z.boolean().nullish() })).query(async ({ ctx, input }) => {
+    return await ctx.db.query.destination.findMany({
+      where: input.isPopularOnly 
+        ? ({ isPopular }, { eq }) => eq(isPopular, true)
+        : undefined,
+    })
+  })
 });

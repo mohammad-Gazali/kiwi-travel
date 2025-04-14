@@ -8,6 +8,8 @@ import { Calendar, MapPin, Star, Users } from "lucide-react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl"
+import { use } from "react"
+import { SearchContext } from "./search-provider"
 
 // Mock data for trips
 const trips = [
@@ -87,13 +89,16 @@ const trips = [
 
 export function TripResults() {
   const t = useTranslations("TripsPage");
+  const { searchValue } = use(SearchContext);
 
   return (
     <div className="col-span-2">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">{t("tripsFoundHeader", { count: trips.length })}</h2>
       </div>
-
+      <pre>
+        {JSON.stringify(searchValue)}
+      </pre>
       <Tabs defaultValue="grid" className="mb-6">
         <div className="md:flex hidden justify-between items-center">
           <TabsList>

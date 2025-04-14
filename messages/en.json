@@ -37,7 +37,7 @@
     "filtersToggleHide": "Hide Filters",
     "priceRangeLabel": "Price Range ($ per person)",
     "popularDestinationsLabel": "Popular Destinations",
-    "regionsLabel": "Regions",
+    "countriesLabel": "Countries",
     "tripTypesLabel": "Trip Type",
     "searchButton": "Search Trips",
     "tripsFoundHeader": "{count} trips found",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,237 +14,361 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Users, SearchIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, localeAttributeFactory } from "@/lib/utils";
 import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import {
+  tripSearchFormSchema,
+  TripSearchFormValues,
+  tripTypes,
+} from "@/validators/trip-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "@/trpc/react";
+import { SearchContext } from "./search-provider";
 
 export function Search({ initialValue }: { initialValue?: string }) {
-  const [date, setDate] = useState<Date>();
-  const [priceRange, setPriceRange] = useState([500, 5000]);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
+  const { setSearchValue, isExtraFiltersOpen, setIsExtraFiltersOpen } =
+    use(SearchContext);
+
   const t = useTranslations("TripsPage");
+  const t_TripType = useTranslations("General.tripType");
 
-  const popularDestinations = [
-    "Paris",
-    "Tokyo",
-    "New York",
-    "Bali",
-    "Rome",
-    "London",
-    "Sydney",
-    "Barcelona",
-    "Dubai",
-    "Cancun",
-  ];
+  const locale = useLocale();
+  const localeAttribute = localeAttributeFactory(locale);
 
-  const regions = [
-    "Europe",
-    "Asia",
-    "North America",
-    "South America",
-    "Africa",
-    "Oceania",
-    "Caribbean",
-    "Middle East",
-  ];
+  const form = useForm<TripSearchFormValues>({
+    resolver: zodResolver(tripSearchFormSchema),
+    defaultValues: {
+      search: initialValue,
+      price: {
+        lower: 0,
+        greater: 10000,
+      },
+      travelersCount: 1,
+      destinations: [],
+      countries: [],
+      type: [],
+    },
+  });
 
-  const tripTypes = [
-    "Beach",
-    "City",
-    "Mountain",
-    "Cultural",
-    "Adventure",
-    "Relaxation",
-    "Family",
-    "Romantic",
-  ];
+  const { data: popularDestinations } = api.destination.list.useQuery({
+    isPopularOnly: true,
+  });
+  const { data: countries } = api.country.list.useQuery();
+
+  const price = form.watch("price");
 
   return (
     <div className="mb-8">
       <Card className="mb-6">
         <CardContent className="p-6">
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="destination">{t("destinationLabel")}</Label>
-              <Input
-                id="destination"
-                placeholder={t("destinationPlaceholder")}
-                className="h-12"
-                defaultValue={initialValue}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label>{t("dateLabel")}</Label>
-              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "h-12 justify-start text-left font-normal",
-                      !date && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : t("datePlaceholder")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    disabled={(date) => date < new Date()}
-                    onSelect={(date) => {
-                      setDate(date);
-                      setIsCalendarOpen(false);
-                    }}
-                    autoFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="travelers">{t("travelersLabel")}</Label>
-              <div className="relative">
-                <Input
-                  id="travelers"
-                  type="number"
-                  min="1"
-                  defaultValue="2"
-                  className="h-12 pl-10"
-                />
-                <Users className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="budget">{t("budgetLabel")}</Label>
-              <Input
-                id="budget"
-                type="text"
-                placeholder={t("budgetPlaceholder")}
-                className="h-12"
-              />
-            </div>
-
-            <Button
-              variant="secondary"
-              className="mt-2 h-12"
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit((v) => setSearchValue(v))}
+              className="grid gap-4"
             >
-              {isFilterOpen ? t("filtersToggleHide") : t("filtersToggleShow")}
-            </Button>
+              <Button className="mb-2 h-12 w-full text-lg">
+                <SearchIcon className="size-16" />
+                {t("searchButton")}
+              </Button>
 
-            {isFilterOpen && (
-              <div className="mt-4 grid gap-6 border-t pt-4">
-                <div>
-                  <Label className="mb-3 block">{t("priceRangeLabel")}</Label>
-                  <div className="px-2">
-                    <Slider
-                      twoThumbs
-                      defaultValue={[500, 5000]}
-                      max={10000}
-                      step={100}
-                      value={priceRange}
-                      onValueChange={setPriceRange}
-                      className="my-6"
-                    />
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>${priceRange[0]}</span>
-                      <span>${priceRange[1]}</span>
+              {/* Search */}
+              <FormField
+                control={form.control}
+                name="search"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("destinationLabel")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("destinationPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {/* Date */}
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("dateLabel")}</FormLabel>
+                    <br />
+                    <Popover
+                      open={isCalendarOpen}
+                      onOpenChange={setIsCalendarOpen}
+                    >
+                      <FormControl>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 size-4" />
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : t("datePlaceholder")}
+                          </Button>
+                        </PopoverTrigger>
+                      </FormControl>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          disabled={(date) => date < new Date()}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            setIsCalendarOpen(false);
+                          }}
+                          autoFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
+                )}
+              />
+
+              {/* Travelers Count */}
+              <FormField
+                control={form.control}
+                name="travelersCount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("travelersLabel")}</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          id="travelers"
+                          type="number"
+                          min="1"
+                          className="pl-12"
+                          {...field}
+                        />
+                        <Users className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {/* Budget */}
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("budgetLabel")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="10000"
+                        placeholder={t("budgetPlaceholder")}
+                        {...field}
+                        value={field.value?.greater}
+                        onChange={(e) =>
+                          field.onChange(
+                            Object.assign(field.value ?? {}, {
+                              greater: Number(e.target.value),
+                            }),
+                          )
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                variant="secondary"
+                className="mt-2 h-12"
+                type="button"
+                onClick={() => setIsExtraFiltersOpen(!isExtraFiltersOpen)}
+              >
+                {isExtraFiltersOpen
+                  ? t("filtersToggleHide")
+                  : t("filtersToggleShow")}
+              </Button>
+
+              {isExtraFiltersOpen && (
+                <div className="mt-4 grid gap-6 border-t pt-4">
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("priceRangeLabel")}</FormLabel>
+                        <FormControl>
+                          <Slider
+                            twoThumbs
+                            value={[
+                              field.value?.lower ?? 0,
+                              field.value?.greater ?? 10000,
+                            ]}
+                            onValueChange={(v) =>
+                              field.onChange({
+                                lower: v[0],
+                                greater: v[1],
+                              })
+                            }
+                            max={10000}
+                            step={100}
+                          />
+                        </FormControl>
+                        <div className="px-2">
+                          <div className="flex justify-between text-sm text-muted-foreground">
+                            <span>${price?.lower}</span>
+                            <span>${price?.greater}</span>
+                          </div>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Popular Destinations */}
+                  <FormField
+                    control={form.control}
+                    name="destinations"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="mb-4">
+                          {t("popularDestinationsLabel")}
+                        </FormLabel>
+                        <div
+                          className="grid gap-2"
+                          style={{
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(120px, 1fr))",
+                          }}
+                        >
+                          {popularDestinations?.map((destination) => (
+                            <FormField
+                              key={destination.id}
+                              control={form.control}
+                              name="destinations"
+                              render={({ field }) => (
+                                <FormItem className="flex items-end gap-2">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={
+                                        !!field.value?.includes(destination.id)
+                                      }
+                                      onCheckedChange={(checked) =>
+                                        checked
+                                          ? field.onChange([
+                                              ...(field.value ?? []),
+                                              destination.id,
+                                            ])
+                                          : field.onChange(
+                                              (field.value ?? []).filter(
+                                                (value) =>
+                                                  value !== destination.id,
+                                              ),
+                                            )
+                                      }
+                                      value={destination.id}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    {localeAttribute(destination, "name")}
+                                  </FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                          ))}
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* // TODO: continue from here */}
+                  <div className="grid gap-6">
+                    <div>
+                      <Label className="mb-3 block">
+                        {t("countriesLabel")}
+                      </Label>
+                      <div
+                        className="grid gap-2"
+                        style={{
+                          gridTemplateColumns:
+                            "repeat(auto-fill, minmax(120px, 1fr))",
+                        }}
+                      >
+                        {countries?.map((country) => (
+                          <div
+                            key={country.id}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              defaultChecked={true}
+                              value={country.id}
+                              id={`region-${localeAttribute(country, "name")}`}
+                            />
+                            <label
+                              htmlFor={`region-${localeAttribute(country, "name")}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {localeAttribute(country, "name")}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="mb-3 block">
+                        {t("tripTypesLabel")}
+                      </Label>
+                      <div
+                        className="grid gap-2"
+                        style={{
+                          gridTemplateColumns:
+                            "repeat(auto-fill, minmax(120px, 1fr))",
+                        }}
+                      >
+                        {tripTypes.map((type) => (
+                          <div
+                            key={type}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              defaultChecked={true}
+                              value={type}
+                              id={`type-${type}`}
+                            />
+                            <label
+                              htmlFor={`type-${type}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {t_TripType(type)}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                <div className="grid gap-6">
-                  <div>
-                    <Label className="mb-3 block">
-                      {t("popularDestinationsLabel")}
-                    </Label>
-                    <div
-                      className="grid gap-2"
-                      style={{
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(120px, 1fr))",
-                      }}
-                    >
-                      {popularDestinations.map((destination) => (
-                        <div
-                          key={destination}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox id={`destination-${destination}`} />
-                          <label
-                            htmlFor={`destination-${destination}`}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {destination}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="mb-3 block">{t("regionsLabel")}</Label>
-                    <div
-                      className="grid gap-2"
-                      style={{
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(120px, 1fr))",
-                      }}
-                    >
-                      {regions.map((region) => (
-                        <div
-                          key={region}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox id={`region-${region}`} />
-                          <label
-                            htmlFor={`region-${region}`}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {region}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="mb-3 block">{t("tripTypesLabel")}</Label>
-                    <div
-                      className="grid gap-2"
-                      style={{
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(120px, 1fr))",
-                      }}
-                    >
-                      {tripTypes.map((type) => (
-                        <div key={type} className="flex items-center space-x-2">
-                          <Checkbox id={`type-${type}`} />
-                          <label
-                            htmlFor={`type-${type}`}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {type}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </form>
+          </Form>
         </CardContent>
       </Card>
-
-      <Button className="h-12 w-full text-lg">
-        <SearchIcon className="mr-2 h-5 w-5" />
-        {t("searchButton")}
-      </Button>
     </div>
   );
 }

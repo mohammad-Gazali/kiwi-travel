@@ -54,15 +54,17 @@ export const tripFormSchema = z.object({
 });
 
 export const tripSearchFormSchema = z.object({
-  search: z.string().nullish(),
-  date: z.date().min(new Date()).nullish(),
-  travelersCount: z.number().nullish(),
-  priceLower: z.number().nullish(),
-  priceGreater: z.number().nullish(),
-  destinations: z.array(z.number()).nullish(),
-  countries: z.array(z.number()).nullish(),
-  type: z.array(z.enum(tripTypes)).nullish(),
-  page: z.number().nullish(),
+  search: z.string().optional(),
+  date: z.date().min(new Date()).optional(),
+  travelersCount: z.number().optional(),
+  price: z.object({
+    lower: z.number().optional(),
+    greater: z.number().optional(),
+  }).optional(),
+  destinations: z.array(z.number()).optional(),
+  countries: z.array(z.number()).optional(),
+  type: z.array(z.enum(tripTypes)).optional(),
+  page: z.number().optional(),
 })
 
 export type TripFormValues = z.infer<typeof tripFormSchema>;

@@ -1,4 +1,5 @@
 import { Search } from "./_components/search";
+import { SearchProvider } from "./_components/search-provider";
 import { TripResults } from "./_components/trip-results";
 
 export default async function Page({
@@ -17,8 +18,10 @@ export default async function Page({
 
   return (
     <main className="container flex flex-col-reverse lg:grid grid-cols-3 gap-4 mx-auto mt-14 px-4 py-8 lg:px-0">
-      <TripResults />
-      <Search initialValue={initialSearchValue} />
+      <SearchProvider>
+        <TripResults />
+        <Search initialValue={initialSearchValue} />
+      </SearchProvider>
     </main>
   );
 }

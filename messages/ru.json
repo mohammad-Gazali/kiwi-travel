@@ -37,7 +37,7 @@
     "filtersToggleHide": "Скрыть фильтры",
     "priceRangeLabel": "Ценовой диапазон ($ на человека)",
     "popularDestinationsLabel": "Популярные направления",
-    "regionsLabel": "Регионы",
+    "countriesLabel": "Страны",
     "tripTypesLabel": "Тип поездки",
     "searchButton": "Найти поездки",
     "tripsFoundHeader": "Найдено {count} поездок",

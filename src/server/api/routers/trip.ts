@@ -25,6 +25,7 @@ import {
   lte,
   sum,
   ilike,
+  count,
 } from "drizzle-orm";
 import { z } from "zod";
 
@@ -147,22 +148,23 @@ export const tripRouter = createTRPCRouter({
     .input(tripSearchFormSchema)
     .query(async ({ ctx, input }) => {
       // ========= query conditions =========
-      const dateCondition = input.date
-        ? sql`${tripBooking.tripStartDate} = ${format(input.date, "yyyy-MM-dd")}::date`
-        : undefined;
+      const dateCondition =
+        input.date &&
+        sql`${tripBooking.tripStartDate} = ${format(input.date, "yyyy-MM-dd")}::date`;
 
-      const typeCondition = input.type
-        ? inArray(trip.tripType, input.type)
-        : undefined;
+      const typeCondition =
+        input.type && input.type.length !== 0
+          ? inArray(trip.tripType, input.type)
+          : undefined;
 
       const priceLowerCondition =
-        input.priceLower !== null && input.priceLower !== undefined
-          ? gte(trip.tripPriceInCents, input.priceLower * 100)
+        input.price?.lower !== undefined
+          ? gte(trip.tripPriceInCents, input.price.lower * 100)
           : undefined;
 
       const priceGreaterCondition =
-        input.priceGreater !== null && input.priceGreater !== undefined
-          ? lte(trip.tripPriceInCents, input.priceGreater * 100)
+        input.price?.greater !== undefined
+          ? lte(trip.tripPriceInCents, input.price.greater * 100)
           : undefined;
 
       const destinationsCondition =
@@ -176,20 +178,21 @@ export const tripRouter = createTRPCRouter({
           : undefined;
 
       const travelersCountNullBookingCountCondition =
-        input.travelersCount !== null && input.travelersCount !== undefined
+        input.travelersCount !== undefined
           ? gte(trip.bookingsLimitCount, input.travelersCount)
           : undefined;
 
-      const searchCondition = input.search
-        ? or(
-            ilike(trip.titleEn, `%${input.search}%`),
-            ilike(trip.titleRu, `%${input.search}%`),
-            ilike(destination.nameEn, `%${input.search}%`),
-            ilike(destination.nameRu, `%${input.search}%`),
-            ilike(country.nameEn, `%${input.search}%`),
-            ilike(country.nameRu, `%${input.search}%`),
-          )
-        : undefined;
+      const searchCondition =
+        input.search !== undefined && input.search.length !== 0
+          ? or(
+              ilike(trip.titleEn, `%${input.search}%`),
+              ilike(trip.titleRu, `%${input.search}%`),
+              ilike(destination.nameEn, `%${input.search}%`),
+              ilike(destination.nameRu, `%${input.search}%`),
+              ilike(country.nameEn, `%${input.search}%`),
+              ilike(country.nameRu, `%${input.search}%`),
+            )
+          : undefined;
 
       // ========= query itself =========
       const subquery = ctx.db
@@ -204,7 +207,7 @@ export const tripRouter = createTRPCRouter({
 
       // ========= depending on subquery condition =========
       const travelersCountNotNullBookingCountCondition =
-        input.travelersCount !== null && input.travelersCount !== undefined
+        input.travelersCount !== undefined
           ? sql`${subquery.bookingCount} + ${input.travelersCount} <= ${trip.bookingsLimitCount}`
           : undefined;
 
@@ -226,6 +229,7 @@ export const tripRouter = createTRPCRouter({
           countryRu: country.nameRu,
           destinationEn: destination.nameEn,
           destinationRu: destination.nameRu,
+          totalCount: count(),
         })
         .from(trip)
         .leftJoin(subquery, eq(trip.id, subquery.tripId))
@@ -256,20 +260,23 @@ export const tripRouter = createTRPCRouter({
         .orderBy(trip.isFeatured)
         .limit(PAGE_SIZE)
         .offset(pageIndex * PAGE_SIZE)
-        .then(result => result.map(item => ({
-          id: item.id,
-          titleEn: item.titleEn,
-          titleRu: item.titleRu,
-          locationEn: `${item.countryEn}, ${item.destinationEn}`,
-          locationRu: `${item.countryRu}, ${item.destinationRu}`,
-          price: Math.floor(item.priceInCents / 100),
-          type: item.type,
-          duration: item.duration,
-          isFeatured: item.isFeatured,
-          image: mainImage(item.assets),
-          reviewsValue: 4.7, // TODO: continue after finishing reviews
-          reviewsCount: 128, // TODO: continue after finishing reviews
-        })));
+        .then((result) => ({
+          totalCount: result[0]?.totalCount ?? 0,
+          items: result.map((item) => ({
+            id: item.id,
+            titleEn: item.titleEn,
+            titleRu: item.titleRu,
+            locationEn: `${item.countryEn}, ${item.destinationEn}`,
+            locationRu: `${item.countryRu}, ${item.destinationRu}`,
+            price: Math.floor(item.priceInCents / 100),
+            type: item.type,
+            duration: item.duration,
+            isFeatured: item.isFeatured,
+            image: mainImage(item.assets),
+            reviewsValue: 4.7, // TODO: continue after finishing reviews
+            reviewsCount: 128, // TODO: continue after finishing reviews
+          })),
+        }));
     }),
   view: publicProcedure.input(z.number().int()).query(
     async ({ ctx, input }) =>
