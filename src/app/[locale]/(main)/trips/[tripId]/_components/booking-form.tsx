@@ -45,7 +45,7 @@ const BookingForm = ({ price, duration }: BookingFormProps) => {
     },
   });
 
-  const trip = {};
+  const trip = {} as any;
 
   const travelersCount = form.watch("travelersCount");
   const date = form.watch("date");
