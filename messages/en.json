@@ -45,7 +45,10 @@
     "listViewTab": "List View",
     "tripCardPricePerPerson": "per person",
     "viewDetailsButton": "View Details",
-    "loadMoreResultsButton": "Load More Results"
+    "loadMoreResultsButton": "Load More Results",
+    "previous": "Previous",
+    "next": "Next",
+    "featured": "Featured"
   },
   "TripDetailsPage": {
     "tripFeatures": "Trip Features",

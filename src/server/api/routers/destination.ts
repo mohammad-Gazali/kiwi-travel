@@ -1,17 +1,23 @@
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
-import { destination } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { country, destination } from "@/server/db/schema";
+import { asc, eq } from "drizzle-orm";
 import { destinationFormSchema } from "@/validators/destination-schema";
 
 export const destinationRouter = createTRPCRouter({
   adminList: adminProcedure.query(
     async ({ ctx }) =>
-      await ctx.db.query.destination.findMany({
-        with: {
-          country: true,
-        },
-      }),
+      await ctx.db
+        .select()
+        .from(destination)
+        .innerJoin(country, eq(destination.countryId, country.id))
+        .orderBy(asc(country.nameEn), asc(destination.nameEn))
+        .then((res) =>
+          res.map((item) => ({
+            ...item.destinations,
+            country: item.contries,
+          })),
+        ),
   ),
   adminView: adminProcedure.input(z.number().int()).query(
     async ({ ctx, input }) =>
@@ -49,11 +55,13 @@ export const destinationRouter = createTRPCRouter({
         message: "Updated successfully",
       };
     }),
-  list: publicProcedure.input(z.object({ isPopularOnly: z.boolean().nullish() })).query(async ({ ctx, input }) => {
-    return await ctx.db.query.destination.findMany({
-      where: input.isPopularOnly 
-        ? ({ isPopular }, { eq }) => eq(isPopular, true)
-        : undefined,
-    })
-  })
+  list: publicProcedure
+    .input(z.object({ isPopularOnly: z.boolean().nullish() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.destination.findMany({
+        where: input.isPopularOnly
+          ? ({ isPopular }, { eq }) => eq(isPopular, true)
+          : undefined,
+      });
+    }),
 });

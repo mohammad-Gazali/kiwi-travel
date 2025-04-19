@@ -45,7 +45,10 @@
     "listViewTab": "Список",
     "tripCardPricePerPerson": "за человека",
     "viewDetailsButton": "Подробнее",
-    "loadMoreResultsButton": "Загрузить ещё"
+    "loadMoreResultsButton": "Загрузить ещё",
+    "previous": "Предыдущий",
+    "next": "Следующий",
+    "featured": "Рекомендуемые"
   },
   "TripDetailsPage": {
     "tripFeatures": "Особенности тура",

@@ -179,7 +179,6 @@ export function TripForm({ initialData, id }: TripFormProps) {
         "Friday",
         "Saturday",
       ],
-      bookingsLimitCount: initialData?.bookingsLimitCount || 0,
       duration: initialData?.duration || "",
       isAvailable: initialData?.isAvailable || true,
       isFeatured: initialData?.isFeatured || false,
@@ -514,27 +513,6 @@ export function TripForm({ initialData, id }: TripFormProps) {
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Bookings Limit */}
-          <FormField
-            control={form.control}
-            name="bookingsLimitCount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bookings limit</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter limit"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
-                  />
-                </FormControl>
-                <FormDescription>The maximum number of bookings per one day</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

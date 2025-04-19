@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function mainImage(assets: string[]) {
-  return assets.find(asset => asset.endsWith("?type=video")) ?? "/placeholder.svg"
+  return assets.find(asset => !asset.endsWith("?type=video")) ?? "/placeholder.svg"
 }
 
 export function localeAttributeFactory(locale: string) {

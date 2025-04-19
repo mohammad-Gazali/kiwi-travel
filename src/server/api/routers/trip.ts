@@ -1,32 +1,17 @@
+import { TRIP_SEARCH_PAGE_SIZE } from "@/constants";
 import { mainImage } from "@/lib/utils";
 import {
-  createTRPCRouter,
   adminProcedure,
+  createTRPCRouter,
   publicProcedure,
 } from "@/server/api/trpc";
+import { country, destination, trip, tripToFeature } from "@/server/db/schema";
 import {
-  country,
-  destination,
-  trip,
-  tripBooking,
-  tripToFeature,
-} from "@/server/db/schema";
-import { tripFormSchema, tripSearchFormSchema } from "@/validators/trip-schema";
-import { format } from "date-fns";
-import {
-  and,
-  eq,
-  isNotNull,
-  isNull,
-  or,
-  sql,
-  inArray,
-  gte,
-  lte,
-  sum,
-  ilike,
-  count,
-} from "drizzle-orm";
+  days,
+  tripFormSchema,
+  tripSearchFormSchema,
+} from "@/validators/trip-schema";
+import { and, count, eq, gte, ilike, inArray, lte, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 export const tripRouter = createTRPCRouter({
@@ -150,7 +135,7 @@ export const tripRouter = createTRPCRouter({
       // ========= query conditions =========
       const dateCondition =
         input.date &&
-        sql`${tripBooking.tripStartDate} = ${format(input.date, "yyyy-MM-dd")}::date`;
+        sql`${days[input.date.getDay()]} = ANY(${trip.availableDays})`;
 
       const typeCondition =
         input.type && input.type.length !== 0
@@ -177,11 +162,6 @@ export const tripRouter = createTRPCRouter({
           ? inArray(country.id, input.countries)
           : undefined;
 
-      const travelersCountNullBookingCountCondition =
-        input.travelersCount !== undefined
-          ? gte(trip.bookingsLimitCount, input.travelersCount)
-          : undefined;
-
       const searchCondition =
         input.search !== undefined && input.search.length !== 0
           ? or(
@@ -194,26 +174,26 @@ export const tripRouter = createTRPCRouter({
             )
           : undefined;
 
-      // ========= query itself =========
-      const subquery = ctx.db
-        .select({
-          tripId: tripBooking.tripId,
-          bookingCount: sum(tripBooking.travelersCount).as("booking_count"),
-        })
-        .from(tripBooking)
-        .where(dateCondition)
-        .groupBy(tripBooking.tripId)
-        .as("bookings_count");
-
-      // ========= depending on subquery condition =========
-      const travelersCountNotNullBookingCountCondition =
-        input.travelersCount !== undefined
-          ? sql`${subquery.bookingCount} + ${input.travelersCount} <= ${trip.bookingsLimitCount}`
-          : undefined;
+      const conditions = and(
+        eq(trip.isAvailable, true),
+        dateCondition,
+        typeCondition,
+        priceLowerCondition,
+        priceGreaterCondition,
+        destinationsCondition,
+        countriesCondition,
+        searchCondition,
+      );
 
       // ========= pagination control ==========
-      const PAGE_SIZE = 6;
       const pageIndex = input.page ?? 0;
+
+      const totalCountResult = await ctx.db
+        .select({ count: count() })
+        .from(trip)
+        .innerJoin(destination, eq(trip.destinationId, destination.id))
+        .innerJoin(country, eq(destination.countryId, country.id))
+        .where(conditions);
 
       return await ctx.db
         .select({
@@ -229,39 +209,16 @@ export const tripRouter = createTRPCRouter({
           countryRu: country.nameRu,
           destinationEn: destination.nameEn,
           destinationRu: destination.nameRu,
-          totalCount: count(),
         })
         .from(trip)
-        .leftJoin(subquery, eq(trip.id, subquery.tripId))
         .innerJoin(destination, eq(trip.destinationId, destination.id))
         .innerJoin(country, eq(destination.countryId, country.id))
-        .where(
-          and(
-            eq(trip.isAvailable, true),
-            or(
-              and(
-                isNull(subquery.bookingCount),
-                travelersCountNullBookingCountCondition,
-              ),
-              and(
-                isNotNull(subquery.bookingCount),
-                lte(subquery.bookingCount, trip.bookingsLimitCount),
-                travelersCountNotNullBookingCountCondition,
-              ),
-            ),
-            typeCondition,
-            priceLowerCondition,
-            priceGreaterCondition,
-            destinationsCondition,
-            countriesCondition,
-            searchCondition,
-          ),
-        )
+        .where(conditions)
         .orderBy(trip.isFeatured)
-        .limit(PAGE_SIZE)
-        .offset(pageIndex * PAGE_SIZE)
+        .limit(TRIP_SEARCH_PAGE_SIZE)
+        .offset(pageIndex * TRIP_SEARCH_PAGE_SIZE)
         .then((result) => ({
-          totalCount: result[0]?.totalCount ?? 0,
+          totalCount: totalCountResult[0]?.count ?? 0,
           items: result.map((item) => ({
             id: item.id,
             titleEn: item.titleEn,
@@ -297,19 +254,3 @@ export const tripRouter = createTRPCRouter({
       }),
   ),
 });
-
-interface A {
-  id: string;
-  title: string;
-  description: string;
-  longDescription: string;
-  images: string[];
-  features: string[];
-  status: string;
-  country: string;
-  location: string;
-  price: number;
-  duration: number;
-  rating: number;
-  reviewCount: number;
-}

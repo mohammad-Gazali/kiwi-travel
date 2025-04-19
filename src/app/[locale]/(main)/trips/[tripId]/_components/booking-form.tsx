@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { days } from "@/validators/trip-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Star, Users } from "lucide-react";
@@ -23,12 +24,12 @@ import { z } from "zod";
 interface BookingFormProps {
   price: number;
   duration: string;
+  availableDays: ((typeof days)[number])[];
 }
 
 // TODO: handle submit to navigate to booking with initial values
-// TODO: mark disabled fields in the picker via full limit or available days
 
-const BookingForm = ({ price, duration }: BookingFormProps) => {
+const BookingForm = ({ price, duration, availableDays }: BookingFormProps) => {
   const t = useTranslations("TripDetailsPage.bookingForm");
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -49,6 +50,12 @@ const BookingForm = ({ price, duration }: BookingFormProps) => {
 
   const travelersCount = form.watch("travelersCount");
   const date = form.watch("date");
+
+  // array of day indexes of the current trip's `availableDays`
+  // e.g.
+  // ["Monday", "Friday"] ======> [1, 5]
+  // ["Tuesday"] ======> [2]
+  const mappedDays = availableDays.map(item => days.indexOf(item));
 
   return (
     <Card>
@@ -104,7 +111,7 @@ const BookingForm = ({ price, duration }: BookingFormProps) => {
                 <Calendar
                   mode="single"
                   selected={date}
-                  disabled={(d) => d < new Date()}
+                  disabled={(d) => d < new Date() || !mappedDays.includes(d.getDay())}
                   onSelect={(d) => {
                     if (!d) return;
 

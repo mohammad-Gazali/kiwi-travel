@@ -1,22 +1,9 @@
 "use client";
 
-import { use, useState } from "react";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Users, SearchIcon } from "lucide-react";
-import { cn, localeAttributeFactory } from "@/lib/utils";
-import { format } from "date-fns";
-import { useLocale, useTranslations } from "next-intl";
 import {
   Form,
   FormControl,
@@ -24,14 +11,26 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { cn, localeAttributeFactory } from "@/lib/utils";
+import { api } from "@/trpc/react";
 import {
   tripSearchFormSchema,
   TripSearchFormValues,
   tripTypes,
 } from "@/validators/trip-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "@/trpc/react";
+import { format } from "date-fns";
+import { CalendarIcon, SearchIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { use, useState } from "react";
+import { useForm } from "react-hook-form";
 import { SearchContext } from "./search-provider";
 
 export function Search({ initialValue }: { initialValue?: string }) {
@@ -54,7 +53,6 @@ export function Search({ initialValue }: { initialValue?: string }) {
         lower: 0,
         greater: 10000,
       },
-      travelersCount: 1,
       destinations: [],
       countries: [],
       type: [],
@@ -144,29 +142,6 @@ export function Search({ initialValue }: { initialValue?: string }) {
                 )}
               />
 
-              {/* Travelers Count */}
-              <FormField
-                control={form.control}
-                name="travelersCount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("travelersLabel")}</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          id="travelers"
-                          type="number"
-                          min="1"
-                          className="pl-12"
-                          {...field}
-                        />
-                        <Users className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
               {/* Budget */}
               <FormField
                 control={form.control}
@@ -245,7 +220,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
                   <FormField
                     control={form.control}
                     name="destinations"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem>
                         <FormLabel className="mb-4">
                           {t("popularDestinationsLabel")}
@@ -297,72 +272,117 @@ export function Search({ initialValue }: { initialValue?: string }) {
                     )}
                   />
 
-                  {/* // TODO: continue from here */}
-                  <div className="grid gap-6">
-                    <div>
-                      <Label className="mb-3 block">
-                        {t("countriesLabel")}
-                      </Label>
-                      <div
-                        className="grid gap-2"
-                        style={{
-                          gridTemplateColumns:
-                            "repeat(auto-fill, minmax(120px, 1fr))",
-                        }}
-                      >
-                        {countries?.map((country) => (
-                          <div
-                            key={country.id}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              defaultChecked={true}
-                              value={country.id}
-                              id={`region-${localeAttribute(country, "name")}`}
+                  {/* Countries */}
+                  <FormField
+                    control={form.control}
+                    name="countries"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel className="mb-4">
+                          {t("countriesLabel")}
+                        </FormLabel>
+                        <div
+                          className="grid gap-2"
+                          style={{
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(120px, 1fr))",
+                          }}
+                        >
+                          {countries?.map((country) => (
+                            <FormField
+                              key={country.id}
+                              control={form.control}
+                              name="countries"
+                              render={({ field }) => (
+                                <FormItem className="flex items-end gap-2">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={
+                                        !!field.value?.includes(country.id)
+                                      }
+                                      onCheckedChange={(checked) =>
+                                        checked
+                                          ? field.onChange([
+                                              ...(field.value ?? []),
+                                              country.id,
+                                            ])
+                                          : field.onChange(
+                                              (field.value ?? []).filter(
+                                                (value) =>
+                                                  value !== country.id,
+                                              ),
+                                            )
+                                      }
+                                      value={country.id}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    {localeAttribute(country, "name")}
+                                  </FormLabel>
+                                </FormItem>
+                              )}
                             />
-                            <label
-                              htmlFor={`region-${localeAttribute(country, "name")}`}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                              {localeAttribute(country, "name")}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                          ))}
+                        </div>
+                      </FormItem>
+                    )}
+                  />
 
-                    <div>
-                      <Label className="mb-3 block">
-                        {t("tripTypesLabel")}
-                      </Label>
-                      <div
-                        className="grid gap-2"
-                        style={{
-                          gridTemplateColumns:
-                            "repeat(auto-fill, minmax(120px, 1fr))",
-                        }}
-                      >
-                        {tripTypes.map((type) => (
-                          <div
-                            key={type}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              defaultChecked={true}
-                              value={type}
-                              id={`type-${type}`}
+                  {/* Trip Type */}
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel className="mb-4">
+                          {t("tripTypesLabel")}
+                        </FormLabel>
+                        <div
+                          className="grid gap-2"
+                          style={{
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(120px, 1fr))",
+                          }}
+                        >
+                          {tripTypes.map((type) => (
+                            <FormField
+                              key={type}
+                              control={form.control}
+                              name="type"
+                              render={({ field }) => (
+                                <FormItem className="flex items-end gap-2">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={
+                                        !!field.value?.includes(type)
+                                      }
+                                      onCheckedChange={(checked) =>
+                                        checked
+                                          ? field.onChange([
+                                              ...(field.value ?? []),
+                                              type,
+                                            ])
+                                          : field.onChange(
+                                              (field.value ?? []).filter(
+                                                (value) =>
+                                                  value !== type,
+                                              ),
+                                            )
+                                      }
+                                      value={type}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    {t_TripType(type)}
+                                  </FormLabel>
+                                </FormItem>
+                              )}
                             />
-                            <label
-                              htmlFor={`type-${type}`}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                              {t_TripType(type)}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                          ))}
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </div>
               )}
             </form>

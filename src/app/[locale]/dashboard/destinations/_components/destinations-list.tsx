@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import type { ColumnDef } from "@tanstack/react-table";
 import {
   Dialog,
   DialogContent,
@@ -13,10 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, CircleX, Edit, Trash } from "lucide-react";
-import { api } from "@/trpc/react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "@/i18n/routing";
+import { api } from "@/trpc/react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { CheckCircle, CircleX, Edit, Trash } from "lucide-react";
+import { useState } from "react";
 
 export function DestinationsList() {
   const { toast } = useToast();
@@ -27,7 +26,7 @@ export function DestinationsList() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data, refetch } = api.destination.adminList.useQuery();
-  const { mutate: deleteDestination } = api.tripFeature.adminDelete.useMutation(
+  const { mutate: deleteDestination } = api.destination.adminDelete.useMutation(
     {
       onError: (error) => {
         toast({

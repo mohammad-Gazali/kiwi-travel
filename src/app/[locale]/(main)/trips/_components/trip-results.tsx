@@ -1,225 +1,296 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, MapPin, Star, Users } from "lucide-react"
-import Image from "next/image"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Star,
+} from "lucide-react";
+import Image from "next/image";
 import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl"
-import { use } from "react"
-import { SearchContext } from "./search-provider"
-
-// Mock data for trips
-const trips = [
-  {
-    id: 1,
-    title: "Romantic Paris Getaway",
-    destination: "Paris, France",
-    image: "https://placehold.co/500x300",
-    price: 1299,
-    duration: "7 days",
-    rating: 4.8,
-    reviews: 245,
-    type: "Romantic",
-    region: "Europe",
-  },
-  {
-    id: 2,
-    title: "Tokyo Adventure",
-    destination: "Tokyo, Japan",
-    image: "https://placehold.co/500x300",
-    price: 1899,
-    duration: "10 days",
-    rating: 4.9,
-    reviews: 189,
-    type: "Adventure",
-    region: "Asia",
-  },
-  {
-    id: 3,
-    title: "New York City Explorer",
-    destination: "New York, USA",
-    image: "https://placehold.co/500x300",
-    price: 1499,
-    duration: "5 days",
-    rating: 4.7,
-    reviews: 312,
-    type: "City",
-    region: "North America",
-  },
-  {
-    id: 4,
-    title: "Bali Beach Retreat",
-    destination: "Bali, Indonesia",
-    image: "https://placehold.co/500x300",
-    price: 1099,
-    duration: "8 days",
-    rating: 4.6,
-    reviews: 278,
-    type: "Beach",
-    region: "Asia",
-  },
-  {
-    id: 5,
-    title: "Rome Historical Tour",
-    destination: "Rome, Italy",
-    image: "https://placehold.co/500x300",
-    price: 1399,
-    duration: "6 days",
-    rating: 4.8,
-    reviews: 201,
-    type: "Cultural",
-    region: "Europe",
-  },
-  {
-    id: 6,
-    title: "London City Break",
-    destination: "London, UK",
-    image: "https://placehold.co/500x300",
-    price: 999,
-    duration: "4 days",
-    rating: 4.5,
-    reviews: 187,
-    type: "City",
-    region: "Europe",
-  },
-]
+import { useLocale, useTranslations } from "next-intl";
+import { use, useState } from "react";
+import { SearchContext } from "./search-provider";
+import { api } from "@/trpc/react";
+import { localeAttributeFactory } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
+import { TRIP_SEARCH_PAGE_SIZE } from "@/constants";
 
 export function TripResults() {
   const t = useTranslations("TripsPage");
-  const { searchValue } = use(SearchContext);
+  const t_TimeUnits = useTranslations("General.timeUnits");
+
+  const { searchValue, isExtraFiltersOpen } = use(SearchContext);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const { data, isLoading } = api.trip.listSearch.useQuery(
+    Object.assign(searchValue, {
+      page: pageIndex,
+    }),
+  );
+
+  const locale = useLocale();
+  const localeAttribute = localeAttributeFactory(locale);
+
+  if (!data || isLoading) {
+    return (
+      <div className="col-span-2">
+        <div className="mb-6 flex items-center justify-between">
+          <Skeleton
+            aria-hidden="true"
+            className="select-none text-xl font-bold text-transparent"
+          >
+            {t("tripsFoundHeader", { count: 0 })}
+          </Skeleton>
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {(isExtraFiltersOpen ? [1, 2, 3, 4, 5, 6] : [1, 2]).map((item) => (
+            <Card key={item} className="overflow-hidden">
+              <Skeleton className="h-48 w-full rounded-b-none" />
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <Skeleton className="h-7 w-60" />
+                    <Skeleton className="h-5 w-60" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="ms-auto h-7 w-16" />
+                    <Skeleton className="h-5 w-20" />
+                  </div>
+                </div>
+                <Skeleton className="mt-4 h-5 w-full" />
+              </CardContent>
+              <CardFooter className="p-4 pt-0">
+                <Skeleton
+                  aria-hidden="true"
+                  className="h-9 select-none text-transparent"
+                >
+                  {t("viewDetailsButton")}
+                </Skeleton>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const pages = generatePages({
+    pageIndex,
+    totalCount: data.totalCount,
+  });
+
+  const getDuration = (duration: string) => {
+    return duration
+      .replaceAll("days", t_TimeUnits("days"))
+      .replaceAll("hours", t_TimeUnits("hours"))
+      .replaceAll("day", t_TimeUnits("day"))
+      .replaceAll("hour", t_TimeUnits("hour"));
+  };
 
   return (
     <div className="col-span-2">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">{t("tripsFoundHeader", { count: trips.length })}</h2>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-xl font-bold">
+          {t("tripsFoundHeader", { count: data.totalCount })}
+        </h2>
       </div>
-      <pre>
-        {JSON.stringify(searchValue)}
-      </pre>
-      <Tabs defaultValue="grid" className="mb-6">
-        <div className="md:flex hidden justify-between items-center">
-          <TabsList>
-            <TabsTrigger value="grid">
-              {t("gridViewTab")}
-            </TabsTrigger>
-            <TabsTrigger value="list">
-            {t("listViewTab")}
-            </TabsTrigger>
-          </TabsList>
-        </div>
-
-        <TabsContent value="grid" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {trips.map((trip) => (
-              <Card key={trip.id} className="overflow-hidden">
-                <div className="relative h-48">
-                  <Image src={trip.image || "/placeholder.svg"} alt={trip.title} fill className="object-cover" />
-                  <div className="absolute top-2 right-2">
-                    <Badge>{trip.type}</Badge>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {data.items.map((trip) => (
+          <Card key={trip.id} className="relative overflow-hidden">
+            {trip.isFeatured && (
+              <div className="absolute -left-10 top-10 z-10 w-48 -rotate-45 bg-red-500 py-[1px] text-center text-primary-foreground">
+                {t("featured")}
+              </div>
+            )}
+            <div className="relative h-48">
+              <Image
+                src={trip.image || "/placeholder.svg"}
+                alt={localeAttribute(trip, "title")}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute right-2 top-2">
+                <Badge>{trip.type}</Badge>
+              </div>
+            </div>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-bold">
+                    {localeAttribute(trip, "title")}
+                  </h3>
+                  <div className="mt-1 flex items-center text-sm text-muted-foreground">
+                    <MapPin className="mr-1 h-4 w-4" />
+                    {localeAttribute(trip, "location")}
                   </div>
                 </div>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-lg">{trip.title}</h3>
-                      <div className="flex items-center text-sm text-muted-foreground mt-1">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        {trip.destination}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold">${trip.price}</div>
-                      <div className="text-xs text-muted-foreground">{t("tripCardPricePerPerson")}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-4 text-sm">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {trip.duration}
-                    </div>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 mr-1 text-yellow-500" />
-                      {trip.rating} ({trip.reviews})
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Link href={`/trips/${trip.id}`}>
-                    <Button className="w-full">
-                      {t("viewDetailsButton")}
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="list" className="mt-6">
-          <div className="space-y-4">
-            {trips.map((trip) => (
-              <Card key={trip.id} className="overflow-hidden">
-                <div className="flex flex-col md:flex-row">
-                  <div className="relative h-48 md:h-auto md:w-1/3">
-                    <Image src={trip.image || "/placeholder.svg"} alt={trip.title} fill className="object-cover" />
-                    <div className="absolute top-2 right-2">
-                      <Badge>{trip.type}</Badge>
-                    </div>
-                  </div>
-                  <div className="flex-1 p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold text-lg">{trip.title}</h3>
-                        <div className="flex items-center text-sm text-muted-foreground mt-1">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {trip.destination}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold">${trip.price}</div>
-                        <div className="text-xs text-muted-foreground">{t("tripCardPricePerPerson")}</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 mt-4 text-sm">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {trip.duration}
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />2 adults
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 mr-1 text-yellow-500" />
-                        {trip.rating} ({trip.reviews})
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <Link href={`/trips/${trip.id}`}>
-                        <Button>
-                          {t("viewDetailsButton")}
-                        </Button>
-                      </Link>
-                    </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold">${trip.price}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {t("tripCardPricePerPerson")}
                   </div>
                 </div>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+              </div>
 
-      <div className="flex justify-center mt-8">
-        <Button variant="outline">
-          {t("loadMoreResultsButton")}
-        </Button>
+              <div className="mt-4 flex items-center justify-between text-sm">
+                <div className="flex items-center">
+                  <Calendar className="mr-1 h-4 w-4" />
+                  {getDuration(trip.duration)}
+                </div>
+                <div className="flex items-center">
+                  <Star className="mr-1 h-4 w-4 text-yellow-500" />
+                  {trip.reviewsValue} ({trip.reviewsCount})
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <Link href={`/trips/${trip.id}`}>
+                <Button className="w-full">{t("viewDetailsButton")}</Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        ))}
       </div>
+
+      {data.totalCount > TRIP_SEARCH_PAGE_SIZE && (
+        <TripResultsPagination
+          pages={pages}
+          pageIndex={pageIndex}
+          setPageIndex={setPageIndex}
+          totalCount={data.totalCount}
+        />
+      )}
     </div>
-  )
+  );
 }
 
+const getTotalPages = (totalCount: number) =>
+  Math.ceil(totalCount / TRIP_SEARCH_PAGE_SIZE);
+
+const generatePages = ({
+  pageIndex,
+  totalCount,
+}: {
+  pageIndex: number;
+  totalCount: number;
+}) => {
+  const totalPages = getTotalPages(totalCount);
+
+  const pages = [];
+  const maxVisiblePages = 5; // Maximum visible page numbers
+
+  if (totalPages <= maxVisiblePages) {
+    // If total pages are less than or equal to maxVisiblePages, show all pages
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+  } else {
+    // Otherwise, calculate visible pages with ellipsis
+    const leftSiblingIndex = Math.max(pageIndex + 1 - 1, 1); // Current page - 1
+    const rightSiblingIndex = Math.min(pageIndex + 1 + 1, totalPages); // Current page + 1
+
+    const shouldShowLeftEllipsis = leftSiblingIndex > 2;
+    const shouldShowRightEllipsis = rightSiblingIndex < totalPages - 1;
+
+    if (!shouldShowLeftEllipsis && shouldShowRightEllipsis) {
+      // Case: 1 2 3 4 ... 10
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(totalPages);
+    } else if (shouldShowLeftEllipsis && !shouldShowRightEllipsis) {
+      // Case: 1 ... 7 8 9 10
+      pages.push(1);
+      pages.push("...");
+      for (let i = totalPages - (maxVisiblePages - 2); i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else if (shouldShowLeftEllipsis && shouldShowRightEllipsis) {
+      // Case: 1 ... 4 5 6 ... 10
+      pages.push(1);
+      pages.push("...");
+      for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(totalPages);
+    }
+  }
+
+  return pages.map(String);
+};
+
+const TripResultsPagination = ({
+  pages,
+  pageIndex,
+  setPageIndex,
+  totalCount,
+}: {
+  pages: string[];
+  pageIndex: number;
+  setPageIndex: (value: number) => void;
+  totalCount: number;
+}) => {
+  const t = useTranslations("TripsPage");
+
+  const totalPages = getTotalPages(totalCount);
+
+  return (
+    <Pagination>
+      <PaginationContent className="mt-8">
+        {/* Previous Button */}
+        <PaginationItem>
+          <Button
+            variant="ghost"
+            onClick={() => setPageIndex(pageIndex - 1)}
+            disabled={pageIndex === 0}
+          >
+            <ChevronLeft className="size-4" />
+            {t("previous")}
+          </Button>
+        </PaginationItem>
+
+        {/* Page Numbers */}
+        {pages.map((page, index) =>
+          page === "..." ? (
+            <PaginationItem key={`ellipsis-${index}`}>
+              <span>...</span>
+            </PaginationItem>
+          ) : (
+            <PaginationItem key={page}>
+              <Button
+                onClick={() => setPageIndex(Number(page) - 1)}
+                variant={pageIndex + 1 === Number(page) ? "outline" : "ghost"}
+              >
+                {page}
+              </Button>
+            </PaginationItem>
+          ),
+        )}
+
+        {/* Next Button */}
+        <PaginationItem>
+          <Button
+            variant="ghost"
+            onClick={() => setPageIndex(pageIndex + 1)}
+            disabled={pageIndex + 1 === totalPages}
+          >
+            {t("next")}
+            <ChevronRight className="size-4" />
+          </Button>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+};

@@ -19,7 +19,7 @@ export const Header = () => {
   const t = useTranslations("General.header");
 
   return (
-    <header className="z-10 fixed w-full top-0 h-16 border-b shadow bg-background text-foreground p-4">
+    <header className="z-20 fixed w-full top-0 h-16 border-b shadow bg-background text-foreground p-4">
       <nav className="container flex items-center justify-between gap-4 mx-auto">
         <Link className="flex gap-2 items-center" href="/">
           <Plane className="h-8 w-8 text-primary" />

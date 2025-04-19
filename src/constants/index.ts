@@ -1,0 +1,1 @@
+export const TRIP_SEARCH_PAGE_SIZE = 6;
