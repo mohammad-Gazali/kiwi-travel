@@ -39,7 +39,7 @@ export function TripDetails({ id }: TripDetailsProps) {
       <CardContent className="space-y-4">
         <div className="grid gap-2">
           <div className="aspect-video w-full overflow-hidden rounded-md">
-            <img src={trip.image || "/placeholder.svg"} alt={trip.title} className="h-full w-full object-cover" />
+            <img src={trip.image || "https://placehold.co/300x200?text=Kiwi+Travel"} alt={trip.title} className="h-full w-full object-cover" />
           </div>
         </div>
         <div className="grid gap-2">

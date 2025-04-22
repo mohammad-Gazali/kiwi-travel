@@ -10,7 +10,8 @@
       "buttonLabel": "Забронировать"
     },
     "popularDestinations": {
-      "sectionTitle": "Популярные направления"
+      "sectionTitle": "Популярные направления",
+      "showAll": "Показать все"
     },
     "whyChooseUs": {
       "sectionTitle": "Почему выбирают нас",

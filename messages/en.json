@@ -10,7 +10,8 @@
       "buttonLabel": "Book Now"
     },
     "popularDestinations": {
-      "sectionTitle": "Popular Destinations"
+      "sectionTitle": "Popular Destinations",
+      "showAll": "Show All"
     },
     "whyChooseUs": {
       "sectionTitle": "Why Choose Us",

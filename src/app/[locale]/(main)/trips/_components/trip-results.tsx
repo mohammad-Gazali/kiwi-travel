@@ -114,7 +114,7 @@ export function TripResults() {
             )}
             <div className="relative h-48">
               <Image
-                src={trip.image || "/placeholder.svg"}
+                src={trip.image || "https://placehold.co/300x200?text=Kiwi+Travel"}
                 alt={localeAttribute(trip, "title")}
                 fill
                 className="object-cover"

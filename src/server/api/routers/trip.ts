@@ -235,6 +235,30 @@ export const tripRouter = createTRPCRouter({
           })),
         }));
     }),
+  listFeatured: publicProcedure.query(
+    async ({ ctx }) =>
+      await ctx.db.query.trip
+        .findMany({
+          where: ({ isFeatured }, { eq }) => eq(isFeatured, true),
+          columns: {
+            id: true,
+            titleEn: true,
+            titleRu: true,
+            tripPriceInCents: true,
+            assetsUrls: true,
+          },
+        })
+        .then((res) =>
+          res.map((item) => ({
+            id: item.id,
+            titleEn: item.titleEn,
+            titleRu: item.titleRu,
+            price: Math.floor(item.tripPriceInCents / 100),
+            image: mainImage(item.assetsUrls),
+            reviewsValue: 4.7, // TODO: continue after finishing reviews
+          })),
+        ),
+  ),
   view: publicProcedure.input(z.number().int()).query(
     async ({ ctx, input }) =>
       await ctx.db.query.trip.findFirst({

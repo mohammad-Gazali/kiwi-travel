@@ -133,7 +133,7 @@ export default function Page() {
           {filteredTrips.map((trip) => (
             <Card key={trip.id} className="overflow-hidden flex flex-col h-full">
               <div className="relative h-48 w-full">
-                <Image src={trip.image || "/placeholder.svg"} alt={trip.title} fill className="object-cover" />
+                <Image src={trip.image} alt={trip.title} fill className="object-cover" />
               </div>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">

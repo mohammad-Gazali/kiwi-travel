@@ -1,20 +1,24 @@
+"use client";
+
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslations } from "next-intl";
-
-const destinations = [
-  { id: 1, name: "Rome, Italy", image: "https://placehold.co/300x200" },
-  { id: 2, name: "Santorini, Greece", image: "https://placehold.co/300x200" },
-  { id: 3, name: "Machu Picchu, Peru", image: "https://placehold.co/300x200" },
-  {
-    id: 4,
-    name: "Bora Bora, French Polynesia",
-    image: "https://placehold.co/300x200",
-  },
-];
+import { useLocale, useTranslations } from "next-intl";
+import { api } from "@/trpc/react";
+import { localeAttributeFactory } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/routing";
+import { Button } from "@/components/ui/button";
 
 export default function PopularDestinations() {
   const t = useTranslations("HomePage.popularDestinations");
+
+  const locale = useLocale();
+  const localeAttribute = localeAttributeFactory(locale);
+
+  const { data: destinations, isLoading } = api.destination.list.useQuery({
+    isPopularOnly: true,
+    limitFour: true,
+  });
 
   return (
     <section className="py-16">
@@ -23,25 +27,48 @@ export default function PopularDestinations() {
           {t("sectionTitle")}
         </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {destinations.map((destination) => (
-            <Card key={destination.id} className="overflow-hidden">
-              <CardHeader className="p-0">
-                <Image
-                  src={destination.image || "/placeholder.svg"}
-                  alt={destination.name}
-                  width={300}
-                  height={200}
-                  className="h-48 w-full object-cover"
-                />
-              </CardHeader>
-              <CardContent className="p-4">
-                <CardTitle className="text-center">
-                  {destination.name}
-                </CardTitle>
-              </CardContent>
-            </Card>
+          {isLoading &&
+            [1, 2, 3, 4].map((item) => (
+              <Card key={item} className="overflow-hidden">
+                <CardHeader className="p-0">
+                  <Skeleton className="h-48 rounded-b-none w-full" />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <Skeleton
+                    className="select-none text-transparent w-fit mx-auto"
+                    aria-hidden="true"
+                  >
+                    Test Big Title
+                  </Skeleton>
+                </CardContent>
+              </Card>
+            ))}
+          {destinations?.map((destination) => (
+            <Link key={destination.id} href={`/destinations/${destination.id}`}>
+              <Card className="overflow-hidden group">
+                <CardHeader className="p-0">
+                  <Image
+                    src={destination.imageUrl}
+                    alt={localeAttribute(destination, "name")}
+                    width={300}
+                    height={200}
+                    className="h-48 w-full object-cover"
+                  />
+                </CardHeader>
+                <CardContent className="p-4 group-hover:bg-muted transition-colors">
+                  <CardTitle className="text-center">
+                    {localeAttribute(destination, "name")}
+                  </CardTitle>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
+        <Link href="/destinations">
+          <Button size="lg" className="mt-8 mx-auto block">
+            {t("showAll")}
+          </Button>
+        </Link>
       </div>
     </section>
   );

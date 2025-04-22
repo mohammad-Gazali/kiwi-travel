@@ -68,7 +68,7 @@ export function AssetGallery({ assets, title }: AssetGalleryProps) {
         onClick={() => openLightbox(0)}
       >
         <AssetItem
-          url={assets[0] ?? "/placeholder.svg"}
+          url={assets[0] ?? "https://placehold.co/300x200?text=Kiwi+Travel"}
           title={title}
           index={0}
           className="object-cover transition-transform duration-300 hover:scale-105"
@@ -108,7 +108,7 @@ export function AssetGallery({ assets, title }: AssetGalleryProps) {
             onClick={() => openLightbox(visibleThumbnailsCount + 1)}
           >
             <AssetItem
-              url={assets[visibleThumbnailsCount + 1] ?? "/placeholder.svg"}
+              url={assets[visibleThumbnailsCount + 1] ?? "https://placehold.co/300x200?text=Kiwi+Travel"}
               title={title}
               index={visibleThumbnailsCount + 1}
               className="object-cover"
@@ -179,7 +179,7 @@ const AssetItem = ({
     </div>
   ) : (
     <Image
-      src={url || "/placeholder.svg"}
+      src={url || "https://placehold.co/300x200?text=Kiwi+Travel"}
       alt={index === 0 ? title : `${title} - image ${index + 2}`}
       fill
       className={className}

@@ -27,7 +27,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/destinations" className="hover:underline">
                   {t("quickLinks.destinations")}
                 </Link>
               </li>

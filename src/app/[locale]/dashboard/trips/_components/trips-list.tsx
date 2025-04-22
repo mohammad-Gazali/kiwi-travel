@@ -65,11 +65,11 @@ export function TripsList() {
         const trip = row.original;
         return (
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-md">
+            <div className="overflow-hidden rounded-md">
               <img
-                src={trip.assetsUrls[0] || "/placeholder.svg"}
+                src={trip.assetsUrls[0] || "https://placehold.co/300x200?text=Kiwi+Travel"}
                 alt={trip.titleEn}
-                className="h-full w-full object-cover"
+                className="size-10 object-cover"
               />
             </div>
             <span className="font-medium">{trip.titleEn}</span>

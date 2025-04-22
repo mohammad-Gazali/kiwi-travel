@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { country, destination } from "@/server/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import { destinationFormSchema } from "@/validators/destination-schema";
 
 export const destinationRouter = createTRPCRouter({
@@ -56,12 +56,14 @@ export const destinationRouter = createTRPCRouter({
       };
     }),
   list: publicProcedure
-    .input(z.object({ isPopularOnly: z.boolean().nullish() }))
+    .input(z.object({ isPopularOnly: z.boolean().nullish(), limitFour: z.boolean().nullish() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.destination.findMany({
         where: input.isPopularOnly
           ? ({ isPopular }, { eq }) => eq(isPopular, true)
           : undefined,
+        orderBy: input.limitFour ? sql`random()` : undefined,
+        limit: input.limitFour ? 4 : undefined,
       });
     }),
 });
