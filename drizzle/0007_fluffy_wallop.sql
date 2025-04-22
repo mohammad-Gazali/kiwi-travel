@@ -1,0 +1,1 @@
+ALTER TABLE "trips" ADD COLUMN "is_confirmation_required" boolean DEFAULT false;

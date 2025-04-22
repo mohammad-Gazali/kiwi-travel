@@ -25,6 +25,44 @@
       "sectionTitle": "What Our Travelers Say"
     }
   },
+  "FAQsPage": {
+    "title": "Frequently Asked Questions",
+    "description": "Find answers to the most common questions about our services."
+  },
+  "PrivacyPolicyPage": {
+    "title": "Privacy Policy",
+    "description": "Learn how we collect, use, and protect your personal information.",
+    "lastUpdated": "Last Updated: April 22, 2025",
+    "section1Title": "Information We Collect",
+    "section1Content": "We collect personal information that you provide directly to us, such as your name, email address, phone number, and payment information when you register for an account, make a booking, or contact our customer service.",
+    "section2Title": "How We Use Your Information",
+    "section2Content": "We use your information to process your bookings, provide customer support, send you promotional offers (if you've opted in), improve our services, and comply with legal obligations.",
+    "section3Title": "Information Sharing",
+    "section3Content": "We share your information with travel providers necessary to complete your booking, service providers who perform services on our behalf, and as required by law.",
+    "section4Title": "Data Security",
+    "section4Content": "We implement appropriate security measures to protect your personal information from unauthorized access, alteration, or disclosure.",
+    "section5Title": "Your Rights",
+    "section5Content": "Depending on your location, you may have rights to access, correct, or delete your personal information. Contact us to exercise these rights.",
+    "section6Title": "Cookies",
+    "section6Content": "We use cookies and similar technologies to enhance your experience on our website, analyze usage patterns, and deliver personalized content."
+  },
+  "TermsOfServicePage": {
+    "title": "Terms of Service",
+    "description": "Please read these terms carefully before using our services.",
+    "lastUpdated": "Last Updated: April 22, 2025",
+    "section1Title": "Acceptance of Terms",
+    "section1Content": "By accessing or using our services, you agree to be bound by these Terms of Service and all applicable laws and regulations.",
+    "section2Title": "User Accounts",
+    "section2Content": "You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.",
+    "section3Title": "Booking and Payments",
+    "section3Content": "All bookings are subject to availability and confirmation. Prices are subject to change without notice until your booking is confirmed.",
+    "section4Title": "Cancellations and Refunds",
+    "section4Content": "Cancellation and refund policies vary depending on the type of booking and the provider's terms. Please review the specific terms before making a booking.",
+    "section5Title": "Limitation of Liability",
+    "section5Content": "We are not liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our services.",
+    "section6Title": "Governing Law",
+    "section6Content": "These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which our company is registered."
+  },
   "TripsPage": {
     "destinationLabel": "Where do you want to go?",
     "destinationPlaceholder": "Search destinations, cities, or landmarks",

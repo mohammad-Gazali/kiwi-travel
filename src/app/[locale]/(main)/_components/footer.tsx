@@ -22,7 +22,7 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/" className="hover:underline">
                   {t("quickLinks.home")}
                 </Link>
               </li>
@@ -32,12 +32,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/trips" className="hover:underline">
                   {t("quickLinks.trips")}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/about" className="hover:underline">
                   {t("quickLinks.aboutUs")}
                 </Link>
               </li>
@@ -47,22 +47,22 @@ export default function Footer() {
             <h3 className="mb-4 text-lg font-semibold">{t("supportTitle")}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/faqs" className="hover:underline">
                   {t("supportLinks.faqs")}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/contact" className="hover:underline">
                   {t("supportLinks.contactUs")}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/privacy" className="hover:underline">
                   {t("supportLinks.privacyPolicy")}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline">
+                <Link href="/terms" className="hover:underline">
                   {t("supportLinks.termsOfService")}
                 </Link>
               </li>

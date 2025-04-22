@@ -25,6 +25,7 @@ export const trip = pgTable("trips", (c) => ({
   tripPriceInCents: c.integer("trip_price_in_cents").notNull(),
   isAvailable: c.boolean("is_available").notNull(),
   isFeatured: c.boolean("is_featured").notNull(),
+  isConfirmationRequired: c.boolean("is_confirmation_required").default(false),
   duration: c.text("duration").notNull(),
   availableDays: c.text("available_days", {
     enum: days,

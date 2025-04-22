@@ -43,6 +43,20 @@
       "when": 1745151718499,
       "tag": "0005_swift_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1745297717881,
+      "tag": "0006_previous_medusa",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1745330042344,
+      "tag": "0007_fluffy_wallop",
+      "breakpoints": true
     }
   ]
 }
