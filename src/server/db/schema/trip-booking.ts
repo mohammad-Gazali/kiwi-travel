@@ -7,11 +7,12 @@ export const tripBooking = pgTable(
   (c) => ({
     id: c.integer("id").primaryKey().generatedByDefaultAsIdentity(),
     userId: c.text("user_id").notNull(),
+    userPhone: c.text("user_phone").notNull(),
     priceInCents: c.integer("price_in_cents").notNull(),
     tripId: c.integer("trip_id")
       .notNull()
       .references(() => trip.id, { onDelete: "cascade" }),
-    tripStartDate: c.date("trip_start_date"),
+    bookingDate: c.date("booking_date").notNull(),
     travelersCount: c.integer("travelers_count").notNull(),
     status: c.text("status", {
       enum: ["pending", "cancelled", "done", "missed"],

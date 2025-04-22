@@ -73,7 +73,14 @@
       "total": "Total",
       "bookNow": "Book Now",
       "noCharge": "No charge for reservation. Pay later.",
-      "reviews": "reviews"
+      "reviews": "reviews",
+      "loading": "Loading...",
+      "signInFirstly": "Sign in before booking",
+      "phoneNumber": "Phone Number",
+      "completeBooking": "Complete Booking",
+      "dialogTitle": "Book Your Trip",
+      "dialogDescription": "Fill in the details to complete your booking",
+      "successMessage": "Trip has been booked successfully"
     }
   },
   "General": {

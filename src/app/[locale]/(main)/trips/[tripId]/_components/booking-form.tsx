@@ -3,64 +3,67 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import {
+  tripBookingFormSchema,
+  TripBookingFormValues,
+} from "@/validators/trip-booking-schema";
 import { days } from "@/validators/trip-schema";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Star, Users } from "lucide-react";
+import { CalendarIcon, Lock, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 interface BookingFormProps {
   price: number;
   duration: string;
-  availableDays: ((typeof days)[number])[];
+  availableDays: (typeof days)[number][];
 }
 
-// TODO: handle submit to navigate to booking with initial values
+// TODO: handle reviews
 
 const BookingForm = ({ price, duration, availableDays }: BookingFormProps) => {
   const t = useTranslations("TripDetailsPage.bookingForm");
 
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-
-  const form = useForm({
-    resolver: zodResolver(
-      z.object({
-        travelersCount: z.number().int().min(1),
-        date: z.date(),
-      }),
-    ),
-    defaultValues: {
-      travelersCount: 1,
-    },
-  });
+  const { isSignedIn, isLoaded } = useAuth();
 
   const trip = {} as any;
-
-  const travelersCount = form.watch("travelersCount");
-  const date = form.watch("date");
 
   // array of day indexes of the current trip's `availableDays`
   // e.g.
   // ["Monday", "Friday"] ======> [1, 5]
   // ["Tuesday"] ======> [2]
-  const mappedDays = availableDays.map(item => days.indexOf(item));
+  const mappedDays = availableDays.map((item) => days.indexOf(item));
 
   return (
     <Card>
       <CardContent className="space-y-6 p-6">
-        <form onSubmit={form.handleSubmit((val) => {})} className="space-y-2">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-3xl font-bold">${price}</span>
             <span className="text-muted-foreground">{t("perPerson")}</span>
@@ -84,82 +87,218 @@ const BookingForm = ({ price, duration, availableDays }: BookingFormProps) => {
               {trip.rating} ({trip.reviewCount} {t("reviews")})
             </span>
           </div>
-        </form>
-
-        <Separator />
-
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              {t("bookingDate")}
-            </Label>
-            <br />
-            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "justify-start text-left font-normal w-full",
-                    !date && "text-muted-foreground",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : t("selectDate")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  disabled={(d) => d < new Date() || !mappedDays.includes(d.getDay())}
-                  onSelect={(d) => {
-                    if (!d) return;
-
-                    form.setValue("date", d);
-                    setIsCalendarOpen(false);
-                  }}
-                  autoFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="travelers">{t("travelersCount")}</Label>
-            <div className="relative">
-              <Input
-                className="pl-12"
-                min="1"
-                type="number"
-                {...form.register("travelersCount")}
-                id="travelers"
-              />
-              <Users className="absolute left-4 top-1/2 size-4 -translate-y-1/2" />
-            </div>
-          </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <span>{t("basePrice")}</span>
-            <span>
-              ${price} &times; {travelersCount}
-            </span>
-          </div>
-          <Separator />
-          <div className="flex justify-between font-bold">
-            <span>{t("total")}</span>
-            <span>${price * travelersCount}</span>
-          </div>
-        </div>
-
-        <Button className="w-full">{t("bookNow")}</Button>
+        {isSignedIn ? (
+          <BookingSubmitDialog mappedDays={mappedDays} price={price} />
+        ) : (
+          <SignInButton>
+            <Button variant="outline" disabled={!isLoaded} className="w-full">
+              {isLoaded ? (
+                <>
+                  <Lock />
+                  {t("signInFirstly")}
+                </>
+              ) : (
+                t("loading")
+              )}
+            </Button>
+          </SignInButton>
+        )}
 
         <div className="text-center text-sm text-muted-foreground">
           <p>{t("noCharge")}</p>
         </div>
       </CardContent>
     </Card>
+  );
+};
+
+interface BookingSubmitDialog {
+  price: number;
+  mappedDays: number[];
+}
+
+const BookingSubmitDialog = ({ price, mappedDays }: BookingSubmitDialog) => {
+  const t = useTranslations("TripDetailsPage.bookingForm");
+
+  const [open, setOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  // Initialize the form
+  const form = useForm<TripBookingFormValues>({
+    resolver: zodResolver(tripBookingFormSchema),
+    defaultValues: {
+      travelersCount: 1,
+      phone: "",
+    },
+  });
+
+  // Get the current travelers value for price calculation
+  const travelers = form.watch("travelersCount") || 1;
+
+  // Calculate total price based on number of travelers
+  const totalPrice = (price * travelers).toFixed(2);
+
+  const handleIncreaseTravelers = () => {
+    const current = form.getValues("travelersCount") || 1;
+    form.setValue("travelersCount", current + 1, { shouldValidate: true });
+  };
+
+  const handleDecreaseTravelers = () => {
+    const current = form.getValues("travelersCount") || 1;
+    if (current > 1) {
+      form.setValue("travelersCount", current - 1, { shouldValidate: true });
+    }
+  };
+
+  function onSubmit(data: TripBookingFormValues) {
+    // Handle form submission logic here
+    console.log({ ...data, totalPrice });
+    setOpen(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button type="button" className="w-full">
+          {t("bookNow")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{t("dialogTitle")}</DialogTitle>
+          <DialogDescription>
+            {t("dialogDescription")}
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>{t("bookingDate")}</FormLabel>
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                  >
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          {field.value
+                            ? format(field.value, "PPP")
+                            : t("selectDate")}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        disabled={(d) =>
+                          d < new Date() || !mappedDays.includes(d.getDay())
+                        }
+                        onSelect={(d) => {
+                          if (!d) return;
+
+                          form.setValue("date", d);
+                          setIsCalendarOpen(false);
+                        }}
+                        autoFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("phoneNumber")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+1 (555) 123-4567" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="travelersCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("travelersCount")}</FormLabel>
+                  <div className="flex items-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={handleDecreaseTravelers}
+                      disabled={field.value <= 1}
+                    >
+                      -
+                    </Button>
+                    <FormControl>
+                      <div className="w-full text-center">
+                        <span className="text-lg font-medium">
+                          {field.value}
+                        </span>
+                        <Input
+                          type="hidden"
+                          {...field}
+                          onChange={(e) => {
+                            const value = Number.parseInt(e.target.value);
+                            field.onChange(isNaN(value) ? 1 : value);
+                          }}
+                        />
+                      </div>
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={handleIncreaseTravelers}
+                    >
+                      +
+                    </Button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="mt-2 rounded-lg bg-muted p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t("basePrice")}</span>
+                <span className="text-sm">${price}</span>
+              </div>
+              <div className="mt-2 flex items-center justify-between border-t pt-2">
+                <span className="text-lg font-bold">{t("total")}</span>
+                <span className="text-lg font-bold">${totalPrice}</span>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="submit" className="w-full">
+                {t("completeBooking")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -36,6 +36,13 @@
       "when": 1744891624913,
       "tag": "0004_bumpy_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1745151718499,
+      "tag": "0005_swift_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

@@ -100,13 +100,30 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 const adminMiddleware = t.middleware(async ({ next }) => {
   const { sessionClaims } = await auth();
 
-  if (!sessionClaims?.metadata.isAdmin) throw new TRPCError({
-    code: 'FORBIDDEN',
-    message: 'admin only procedure',
-  })
+  if (!sessionClaims?.metadata.isAdmin)
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "admin only procedure",
+    });
 
-  return next()
-})
+  return next();
+});
+
+const authMiddleware = t.middleware(async ({ next }) => {
+  const { userId } = await auth();
+
+  if (!userId)
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "authentication is required for this procedure",
+    });
+
+  return next({
+    ctx: {
+      userId,
+    },
+  });
+});
 
 /**
  * Public (unauthenticated) procedure
@@ -117,5 +134,6 @@ const adminMiddleware = t.middleware(async ({ next }) => {
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
+export const authProtectedProcedure = t.procedure.use(authMiddleware);
 
 export const adminProcedure = publicProcedure.use(adminMiddleware);
