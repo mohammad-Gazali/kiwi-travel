@@ -1,0 +1,1 @@
+ALTER TABLE "trip_bookings" ALTER COLUMN "status" SET NOT NULL;

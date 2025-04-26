@@ -129,10 +129,10 @@ export function TripResults() {
                   <h3 className="text-lg font-bold">
                     {localeAttribute(trip, "title")}
                   </h3>
-                  <div className="mt-1 flex items-center text-sm text-muted-foreground">
+                  <Link href={`/destinations/${trip.destinationId}`} className="mt-1 flex items-center text-sm text-muted-foreground hover:text-primary">
                     <MapPin className="mr-1 h-4 w-4" />
                     {localeAttribute(trip, "location")}
-                  </div>
+                  </Link>
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold">${trip.price}</div>

@@ -6,4 +6,8 @@ declare global {
       isAdmin: boolean;
     }
   }
+
+  interface UserPublicMetadata {
+    isAdmin?: boolean;
+  }
 }

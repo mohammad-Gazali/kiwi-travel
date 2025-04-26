@@ -64,11 +64,19 @@ export default function PopularDestinations() {
             </Link>
           ))}
         </div>
-        <Link href="/destinations">
-          <Button size="lg" className="mt-8 mx-auto block">
-            {t("showAll")}
-          </Button>
-        </Link>
+        {
+          isLoading ? (
+            <Skeleton className="mt-8 mx-auto h-10 px-8 text-transparent select-none w-fit" aria-hidden="true">
+              {t("showAll")}
+            </Skeleton>
+          ) : (
+            <Link href="/destinations">
+              <Button size="lg" className="mt-8 mx-auto block">
+                {t("showAll")}
+              </Button>
+            </Link>
+          )
+        }
       </div>
     </section>
   );

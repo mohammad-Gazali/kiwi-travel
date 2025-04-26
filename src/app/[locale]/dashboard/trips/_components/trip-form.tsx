@@ -182,6 +182,7 @@ export function TripForm({ initialData, id }: TripFormProps) {
       duration: initialData?.duration || "",
       isAvailable: initialData?.isAvailable || true,
       isFeatured: initialData?.isFeatured || false,
+      isConfirmationRequired: initialData?.isConfirmationRequired || false,
       tripType: initialData?.tripType,
     },
   });
@@ -577,6 +578,27 @@ export function TripForm({ initialData, id }: TripFormProps) {
                   />
                 </FormControl>
                 <FormLabel>Featured</FormLabel>
+              </FormItem>
+            )}
+          />
+
+          {/* Is confirmation action required */}
+          <FormField
+            control={form.control}
+            name="isConfirmationRequired"
+            render={({ field }) => (
+              <FormItem className="-mt-2 flex items-center gap-2">
+                <FormControl>
+                  <Switch
+                    className="mt-2"
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={field.disabled}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Required Confirmation</FormLabel>
               </FormItem>
             )}
           />

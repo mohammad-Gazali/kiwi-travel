@@ -21,10 +21,19 @@ const isAPIRoute = createRouteMatcher([
   "/api(.*)",
 ])
 
+const isBookingsRoute = createRouteMatcher([
+  "/en/bookings(.*)",
+  "/ru/bookings(.*)",
+])
+
 export default clerkMiddleware(async (auth, req) => {
   const { sessionClaims } = await auth();
   
   if (isAdminRoute(req) && !sessionClaims?.metadata.isAdmin) {
+    await auth.protect();
+  }
+
+  if (isBookingsRoute(req)) {
     await auth.protect();
   }
 

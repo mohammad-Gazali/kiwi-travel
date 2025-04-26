@@ -129,6 +129,48 @@ export const tripRouter = createTRPCRouter({
         message: "Deleted successfully",
       };
     }),
+  tinyListSearch: publicProcedure.input(z.string()).query(
+    async ({ ctx, input }) =>
+      await ctx.db
+        .select({
+          id: trip.id,
+          titleEn: trip.titleEn,
+          titleRu: trip.titleRu,
+          assets: trip.assetsUrls,
+          countryEn: country.nameEn,
+          countryRu: country.nameRu,
+          destinationEn: destination.nameEn,
+          destinationRu: destination.nameRu,
+        })
+        .from(trip)
+        .innerJoin(destination, eq(trip.destinationId, destination.id))
+        .innerJoin(country, eq(destination.countryId, country.id))
+        .where(
+          input
+            ? or(
+                ilike(trip.titleEn, `%${input}%`),
+                ilike(trip.titleRu, `%${input}%`),
+                ilike(destination.nameEn, `%${input}%`),
+                ilike(destination.nameRu, `%${input}%`),
+                ilike(country.nameEn, `%${input}%`),
+                ilike(country.nameRu, `%${input}%`),
+              )
+            : undefined,
+        )
+        .orderBy(trip.isFeatured)
+        .limit(TRIP_SEARCH_PAGE_SIZE)
+        .then((res) =>
+          res.map((item) => ({
+            id: item.id,
+            titleEn: item.titleEn,
+            titleRu: item.titleRu,
+            locationEn: `${item.countryEn}, ${item.destinationEn}`,
+            locationRu: `${item.countryRu}, ${item.destinationRu}`,
+            image: mainImage(item.assets),
+            reviewsValue: 4.7, // TODO: continue after finishing reviews
+          })),
+        ),
+  ),
   listSearch: publicProcedure
     .input(tripSearchFormSchema)
     .query(async ({ ctx, input }) => {
@@ -209,6 +251,7 @@ export const tripRouter = createTRPCRouter({
           countryRu: country.nameRu,
           destinationEn: destination.nameEn,
           destinationRu: destination.nameRu,
+          destinationId: destination.id,
         })
         .from(trip)
         .innerJoin(destination, eq(trip.destinationId, destination.id))
@@ -223,6 +266,7 @@ export const tripRouter = createTRPCRouter({
             id: item.id,
             titleEn: item.titleEn,
             titleRu: item.titleRu,
+            destinationId: item.destinationId,
             locationEn: `${item.countryEn}, ${item.destinationEn}`,
             locationRu: `${item.countryRu}, ${item.destinationRu}`,
             price: Math.floor(item.priceInCents / 100),

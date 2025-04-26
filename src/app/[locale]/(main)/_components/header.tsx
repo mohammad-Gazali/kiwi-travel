@@ -46,6 +46,9 @@ export const Header = () => {
             <DashboardButton />
           </Suspense>
           <SignedIn>
+            <Link href="/bookings">
+              <Button>{t("bookings")}</Button>
+            </Link>
             <UserButton />
           </SignedIn>
         </div>

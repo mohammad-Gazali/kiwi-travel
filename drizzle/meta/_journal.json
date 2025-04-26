@@ -57,6 +57,34 @@
       "when": 1745330042344,
       "tag": "0007_fluffy_wallop",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1745383609854,
+      "tag": "0008_wild_switch",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1745386664235,
+      "tag": "0009_violet_ma_gnuci",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1745572762293,
+      "tag": "0010_stiff_vampiro",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1745682785348,
+      "tag": "0011_famous_mojo",
+      "breakpoints": true
     }
   ]
 }

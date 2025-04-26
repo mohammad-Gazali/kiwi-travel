@@ -3,7 +3,12 @@
     "hero": {
       "headline": "Discover Your Next Adventure",
       "subheadline": "Find and book amazing trips around the world",
-      "cardTitle": "Find your Next Travel"
+      "cardTitle": "Find your Next Travel",
+      "advancedFilters": "Advanced Filters",
+      "searchPlaceholder": "Search destinations, trips, countries...",
+      "search": "Search",
+      "notFound": "No results found.",
+      "suggestions": "Suggestions"
     },
     "featuredTrips": {
       "sectionTitle": "Featured Trips",
@@ -119,7 +124,11 @@
       "completeBooking": "Complete Booking",
       "dialogTitle": "Book Your Trip",
       "dialogDescription": "Fill in the details to complete your booking",
-      "successMessage": "Trip has been booked successfully"
+      "success": "Success",
+      "error": "Error",
+      "successMessage": "Trip has been booked successfully",
+      "successMessageWithConfirm": "Booking has been created successfully, waiting for acceptance",
+      "existingBookingError": "You have already booked a trip with same date, consider updating the existing one."
     }
   },
   "General": {
@@ -165,7 +174,8 @@
       "dashboard": "Dashboard",
       "openProfile": "Open Profile",
       "sidenavDescription": "Sidenav for settings",
-      "changeLanguage": "Change Language"
+      "changeLanguage": "Change Language",
+      "bookings": "Bookings"
     },
     "footer": {
       "quickLinksTitle": "Quick Links",

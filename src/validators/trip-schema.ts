@@ -43,6 +43,7 @@ export const tripFormSchema = z.object({
   duration: z.string().min(1, "Duration is required"),
   isAvailable: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
+  isConfirmationRequired: z.boolean().default(false),
   destinationId: z
     .number({ message: "Destination is required" })
     .int()

@@ -26,6 +26,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useToast } from "@/hooks/use-toast";
+import { api } from "@/trpc/react";
 import {
   tripBookingFormSchema,
   TripBookingFormValues,
@@ -43,11 +45,17 @@ interface BookingFormProps {
   price: number;
   duration: string;
   availableDays: (typeof days)[number][];
+  tripId: number;
 }
 
 // TODO: handle reviews
 
-const BookingForm = ({ price, duration, availableDays }: BookingFormProps) => {
+const BookingForm = ({
+  price,
+  duration,
+  availableDays,
+  tripId,
+}: BookingFormProps) => {
   const t = useTranslations("TripDetailsPage.bookingForm");
 
   const { isSignedIn, isLoaded } = useAuth();
@@ -90,7 +98,11 @@ const BookingForm = ({ price, duration, availableDays }: BookingFormProps) => {
         </div>
 
         {isSignedIn ? (
-          <BookingSubmitDialog mappedDays={mappedDays} price={price} />
+          <BookingSubmitDialog
+            mappedDays={mappedDays}
+            price={price}
+            tripId={tripId}
+          />
         ) : (
           <SignInButton>
             <Button variant="outline" disabled={!isLoaded} className="w-full">
@@ -117,13 +129,39 @@ const BookingForm = ({ price, duration, availableDays }: BookingFormProps) => {
 interface BookingSubmitDialog {
   price: number;
   mappedDays: number[];
+  tripId: number;
 }
 
-const BookingSubmitDialog = ({ price, mappedDays }: BookingSubmitDialog) => {
+const BookingSubmitDialog = ({
+  price,
+  mappedDays,
+  tripId,
+}: BookingSubmitDialog) => {
   const t = useTranslations("TripDetailsPage.bookingForm");
 
   const [open, setOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  const { toast } = useToast();
+
+  const { mutate: createBooking, isPending } =
+    api.tripBooking.create.useMutation({
+      onSuccess: ({ message }) => {
+        toast({
+          title: "Success",
+          description: message,
+        });
+
+        setOpen(false);
+      },
+      onError: ({ message }) => {
+        toast({
+          title: "Error",
+          description: message,
+          variant: "destructive",
+        });
+      },
+    });
 
   // Initialize the form
   const form = useForm<TripBookingFormValues>({
@@ -153,13 +191,23 @@ const BookingSubmitDialog = ({ price, mappedDays }: BookingSubmitDialog) => {
   };
 
   function onSubmit(data: TripBookingFormValues) {
-    // Handle form submission logic here
-    console.log({ ...data, totalPrice });
-    setOpen(false);
+    if (isPending) return;
+
+    createBooking({
+      ...data,
+      tripId,
+    });
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (isPending) return;
+
+        setOpen(open);
+      }}
+    >
       <DialogTrigger asChild>
         <Button type="button" className="w-full">
           {t("bookNow")}
@@ -168,9 +216,7 @@ const BookingSubmitDialog = ({ price, mappedDays }: BookingSubmitDialog) => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{t("dialogTitle")}</DialogTitle>
-          <DialogDescription>
-            {t("dialogDescription")}
-          </DialogDescription>
+          <DialogDescription>{t("dialogDescription")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -291,7 +337,7 @@ const BookingSubmitDialog = ({ price, mappedDays }: BookingSubmitDialog) => {
             </div>
 
             <DialogFooter>
-              <Button type="submit" className="w-full">
+              <Button disabled={isPending} type="submit" className="w-full">
                 {t("completeBooking")}
               </Button>
             </DialogFooter>

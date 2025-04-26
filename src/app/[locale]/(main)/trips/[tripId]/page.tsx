@@ -19,7 +19,7 @@ import {
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import BookingForm from "./_components/booking-form";
-import { AssetGallery } from "./_components/asset-gallery";
+import { AssetGallery } from "@/components/asset-gallery";
 
 // TODO: handle reviews
 
@@ -160,6 +160,7 @@ export default async function TripDetailsPage({
         <div className="lg:col-span-1">
           <BookingForm
             availableDays={trip.availableDays}
+            tripId={trip.id}
             price={price}
             duration={duration}
           />

@@ -17,6 +17,7 @@ import {
   SignUpButton,
   SignOutButton,
   useClerk,
+  useUser,
 } from "@clerk/nextjs";
 import { LogOut, Menu, User, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -30,6 +31,10 @@ export const DrawerButton = () => {
   const { openUserProfile } = useClerk();
 
   const t = useTranslations("General.header");
+
+  const { user } = useUser();
+
+  const isAdmin = !!user?.publicMetadata.isAdmin;
 
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
@@ -60,9 +65,18 @@ export const DrawerButton = () => {
         </DrawerHeader>
         <div className="m-4">
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard">
-              <Button className="w-full">{t("dashboard")}</Button>
-            </Link>
+            {
+              isAdmin && (
+                <Link onClick={() => setOpen(false)} href="/dashboard">
+                  <Button className="w-full">{t("dashboard")}</Button>
+                </Link>
+              )
+            }
+            <SignedIn>
+              <Link onClick={() => setOpen(false)} href="/bookings">
+                <Button className="w-full">{t("bookings")}</Button>
+              </Link>
+            </SignedIn>
           </div>
         </div>
         <DrawerFooter>

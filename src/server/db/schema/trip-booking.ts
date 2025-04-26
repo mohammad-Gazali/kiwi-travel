@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import { index, pgTable } from "drizzle-orm/pg-core";
 import { trip } from "./trip";
+import { review } from "./review";
 
 export const tripBooking = pgTable(
   "trip_bookings",
@@ -15,8 +16,8 @@ export const tripBooking = pgTable(
     bookingDate: c.date("booking_date").notNull(),
     travelersCount: c.integer("travelers_count").notNull(),
     status: c.text("status", {
-      enum: ["pending", "cancelled", "done", "missed"],
-    }),
+      enum: ["pending", "accepted", "cancelled", "done", "missed"],
+    }).notNull(),
     createdAt: c.timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -30,6 +31,7 @@ export const tripBooking = pgTable(
 // ======================== relations ======================== 
 
 export const tripBookRelations = relations(tripBooking, ({ one }) => ({
+  review: one(review),
   trip: one(trip, {
     fields: [tripBooking.tripId],
     references: [trip.id],

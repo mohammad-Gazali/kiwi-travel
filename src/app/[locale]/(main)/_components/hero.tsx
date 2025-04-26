@@ -1,6 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import SearchForm from "./search-form";
 import { useTranslations } from "next-intl";
+import SearchCard from "./search-card";
 
 export default function Hero() {
   const t = useTranslations("HomePage.hero");
@@ -14,14 +13,7 @@ export default function Hero() {
       <div className="container relative mx-auto flex h-full flex-col items-center justify-center px-4 text-center text-white">
         <h1 className="mb-4 text-4xl font-bold md:text-6xl">{t("headline")}</h1>
         <p className="mb-8 text-xl">{t("subheadline")}</p>
-        <Card className="w-full max-w-2xl">
-          <CardHeader>
-            <CardTitle>{t("cardTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SearchForm />
-          </CardContent>
-        </Card>
+        <SearchCard />
       </div>
     </section>
   );
