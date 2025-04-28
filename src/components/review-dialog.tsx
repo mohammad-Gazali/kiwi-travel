@@ -15,6 +15,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
 import { api } from "@/trpc/react";
+import { useTranslations } from "next-intl";
 
 interface ReviewDialogProps {
   open: boolean;
@@ -31,6 +32,8 @@ export function ReviewDialog({
   title,
   disableManualClose,
 }: ReviewDialogProps) {
+  const t = useTranslations("ReviewDialog");
+
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [review, setReview] = useState("");
@@ -67,16 +70,14 @@ export function ReviewDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="mt-2">
-            Review your trip to {title}
+            {t("reviewYourTrip", { title })}
           </DialogTitle>
-          <DialogDescription>
-            Share your experience to help other travelers plan their journey.
-          </DialogDescription>
+          <DialogDescription>{t("shareExperience")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Rating</label>
+            <label className="text-sm font-medium">{t("ratingLabel")}</label>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -94,7 +95,7 @@ export function ReviewDialog({
                         : "text-gray-300"
                     }`}
                   />
-                  <span className="sr-only">Rate {star} stars</span>
+                  <span className="sr-only">{t("rateStars", { star })}</span>
                 </button>
               ))}
             </div>
@@ -102,11 +103,11 @@ export function ReviewDialog({
 
           <div className="space-y-2">
             <label htmlFor="review" className="text-sm font-medium">
-              Your Review
+              {t("yourReviewLabel")}
             </label>
             <Textarea
               id="review"
-              placeholder="Share details of your experience..."
+              placeholder={t("reviewPlaceholder")}
               value={review}
               onChange={(e) => setReview(e.target.value)}
               rows={5}
@@ -121,13 +122,13 @@ export function ReviewDialog({
               onOpenChange(false);
             }}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={isPending || rating < 1 || review.length === 0}
           >
-            {isPending ? "Submitting..." : "Submit Review"}
+            {isPending ? t("submitting") : t("submitReview")}
           </Button>
         </DialogFooter>
       </DialogContent>

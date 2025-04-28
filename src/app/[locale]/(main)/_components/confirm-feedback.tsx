@@ -5,10 +5,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Link } from "@/i18n/routing";
 import { localeAttributeFactory } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 
 const ConfirmFeedback = () => {
+  const t = useTranslations("ConfirmFeedback");
   const locale = useLocale();
   const localeAttribute = localeAttributeFactory(locale);
 
@@ -17,34 +18,30 @@ const ConfirmFeedback = () => {
   const { data: notification } = api.notifications.viewConfirmNotification.useQuery();
 
   useEffect(() => {
-      if (notification) {
-        setOpen(true)
-      }
-  }, [notification])
+    if (notification) {
+      setOpen(true);
+    }
+  }, [notification]);
 
   return notification ? (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {notification.isCancelled ? "Booking Cancelled" : "Booking Confirmed"}
+            {notification.isCancelled ? t("bookingCancelled") : t("bookingConfirmed")}
           </DialogTitle>
           <DialogDescription>
-            {
-              notification.isCancelled 
-              ? `Unfortunately the booking for trip '${localeAttribute(notification, "tripTitle")}' has been cancelled for organisational reasons, you can proceed to your booking details.`
-              : `Congratulations, the booking for trip '${localeAttribute(notification, "tripTitle")}' has been accepted, you can proceed to your booking details.`
-            }
+            {notification.isCancelled
+              ? t("cancelledMessage", { tripTitle: localeAttribute(notification, "tripTitle") })
+              : t("confirmedMessage", { tripTitle: localeAttribute(notification, "tripTitle") })}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Link onClick={() => setOpen(false)} href={`/bookings/${notification.tripBookingId}`}>
-            <Button>
-              View Booking Details
-            </Button>
+            <Button>{t("viewBookingDetails")}</Button>
           </Link>
         </DialogFooter>
       </DialogContent>
@@ -52,4 +49,4 @@ const ConfirmFeedback = () => {
   ) : null;
 };
 
-export default ConfirmFeedback
+export default ConfirmFeedback;

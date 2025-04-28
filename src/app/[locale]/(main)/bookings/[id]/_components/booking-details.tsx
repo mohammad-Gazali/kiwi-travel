@@ -1,9 +1,9 @@
 "use client";
-
 import {
   ArrowLeft,
   Calendar,
   CalendarDays,
+  LinkIcon,
   MapPin,
   Phone,
   Star,
@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
 import { AssetGallery } from "@/components/asset-gallery";
 import { ReviewDialog } from "@/components/review-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -30,21 +29,20 @@ import { api } from "@/trpc/react";
 import type { api as serverApi } from "@/trpc/server";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { CancelDialog } from "./cancel-dialog";
 import { DeleteDialog } from "./delete-dialog";
-
-// TODO: add link to trip page
 
 type Booking = NonNullable<
   Awaited<ReturnType<typeof serverApi.tripBooking.view>>
 >;
 
 export function BookingDetails({ booking }: { booking: Booking }) {
+  const t = useTranslations("BookingDetails");
+
   const { data: d } = api.tripBooking.view.useQuery(booking.id, {
     initialData: booking,
   });
-
   const data = d!;
 
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
@@ -92,75 +90,74 @@ export function BookingDetails({ booking }: { booking: Booking }) {
           className="mb-4 flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-1 h-4 w-4" />
-          Back to all bookings
+          {t("backToAllBookings")}
         </Link>
-
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-3xl font-bold">
-            {localeAttribute(data.trip, "title")}
-          </h1>
+          <Link href={`/trips/${data.tripId}`}>
+            <Button variant="link" className="p-0">
+              <LinkIcon className="!size-6" />
+              <h1 className="text-2xl font-bold">
+                {localeAttribute(data.trip, "title")}
+              </h1>
+            </Button>
+          </Link>
           <Badge className={`${getStatusColor(data.status)} self-start`}>
-            {data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+            {t(`statuses.${data.status}`).charAt(0).toUpperCase()}
+            {t(`statuses.${data.status}`).slice(1)}
           </Badge>
         </div>
       </div>
-
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <AssetGallery
             title={localeAttribute(data.trip, "title")}
             assets={data.trip.assetsUrls}
           />
-
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle>Trip Details</CardTitle>
+              <CardTitle>{t("tripDetails")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
                 <div className="flex items-start gap-3">
                   <CalendarDays className="mt-0.5 h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Booking Date</p>
+                    <p className="font-medium">{t("bookingDate")}</p>
                     <p className="text-muted-foreground">
                       {formatDate(data.bookingDate)}
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3">
                   <MapPin className="mt-0.5 h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Destination</p>
+                    <p className="font-medium">{t("destination")}</p>
                     <p className="text-muted-foreground">
                       {`${localeAttribute(data.trip.destination.country, "name")}, ${localeAttribute(data.trip.destination, "name")}`}
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3">
                   <Users className="mt-0.5 h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Travelers</p>
+                    <p className="font-medium">{t("travelers")}</p>
                     <p className="text-muted-foreground">
                       {data.travelersCount}{" "}
-                      {data.travelersCount === 1 ? "person" : "people"}
+                      {data.travelersCount === 1 ? t("person") : t("people")}
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3">
                   <Phone className="mt-0.5 h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Contact Phone</p>
+                    <p className="font-medium">{t("contactPhone")}</p>
                     <p className="text-muted-foreground">{data.userPhone}</p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3">
                   <Calendar className="mt-0.5 h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Booking Date</p>
+                    <p className="font-medium">{t("bookingDate")}</p>
                     <p className="text-muted-foreground">
                       {formatDate(data.bookingDate)}
                     </p>
@@ -170,28 +167,32 @@ export function BookingDetails({ booking }: { booking: Booking }) {
             </CardContent>
           </Card>
         </div>
-
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Booking Summary</CardTitle>
+              <CardTitle>{t("bookingSummary")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Booking ID</span>
+                  <span className="text-muted-foreground">
+                    {t("bookingId")}
+                  </span>
                   <span className="font-medium">{data.id}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Status</span>
+                  <span className="text-muted-foreground">{t("status")}</span>
                   <Badge className={getStatusColor(data.status)}>
-                    {data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+                    {t(`statuses.${data.status}`).charAt(0).toUpperCase()}
+                    {t(`statuses.${data.status}`).slice(1)}
                   </Badge>
                 </div>
                 <Separator />
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Price</span>
+                  <span className="text-muted-foreground">
+                    {t("totalPrice")}
+                  </span>
                   <span className="font-bold">
                     $
                     {Math.floor(
@@ -202,7 +203,7 @@ export function BookingDetails({ booking }: { booking: Booking }) {
                 <Separator />
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
-                    Price per Person
+                    {t("pricePerPerson")}
                   </span>
                   <span className="font-medium">
                     ${Math.floor(data.trip.tripPriceInCents / 100)}
@@ -210,19 +211,20 @@ export function BookingDetails({ booking }: { booking: Booking }) {
                 </div>
                 <Separator />
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Travelers</span>
+                  <span className="text-muted-foreground">
+                    {t("travelers")}
+                  </span>
                   <span className="font-medium">{data.travelersCount}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
-
           <div className="space-y-3">
             {data.review ? (
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    Review{" "}
+                    {t("review")}{" "}
                     <span className="text-xs font-normal text-muted-foreground">
                       (
                       {format(data.review!.createdAt, "yyyy-MM-dd hh:mm a", {
@@ -237,7 +239,11 @@ export function BookingDetails({ booking }: { booking: Booking }) {
                       .map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 ${i < Math.floor(data.review!.ratingValue) ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"}`}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(data.review!.ratingValue)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "fill-muted text-muted"
+                          }`}
                         />
                       ))}
                   </div>
@@ -246,50 +252,48 @@ export function BookingDetails({ booking }: { booking: Booking }) {
                   {data.review.message}
                 </CardContent>
                 <CardFooter>
-                  <Button onClick={() => setIsDeleteDialogOpen(true)} variant="destructive">
+                  <Button
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    variant="destructive"
+                  >
                     <Trash2 />
-                    Delete
+                    {t("delete")}
                   </Button>
                 </CardFooter>
               </Card>
             ) : null}
-
             {canReview && (
               <Button
                 className="w-full"
                 onClick={() => setIsReviewDialogOpen(true)}
               >
-                Leave a Review
+                {t("leaveAReview")}
               </Button>
             )}
-
             {canCancel && (
               <Button
                 variant="destructive"
                 className="w-full"
                 onClick={() => setIsCancelDialogOpen(true)}
               >
-                Cancel Booking
+                {t("cancelBooking")}
               </Button>
             )}
           </div>
         </div>
       </div>
-
       <ReviewDialog
         open={isReviewDialogOpen}
         onOpenChange={setIsReviewDialogOpen}
         bookingId={data.id}
         title={localeAttribute(data.trip, "title")}
       />
-
       <CancelDialog
         open={isCancelDialogOpen}
         onOpenChange={setIsCancelDialogOpen}
         bookingId={data.id}
         title={localeAttribute(data.trip, "title")}
       />
-
       <DeleteDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

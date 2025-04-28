@@ -1,7 +1,7 @@
 import Image from "next/image"
 import type { Metadata } from "next"
 import { api } from "@/trpc/server"
-import { getLocale } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import { localeAttributeFactory } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 
@@ -28,11 +28,13 @@ export default async function DestinationsPage() {
   const locale = await getLocale();
   const localeAttribute = localeAttributeFactory(locale);
 
+  const t = await getTranslations("DestinationsPage")
+
   const destinations = await api.destination.list({});
 
   return (
     <main className="container mx-auto mt-20 px-4 py-8 lg:grid lg:px-0">
-      <h1 className="text-3xl font-bold mb-8 text-center">Destinations</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">{t("destinations")}</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {destinations.map((destination) => (
           <Link key={destination.id} href={`/destinations/${destination.id}`} className="group">

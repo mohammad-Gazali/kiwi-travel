@@ -131,6 +131,90 @@
       "existingBookingError": "Вы уже забронировали поездку на ту же дату, рассмотрите возможность обновления существующей поездки."
     }
   },
+  "BookingsPage": {
+    "title": "Бронирования",
+    "tabs": {
+      "all": "Все",
+      "pending": "Ожидающие",
+      "accepted": "Принятые",
+      "done": "Завершенные",
+      "cancelled": "Отмененные",
+      "missed": "Пропущенные"
+    },
+    "noTripsFound": "Поездки со статусом {status} не найдены.",
+    "viewDetails": "Посмотреть детали",
+    "traveler": "путешественник",
+    "travelers": "путешественников"
+  },
+  "BookingDetails": {
+    "backToAllBookings": "Назад ко всем бронированиям",
+    "tripDetails": "Детали поездки",
+    "bookingSummary": "Сводка бронирования",
+    "bookingId": "ID бронирования",
+    "status": "Статус",
+    "totalPrice": "Общая стоимость",
+    "pricePerPerson": "Цена за человека",
+    "travelers": "Путешественники",
+    "bookingDate": "Дата бронирования",
+    "destination": "Место назначения",
+    "contactPhone": "Контактный телефон",
+    "review": "Отзыв",
+    "leaveAReview": "Оставить отзыв",
+    "cancelBooking": "Отменить бронирование",
+    "delete": "Удалить",
+    "person": "человек",
+    "people": "человека",
+    "statuses": {
+      "all": "Все",
+      "pending": "Ожидающие",
+      "accepted": "Принятые",
+      "done": "Завершенные",
+      "cancelled": "Отмененные",
+      "missed": "Пропущенные"
+    }
+  },
+  "DestinationsPage": {
+    "destinations": "Направления"
+  },
+  "DestinationTripsPage": {
+    "backToDestinations": "Назад к направлениям",
+    "tripsAvailable": "Доступно {count} поездок",
+    "noTripsAvailable": "Пока нет доступных поездок для этого направления.",
+    "availableTrips": "Доступные поездки",
+    "bookNow": "Забронировать сейчас"
+  },
+  "ConfirmFeedback": {
+    "bookingCancelled": "Бронирование отменено",
+    "bookingConfirmed": "Бронирование подтверждено",
+    "cancelledMessage": "К сожалению, бронирование поездки '{tripTitle}' было отменено по организационным причинам. Вы можете перейти к деталям бронирования.",
+    "confirmedMessage": "Поздравляем! Бронирование поездки '{tripTitle}' подтверждено. Вы можете перейти к деталям бронирования.",
+    "cancel": "Отмена",
+    "viewBookingDetails": "Посмотреть детали бронирования"
+  },
+  "ReviewDialog": {
+    "reviewYourTrip": "Оставьте отзыв о поездке в {title}",
+    "shareExperience": "Поделитесь своим опытом, чтобы помочь другим путешественникам спланировать свое путешествие.",
+    "ratingLabel": "Оценка",
+    "yourReviewLabel": "Ваш отзыв",
+    "reviewPlaceholder": "Расскажите подробности о вашем опыте...",
+    "cancel": "Отмена",
+    "submitReview": "Отправить отзыв",
+    "submitting": "Отправка..."
+  },
+  "CancelBookingDialog": {
+    "cancelBookingTitle": "Отменить бронирование на {title}",
+    "cancelBookingDescription": "Вы уверены, что хотите отменить это бронирование? Это действие нельзя отменить.",
+    "keepBooking": "Оставить бронирование",
+    "confirmCancellation": "Подтвердить отмену",
+    "cancelling": "Отмена..."
+  },
+  "DeleteReviewDialog": {
+    "deleteReviewTitle": "Удалить ваш отзыв",
+    "deleteReviewDescription": "Вы уверены, что хотите удалить этот отзыв? Это действие нельзя отменить.",
+    "cancel": "Отмена",
+    "confirmDeletion": "Да",
+    "deleting": "Удаление..."
+  },
   "General": {
     "themeToggle": {
       "toggleTheme": "Переключить тему",

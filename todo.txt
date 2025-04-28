@@ -1,4 +1,3 @@
-- Add missing translations
 - Finish todos
 - Optimize for SEO
 - Add missing social links and contact in footer (talk to customer)

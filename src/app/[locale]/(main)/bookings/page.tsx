@@ -13,7 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { localeAttributeFactory } from "@/lib/utils";
 import { api } from "@/trpc/server";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export default async function BookingsPage() {
   const locale = await getLocale();
@@ -21,13 +21,15 @@ export default async function BookingsPage() {
 
   const bookings = await api.tripBooking.list();
 
+  const t = await getTranslations("BookingsPage");
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric",
-    })
-  }
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -48,16 +50,16 @@ export default async function BookingsPage() {
 
   return (
     <main className="container mx-auto mt-14 px-4 py-8 lg:px-0">
-      <h1 className="mb-6 text-3xl font-bold">Bookings</h1>
+      <h1 className="mb-6 text-3xl font-bold">{t("title")}</h1>
 
       <Tabs defaultValue="all" className="mb-8">
         <TabsList className="mb-4">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="accepted">Accepted</TabsTrigger>
-          <TabsTrigger value="done">Done</TabsTrigger>
-          <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
-          <TabsTrigger value="missed">Missed</TabsTrigger>
+          <TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
+          <TabsTrigger value="pending">{t("tabs.pending")}</TabsTrigger>
+          <TabsTrigger value="accepted">{t("tabs.accepted")}</TabsTrigger>
+          <TabsTrigger value="done">{t("tabs.done")}</TabsTrigger>
+          <TabsTrigger value="cancelled">{t("tabs.cancelled")}</TabsTrigger>
+          <TabsTrigger value="missed">{t("tabs.missed")}</TabsTrigger>
         </TabsList>
 
         {["all", "pending", "accepted", "done", "cancelled", "missed"].map(
@@ -77,8 +79,8 @@ export default async function BookingsPage() {
                         <Badge
                           className={`absolute right-3 top-3 ${getStatusColor(booking.status)}`}
                         >
-                          {booking.status.charAt(0).toUpperCase() +
-                            booking.status.slice(1)}
+                          {t(`tabs.${booking.status}`).charAt(0).toUpperCase() +
+                            t(`tabs.${booking.status}`).slice(1)}
                         </Badge>
                       </div>
                       <CardHeader>
@@ -105,8 +107,8 @@ export default async function BookingsPage() {
                           <span>
                             {booking.travelersCount}{" "}
                             {booking.travelersCount === 1
-                              ? "traveler"
-                              : "travelers"}
+                              ? t("traveler")
+                              : t("travelers")}
                           </span>
                         </div>
                         {booking.review !== null && (
@@ -130,7 +132,7 @@ export default async function BookingsPage() {
                           className="w-full"
                         >
                           <Button variant="outline" className="w-full">
-                            View Details
+                            {t("viewDetails")}
                           </Button>
                         </Link>
                       </CardFooter>
@@ -141,7 +143,9 @@ export default async function BookingsPage() {
                 (booking) => tab === "all" || booking.status === tab,
               ).length === 0 && (
                 <div className="py-12 text-center">
-                  <p className="text-muted-foreground">No {tab} trips found.</p>
+                  <p className="text-muted-foreground">
+                    {t("noTripsFound", { status: tab })}
+                  </p>
                 </div>
               )}
             </TabsContent>
