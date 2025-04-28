@@ -5,13 +5,28 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "@/server/api/trpc";
-import { country, destination, trip, tripToFeature } from "@/server/db/schema";
+import {
+  country,
+  destination,
+  trip,
+  tripToFeature
+} from "@/server/db/schema";
 import {
   days,
   tripFormSchema,
   tripSearchFormSchema,
 } from "@/validators/trip-schema";
-import { and, count, eq, gte, ilike, inArray, lte, or, sql } from "drizzle-orm";
+import {
+  and,
+  count,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  lte,
+  or,
+  sql
+} from "drizzle-orm";
 import { z } from "zod";
 
 export const tripRouter = createTRPCRouter({
@@ -143,9 +158,26 @@ export const tripRouter = createTRPCRouter({
         message: "Deleted successfully",
       };
     }),
-  tinyListSearch: publicProcedure.input(z.string()).query(
-    async ({ ctx, input }) =>
-      await ctx.db
+  tinyListSearch: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const _reviews = await ctx.db.query.review.findMany({
+        where: (fields, { eq, and }) => and(eq(fields.isHiddenByAdmin, false)),
+        columns: {
+          tripId: true,
+          ratingValue: true,
+        },
+      });
+
+      const calculateReviewsValue = (tripId: number) => {
+        const arr = _reviews.filter((r) => r.tripId === tripId);
+
+        const res = arr.reduce((acc, curr) => acc + curr.ratingValue, 0) / arr.length;
+
+        return isNaN(res) ? 0 : res;
+      };
+
+      return await ctx.db
         .select({
           id: trip.id,
           titleEn: trip.titleEn,
@@ -181,10 +213,10 @@ export const tripRouter = createTRPCRouter({
             locationEn: `${item.countryEn}, ${item.destinationEn}`,
             locationRu: `${item.countryRu}, ${item.destinationRu}`,
             image: mainImage(item.assets),
-            reviewsValue: 4.7, // TODO: continue after finishing reviews
+            reviewsValue: calculateReviewsValue(item.id),
           })),
-        ),
-  ),
+        );
+    }),
   listSearch: publicProcedure
     .input(tripSearchFormSchema)
     .query(async ({ ctx, input }) => {
@@ -251,6 +283,28 @@ export const tripRouter = createTRPCRouter({
         .innerJoin(country, eq(destination.countryId, country.id))
         .where(conditions);
 
+      const _reviews = await ctx.db.query.review.findMany({
+        where: (fields, { eq, and }) => and(eq(fields.isHiddenByAdmin, false)),
+        columns: {
+          tripId: true,
+          ratingValue: true,
+        },
+      });
+
+      const calculateReviewsValueAndCount = (tripId: number) => {
+        const arr = _reviews.filter((r) => r.tripId === tripId);
+
+        const res = arr.reduce((acc, curr) => acc + curr.ratingValue, 0) / arr.length;
+
+        return isNaN(res) ? {
+          reviewsValue: 0,
+          reviewsCount: 0,
+        } : {
+          reviewsValue: arr.reduce((acc, curr) => acc + curr.ratingValue, 0) / arr.length,
+          reviewsCount: arr.length,
+        };
+      };
+
       return await ctx.db
         .select({
           id: trip.id,
@@ -276,21 +330,25 @@ export const tripRouter = createTRPCRouter({
         .offset(pageIndex * TRIP_SEARCH_PAGE_SIZE)
         .then((result) => ({
           totalCount: totalCountResult[0]?.count ?? 0,
-          items: result.map((item) => ({
-            id: item.id,
-            titleEn: item.titleEn,
-            titleRu: item.titleRu,
-            destinationId: item.destinationId,
-            locationEn: `${item.countryEn}, ${item.destinationEn}`,
-            locationRu: `${item.countryRu}, ${item.destinationRu}`,
-            price: Math.floor(item.priceInCents / 100),
-            type: item.type,
-            duration: item.duration,
-            isFeatured: item.isFeatured,
-            image: mainImage(item.assets),
-            reviewsValue: 4.7, // TODO: continue after finishing reviews
-            reviewsCount: 128, // TODO: continue after finishing reviews
-          })),
+          items: result.map((item) => {
+            const { reviewsCount, reviewsValue } = calculateReviewsValueAndCount(item.id);
+
+            return {
+              id: item.id,
+              titleEn: item.titleEn,
+              titleRu: item.titleRu,
+              destinationId: item.destinationId,
+              locationEn: `${item.countryEn}, ${item.destinationEn}`,
+              locationRu: `${item.countryRu}, ${item.destinationRu}`,
+              price: Math.floor(item.priceInCents / 100),
+              type: item.type,
+              duration: item.duration,
+              isFeatured: item.isFeatured,
+              image: mainImage(item.assets),
+              reviewsValue,
+              reviewsCount,
+            }
+          }),
         }));
     }),
   listFeatured: publicProcedure.query(
@@ -305,16 +363,28 @@ export const tripRouter = createTRPCRouter({
             tripPriceInCents: true,
             assetsUrls: true,
           },
+          with: {
+            reviews: {
+              where: ({ isHiddenByAdmin }, { eq }) => eq(isHiddenByAdmin, false),
+              columns: {
+                ratingValue: true,
+              },
+            },
+          },
         })
         .then((res) =>
-          res.map((item) => ({
-            id: item.id,
-            titleEn: item.titleEn,
-            titleRu: item.titleRu,
-            price: Math.floor(item.tripPriceInCents / 100),
-            image: mainImage(item.assetsUrls),
-            reviewsValue: 4.7, // TODO: continue after finishing reviews
-          })),
+          res.map((item) => {
+            const _reviewsValue = item.reviews.reduce((acc, curr) => acc + curr.ratingValue, 0) / item.reviews.length;
+
+            return {
+              id: item.id,
+              titleEn: item.titleEn,
+              titleRu: item.titleRu,
+              price: Math.floor(item.tripPriceInCents / 100),
+              image: mainImage(item.assetsUrls),
+              reviewsValue: isNaN(_reviewsValue) ? 0 : _reviewsValue,
+            }
+          }),
         ),
   ),
   listByDestination: publicProcedure.input(z.number().int()).query(
@@ -351,6 +421,9 @@ export const tripRouter = createTRPCRouter({
             with: {
               feature: true,
             },
+          },
+          reviews: {
+            where: ({ isHiddenByAdmin }, { eq }) => eq(isHiddenByAdmin, false),
           },
         },
       }),

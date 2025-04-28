@@ -15,13 +15,16 @@ import {
   CircleDollarSign,
   Globe,
   MapPin,
+  MessageCircle,
+  Star,
+  User,
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import BookingForm from "./_components/booking-form";
 import { AssetGallery } from "@/components/asset-gallery";
-
-// TODO: handle reviews
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function TripDetailsPage({
   params,
@@ -67,6 +70,12 @@ export default async function TripDetailsPage({
     .replaceAll("hours", t_TimeUnits("hours"))
     .replaceAll("day", t_TimeUnits("day"))
     .replaceAll("hour", t_TimeUnits("hour"));
+
+  const _avarage =
+    trip.reviews.reduce((acc, curr) => acc + curr.ratingValue, 0) /
+    trip.reviews.length;
+  const reviewsValue = isNaN(_avarage) ? 0 : _avarage;
+  const reviewsCount = trip.reviews.length;
 
   return (
     <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
@@ -163,6 +172,8 @@ export default async function TripDetailsPage({
             tripId={trip.id}
             price={price}
             duration={duration}
+            reviewsValue={reviewsValue}
+            reviewsCount={reviewsCount}
           />
 
           <div className="mt-6 rounded-lg bg-muted p-4">
@@ -201,16 +212,54 @@ export default async function TripDetailsPage({
               </div>
             </div>
           </div>
-
-          <div className="mt-6">
-            <Button variant="outline" className="w-full">
-              <Link
-                href="#"
-                className="flex w-full items-center justify-center"
-              >
-                {t("askQuestion")}
-              </Link>
-            </Button>
+          
+          <div className="flex items-center gap-2 mt-6 p-4 pb-0 bg-muted w-full rounded-t-lg font-medium">
+              <MessageCircle className="h-5 w-5 text-primary" />
+              <h3 className="font-medium">{t("reviews")}</h3>
+          </div>
+          <div className="bg-muted space-y-4 p-4 rounded-b-lg max-h-[500px] overflow-y-auto">
+            {trip.reviews.map((review) => (
+              <Card key={review.id}>
+                <CardHeader className="flex-row items-center gap-4">
+                  {review.userImageUrl ? (
+                    <Image
+                      src={review.userImageUrl}
+                      alt={review.userEmail}
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <div className="grid size-10 place-items-center rounded-full bg-muted text-muted-foreground">
+                      <User className="size-6" />
+                    </div>
+                  )}
+                  <div>
+                    <CardTitle>{review.userFullName}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {review.userEmail}
+                    </p>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="mb-4">{review.message}</p>
+                  <div className="flex">
+                    {Array(5)
+                      .fill(null)
+                      .map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < review.ratingValue
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "fill-muted text-muted"
+                          }`}
+                        />
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>

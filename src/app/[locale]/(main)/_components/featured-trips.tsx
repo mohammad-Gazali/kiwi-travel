@@ -100,10 +100,14 @@ export default function FeaturedTrips() {
                   </CardHeader>
                   <CardContent className="p-4">
                     <CardTitle className="truncate">{localeAttribute(trip, "title")}</CardTitle>
-                    <div className="mt-2 flex items-center">
-                      <Star className="h-5 w-5 fill-current text-yellow-400" />
-                      <span className="ml-1 text-sm">{trip.reviewsValue}</span>
-                    </div>
+                    {
+                      trip.reviewsValue !== 0 ? (
+                        <div className="mt-2 flex items-center">
+                          <Star className="h-5 w-5 fill-current text-yellow-400" />
+                          <span className="ml-1 text-sm">{trip.reviewsValue}</span>
+                        </div>
+                      ) : <div className="block h-5 mt-2" aria-hidden="true" />
+                    }
                   </CardContent>
                   <CardFooter className="flex items-center justify-between p-4 pt-0">
                     <span className="text-lg font-bold">${trip.price}</span>

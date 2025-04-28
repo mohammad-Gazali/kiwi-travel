@@ -46,21 +46,21 @@ interface BookingFormProps {
   duration: string;
   availableDays: (typeof days)[number][];
   tripId: number;
+  reviewsCount: number;
+  reviewsValue: number;
 }
-
-// TODO: handle reviews
 
 const BookingForm = ({
   price,
   duration,
   availableDays,
   tripId,
+  reviewsCount,
+  reviewsValue,
 }: BookingFormProps) => {
   const t = useTranslations("TripDetailsPage.bookingForm");
 
   const { isSignedIn, isLoaded } = useAuth();
-
-  const trip = {} as any;
 
   // array of day indexes of the current trip's `availableDays`
   // e.g.
@@ -80,21 +80,23 @@ const BookingForm = ({
             <CalendarIcon className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">{duration}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex">
-              {Array(5)
-                .fill(null)
-                .map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${i < Math.floor(trip.rating) ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"}`}
-                  />
-                ))}
+          {reviewsValue !== 0 && reviewsCount !== 0 ? (
+            <div className="flex items-center gap-2">
+              <div className="flex">
+                {Array(5)
+                  .fill(null)
+                  .map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${i < Math.floor(reviewsValue) ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"}`}
+                    />
+                  ))}
+              </div>
+              <span className="text-sm text-muted-foreground">
+                {reviewsValue} ({reviewsCount} {t("reviews")})
+              </span>
             </div>
-            <span className="text-sm text-muted-foreground">
-              {trip.rating} ({trip.reviewCount} {t("reviews")})
-            </span>
-          </div>
+          ) : null}
         </div>
 
         {isSignedIn ? (

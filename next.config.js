@@ -18,11 +18,6 @@ const config = {
         protocol: 'https',
         hostname: env.UPLOADTHING_HOST,
       },
-      // TODO: remove it
-      {
-        protocol: 'https',
-        hostname: 'f7cxh5ao0u.ufs.sh',
-      }
     ],
   },
 };
