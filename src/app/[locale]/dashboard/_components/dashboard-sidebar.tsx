@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "./sidebar-provider";
+import { BookingsOption } from "./bookings-option";
 ;
 
 const sidebarNavItems = [
@@ -42,11 +43,6 @@ const sidebarNavItems = [
     title: "Destinations",
     href: "/dashboard/destinations",
     icon: Globe,
-  },
-  {
-    title: "Trip Bookings",
-    href: "/dashboard/bookings",
-    icon: ShoppingCart,
   },
   {
     title: "F.A.Q.",
@@ -112,6 +108,7 @@ export function DashboardSidebar() {
                 <span>{item.title}</span>
               </Link>
             ))}
+            <BookingsOption />
             <a className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground text-muted-foreground" href="https://dashboard.clerk.com" target="_blank">
               <Users className="size-4" />
               Users

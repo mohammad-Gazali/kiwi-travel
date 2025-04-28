@@ -26,14 +26,15 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { localeAttributeFactory } from "@/lib/utils";
-import type { api as serverApi } from "@/trpc/server";
-import { useLocale } from "next-intl";
-import { CancelDialog } from "./cancel-dialog";
 import { api } from "@/trpc/react";
+import type { api as serverApi } from "@/trpc/server";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import { Dialog, DialogHeader, DialogContent } from "@/components/ui/dialog";
+import { useLocale } from "next-intl";
+import { CancelDialog } from "./cancel-dialog";
 import { DeleteDialog } from "./delete-dialog";
+
+// TODO: add link to trip page
 
 type Booking = NonNullable<
   Awaited<ReturnType<typeof serverApi.tripBooking.view>>

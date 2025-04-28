@@ -241,7 +241,7 @@ export function TripDetails({ trip }: { trip: Trip }) {
                       <TableHead>Travelers Count</TableHead>
                       <TableHead>Created At</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Action</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -291,7 +291,7 @@ export function TripDetails({ trip }: { trip: Trip }) {
                                 </>
                               )}
                             {request.status === "accepted" && (
-                              <Button onClick={() => markAsDone(request.id)}>
+                              <Button size="sm" onClick={() => markAsDone(request.id)}>
                                 Mark as Done
                               </Button>
                             )}

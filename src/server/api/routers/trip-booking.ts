@@ -7,7 +7,7 @@ import {
 import { tripBookingFormSchema } from "@/validators/trip-booking-schema";
 import { TRPCError } from "@trpc/server";
 import { format } from "date-fns";
-import { eq, inArray } from "drizzle-orm";
+import { count, desc, eq, inArray } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 import {
@@ -375,4 +375,34 @@ export const tripBookingRouter = createTRPCRouter({
         message: "booking has been marked as done successfully",
       };
     }),
+  adminUnseenBookingsCount: adminProcedure.query(
+    async ({ ctx }) =>
+      await ctx.db
+        .select({
+          count: count(),
+        })
+        .from(tripBooking)
+        .where(eq(tripBooking.isSeenByAdmin, false)),
+  ),
+  adminList: adminProcedure.query(
+    async ({ ctx }) =>
+      await ctx.db.transaction(async (tx) => {
+        const result = await tx.query.tripBooking.findMany({
+          with: {
+            trip: {
+              columns: {
+                titleEn: true,
+              },
+            },
+          },
+          orderBy: desc(tripBooking.isSeenByAdmin),
+        });
+
+        await tx.update(tripBooking).set({
+          isSeenByAdmin: true,
+        });
+
+        return result;
+      }),
+  ),
 });
