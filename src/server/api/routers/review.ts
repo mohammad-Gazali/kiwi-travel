@@ -1,10 +1,13 @@
+import { addReviewFormSchema } from "@/validators/review-schema";
 import {
-  addReviewFormSchema,
-} from "@/validators/review-schema";
-import { authProtectedProcedure, createTRPCRouter } from "../trpc";
+  adminProcedure,
+  authProtectedProcedure,
+  createTRPCRouter,
+  publicProcedure,
+} from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { clerkClient } from "@clerk/nextjs/server";
-import { review as reviewTableSchema } from "@/server/db/schema";
+import { review, review as reviewTableSchema } from "@/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -16,6 +19,7 @@ export const reviewRouter = createTRPCRouter({
         where: ({ id, userId }, { eq, and }) =>
           and(eq(userId, ctx.userId), eq(id, input.bookingId)),
         columns: {
+          tripId: true,
           status: true,
         },
         with: {
@@ -50,6 +54,7 @@ export const reviewRouter = createTRPCRouter({
         ratingValue: input.ratingValue,
         message: input.message,
         tripBookingId: input.bookingId,
+        tripId: booking.tripId,
         userEmail: user.emailAddresses[0]!.emailAddress,
         userId: ctx.userId,
         userImageUrl: user.hasImage ? user.imageUrl : null,
@@ -78,4 +83,47 @@ export const reviewRouter = createTRPCRouter({
         message: "review has been deleted successfully",
       };
     }),
+  adminHide: adminProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(review)
+        .set({
+          isHiddenByAdmin: true,
+        })
+        .where(eq(review.id, input));
+
+      return {
+        message: "review has been hidden successfully",
+      };
+    }),
+  adminUnhide: adminProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(review)
+        .set({
+          isHiddenByAdmin: false,
+        })
+        .where(eq(review.id, input));
+
+      return {
+        message: "review has been unhidden successfully",
+      };
+    }),
+  listTop: publicProcedure.query(
+    async ({ ctx }) =>
+      await ctx.db.query.review.findMany({
+        where: ({ ratingValue, isHiddenByAdmin }, { eq, and }) =>
+          and(eq(ratingValue, 5), eq(isHiddenByAdmin, false)),
+        columns: {
+          id: true,
+          userImageUrl: true,
+          userEmail: true,
+          userFullName: true,
+          message: true,
+        },
+        limit: 3,
+      }),
+  ),
 });

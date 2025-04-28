@@ -1,26 +1,26 @@
 "use client";
 
-import { Link } from "@/i18n/routing";;
-import { usePathname } from "next/navigation";
-import { useSidebar } from "./sidebar-provider";
-import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Globe,
-  Map,
-  Settings,
-  ShoppingCart,
-  Users,
-  CircleGauge,
-  Flag,
-  Sparkles,
-  CircleHelp,
-  SquareArrowOutUpRight,
-  Folder,
-} from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Link } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+import {
+  CircleGauge,
+  CircleHelp,
+  Flag,
+  Folder,
+  Globe,
+  Map,
+  ShoppingCart,
+  Sparkles,
+  SquareArrowOutUpRight,
+  Users
+} from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useSidebar } from "./sidebar-provider";
+;
 
 const sidebarNavItems = [
   {
@@ -52,11 +52,6 @@ const sidebarNavItems = [
     title: "F.A.Q.",
     href: "/dashboard/faqs",
     icon: CircleHelp,
-  },
-  {
-    title: "Website Constants",
-    href: "/dashboard/constants",
-    icon: Settings,
   },
 ];
 

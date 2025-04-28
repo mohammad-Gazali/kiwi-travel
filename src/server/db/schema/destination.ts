@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm"
 import { pgTable } from "drizzle-orm/pg-core";
+import { trip } from "./trip";
 
 export const country = pgTable("contries", (c) => ({
   id: c.integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -24,7 +25,8 @@ export const countryRelations = relations(country, ({ many }) => ({
   destinations: many(country),
 }));
 
-export const destinationRelations = relations(destination, ({ one }) => ({
+export const destinationRelations = relations(destination, ({ one, many }) => ({
+  trips: many(trip),
   country: one(country, {
     fields: [destination.countryId],
     references: [country.id],

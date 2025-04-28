@@ -1,5 +1,5 @@
-import { Link } from "@/i18n/routing";;
-import { Plane } from "lucide-react";
+import { Link } from "@/i18n/routing";
+import { Mail, MapPin, Phone, Plane } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function Footer() {
@@ -15,6 +15,23 @@ export default function Footer() {
               <span className="text-xl font-bold">Kiwi Travel</span>
             </Link>
             <p className="mt-2 text-sm">{t("discoverTheWorld")}</p>
+
+            {/* Contact information added here */}
+            <div className="mt-4 space-y-2">
+              <h3 className="text-sm font-semibold">{t("contactUs")}</h3>
+              <div className="flex items-center gap-2 text-sm">
+                <Phone className="h-4 w-4" />
+                <span>+1 (555) 123-4567</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Mail className="h-4 w-4" />
+                <span>support@kiwitravel.com</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm">
+                <MapPin className="mt-0.5 h-4 w-4" />
+                <span>123 Travel Street, Adventure City, AC 12345</span>
+              </div>
+            </div>
           </div>
           <div>
             <h3 className="mb-4 text-lg font-semibold">
@@ -36,11 +53,7 @@ export default function Footer() {
                   {t("quickLinks.trips")}
                 </Link>
               </li>
-              <li>
-                <Link href="/about" className="hover:underline">
-                  {t("quickLinks.aboutUs")}
-                </Link>
-              </li>
+              {/* About Us link removed */}
             </ul>
           </div>
           <div>
@@ -51,11 +64,7 @@ export default function Footer() {
                   {t("supportLinks.faqs")}
                 </Link>
               </li>
-              <li>
-                <Link href="/contact" className="hover:underline">
-                  {t("supportLinks.contactUs")}
-                </Link>
-              </li>
+              {/* Contact Us link removed */}
               <li>
                 <Link href="/privacy" className="hover:underline">
                   {t("supportLinks.privacyPolicy")}

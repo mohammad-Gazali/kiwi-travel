@@ -18,6 +18,7 @@ import { api } from "@/trpc/react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
+import { PLACEHOLDER_IMAGE } from "@/constants";
 
 
 export function TripsList() {
@@ -67,7 +68,7 @@ export function TripsList() {
           <div className="flex items-center gap-3">
             <div className="overflow-hidden rounded-md">
               <img
-                src={trip.assetsUrls[0] || "https://placehold.co/300x200?text=Kiwi+Travel"}
+                src={trip.assetsUrls[0] || PLACEHOLDER_IMAGE}
                 alt={trip.titleEn}
                 className="size-10 object-cover"
               />
@@ -89,15 +90,6 @@ export function TripsList() {
 
         return `${feature.destination.country.nameEn}, ${feature.destination.nameEn}`;
       },
-    },
-    {
-      accessorKey: "tripType",
-      header: "Type",
-      cell: ({ row }) => <Badge>{t(row.original.tripType)}</Badge>
-    },
-    {
-      accessorKey: "duration",
-      header: "Duration",
     },
     {
       accessorKey: "price",
@@ -131,33 +123,43 @@ export function TripsList() {
       ),
     },
     {
+      accessorKey: "isConfirmationRequired",
+      header: "Confirmation",
+      cell: ({ row }) => (
+        <div className="ml-5">
+          {row.original.isConfirmationRequired ? (
+            <CheckCircle className="text-green-500" />
+          ) : (
+            <CircleX className="text-destructive" />
+          )}
+        </div>
+      ),
+    },
+    {
       id: "actions",
       cell: ({ row }) => {
         const trip = row.original;
         return (
           <div className="flex justify-end gap-2">
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="icon" asChild>
               <Link href={`/dashboard/trips/${trip.id}`}>
-                <Eye className="mr-1 h-4 w-4" />
-                View
+                <Eye className="h-4 w-4" />
               </Link>
             </Button>
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="icon" asChild>
               <Link href={`/dashboard/trips/edit/${trip.id}`}>
-                <Edit className="mr-1 h-4 w-4" />
-                Edit
+                <Edit className="h-4 w-4" />
               </Link>
             </Button>
             <Button
               variant="destructive"
-              size="sm"
+              size="icon"
               onClick={() => {
                 setTripToDelete(trip.id);
                 setDialogOpen(true);
               }}
             >
-              <Trash className="mr-1 h-4 w-4" />
-              Delete
+              <Trash className="h-4 w-4" />
             </Button>
           </div>
         );

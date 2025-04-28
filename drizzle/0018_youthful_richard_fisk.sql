@@ -1,0 +1,2 @@
+ALTER TABLE "confirm_notifications" ADD COLUMN "trip_id" integer NOT NULL;--> statement-breakpoint
+ALTER TABLE "confirm_notifications" ADD CONSTRAINT "confirm_notifications_trip_id_trips_id_fk" FOREIGN KEY ("trip_id") REFERENCES "public"."trips"("id") ON DELETE no action ON UPDATE no action;

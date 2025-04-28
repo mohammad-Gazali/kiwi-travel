@@ -1,0 +1,100 @@
+import Image from "next/image";
+import { Link } from "@/i18n/routing";
+import { ArrowLeft, Clock } from "lucide-react";
+import { PageParams } from "@/types/page-params";
+import { api } from "@/trpc/server";
+import { notFound } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { localeAttributeFactory, mainImage } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default async function DestinationTripsPage({
+  params,
+}: PageParams<{ id: string }>) {
+  const { id } = await params;
+
+  const destination = await api.trip.listByDestination(Number(id));
+
+  if (!destination) return notFound();
+
+  const locale = await getLocale();
+  const localeAttribute = localeAttributeFactory(locale);
+
+  return (
+    <main className="container mx-auto mt-20 px-4 py-8 lg:grid lg:px-0">
+      <Link
+        href="/destinations"
+        className="mb-6"
+      >
+        <Button variant="link">
+          <ArrowLeft className="h-4 w-4" />
+          Back to destinations
+        </Button>
+      </Link>
+
+      <div className="relative mb-8 h-64 w-full overflow-hidden rounded-xl">
+        <Image
+          src={destination.imageUrl}
+          alt={localeAttribute(destination, "name")}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 flex items-end bg-black bg-opacity-40">
+          <div className="p-6">
+            <h1 className="text-4xl font-bold text-white">
+              {localeAttribute(destination, "name")}
+            </h1>
+            <p className="mt-2 text-white text-opacity-90">
+              {destination.trips.length} trips available
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <h2 className="mb-6 text-2xl font-semibold">Available Trips</h2>
+
+      {destination.trips.length === 0 ? (
+        <p className="text-gray-500">
+          No trips available for this destination yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {destination.trips.map((trip) => (
+            <Card className="overflow-hidden" key={trip.id}>
+              <CardHeader className="relative h-48 w-full">
+                <Image
+                  src={mainImage(trip.assetsUrls)}
+                  alt={localeAttribute(trip, "title")}
+                  fill
+                  className="object-cover"
+                />
+              </CardHeader>
+              <CardContent className="p-4">
+                <h3 className="truncate text-xl font-semibold">
+                  {localeAttribute(trip, "title")}
+                </h3>
+                <p className="mt-1 flex items-center gap-1 text-sm text-gray-500">
+                  <Clock className="size-4" />
+                  {trip.duration}
+                </p>
+                <p className="mt-2 line-clamp-2">
+                  {localeAttribute(trip, "description")}
+                </p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-lg font-bold">
+                    ${Math.floor(trip.tripPriceInCents / 100)}
+                  </span>
+                  <Link href={`/trips/${trip.id}`}>
+                    <Button>Book Now</Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}

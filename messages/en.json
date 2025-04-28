@@ -178,17 +178,16 @@
       "bookings": "Bookings"
     },
     "footer": {
+      "contactUs": "Contact Us",
       "quickLinksTitle": "Quick Links",
       "quickLinks": {
         "home": "Home",
         "destinations": "Destinations",
-        "trips": "Trips",
-        "aboutUs": "About Us"
+        "trips": "Trips"
       },
       "supportTitle": "Support",
       "supportLinks": {
         "faqs": "FAQs",
-        "contactUs": "Contact Us",
         "privacyPolicy": "Privacy Policy",
         "termsOfService": "Terms of Service"
       },

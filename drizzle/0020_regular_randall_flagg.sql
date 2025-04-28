@@ -1,0 +1,1 @@
+ALTER TABLE "trip_bookings" DROP COLUMN "is_review_shown";

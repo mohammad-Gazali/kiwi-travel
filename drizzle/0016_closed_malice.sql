@@ -1,0 +1,1 @@
+ALTER TABLE "trip_bookings" ADD COLUMN "is_seen_by_admin" boolean DEFAULT false;

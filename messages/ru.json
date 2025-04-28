@@ -178,17 +178,16 @@
       "bookings": "Бронирование"
     },
     "footer": {
+      "contactUs": "Свяжитесь с нами",
       "quickLinksTitle": "Быстрые ссылки",
       "quickLinks": {
         "home": "Главная",
         "destinations": "Направления",
-        "trips": "Путешествия",
-        "aboutUs": "О нас"
+        "trips": "Путешествия"
       },
       "supportTitle": "Поддержка",
       "supportLinks": {
         "faqs": "Часто задаваемые вопросы",
-        "contactUs": "Свяжитесь с нами",
         "privacyPolicy": "Политика конфиденциальности",
         "termsOfService": "Условия обслуживания"
       },

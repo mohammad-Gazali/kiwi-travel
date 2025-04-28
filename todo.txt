@@ -1,0 +1,7 @@
+- Add trip bookings option in dashboard sidebar with unseen bookings
+- Add trip bookings list in dashboard with server side pagination
+- Test trip bookings in dashboard
+- Add missing translations
+- Finish todos
+- Optimize for SEO
+- Add missing social links and contact in footer (talk to customer)

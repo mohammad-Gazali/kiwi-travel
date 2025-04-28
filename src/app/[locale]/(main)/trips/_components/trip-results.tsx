@@ -23,7 +23,7 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
-import { TRIP_SEARCH_PAGE_SIZE } from "@/constants";
+import { PLACEHOLDER_IMAGE, TRIP_SEARCH_PAGE_SIZE } from "@/constants";
 
 export function TripResults() {
   const t = useTranslations("TripsPage");
@@ -114,7 +114,7 @@ export function TripResults() {
             )}
             <div className="relative h-48">
               <Image
-                src={trip.image || "https://placehold.co/300x200?text=Kiwi+Travel"}
+                src={trip.image || PLACEHOLDER_IMAGE}
                 alt={localeAttribute(trip, "title")}
                 fill
                 className="object-cover"

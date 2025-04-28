@@ -1,3 +1,4 @@
+import { PLACEHOLDER_IMAGE } from "@/constants";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -6,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function mainImage(assets: string[]) {
-  return assets.find(asset => !asset.endsWith("?type=video")) ?? "https://placehold.co/300x200?text=Kiwi+Travel"
+  return assets.find(asset => !asset.endsWith("?type=video")) ?? PLACEHOLDER_IMAGE
 }
 
 export function localeAttributeFactory(locale: string) {

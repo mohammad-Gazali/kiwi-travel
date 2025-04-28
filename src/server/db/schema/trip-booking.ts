@@ -15,6 +15,7 @@ export const tripBooking = pgTable(
       .references(() => trip.id, { onDelete: "cascade" }),
     bookingDate: c.date("booking_date").notNull(),
     travelersCount: c.integer("travelers_count").notNull(),
+    isSeenByAdmin: c.boolean("is_seen_by_admin").default(false),
     status: c.text("status", {
       enum: ["pending", "accepted", "cancelled", "done", "missed"],
     }).notNull(),
@@ -25,7 +26,10 @@ export const tripBooking = pgTable(
       () => new Date(),
     ),
   }),
-  (t) => [index("user_id_idx").on(t.userId)],
+  (t) => [
+    index("user_id_idx").on(t.userId),
+    index("booking_date_idx").on(t.bookingDate),
+  ],
 );
 
 // ======================== relations ======================== 

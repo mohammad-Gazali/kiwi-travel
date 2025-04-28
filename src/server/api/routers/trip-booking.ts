@@ -1,12 +1,20 @@
 import { mainImage } from "@/lib/utils";
-import { tripBooking } from "@/server/db/schema";
+import {
+  confirmNotification,
+  reviewNotification,
+  tripBooking,
+} from "@/server/db/schema";
 import { tripBookingFormSchema } from "@/validators/trip-booking-schema";
 import { TRPCError } from "@trpc/server";
 import { format } from "date-fns";
 import { eq, inArray } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
-import { authProtectedProcedure, createTRPCRouter } from "../trpc";
+import {
+  adminProcedure,
+  authProtectedProcedure,
+  createTRPCRouter,
+} from "../trpc";
 
 export const tripBookingRouter = createTRPCRouter({
   list: authProtectedProcedure.query(
@@ -209,37 +217,162 @@ export const tripBookingRouter = createTRPCRouter({
         message: "booking has been cancelled successfully",
       };
     }),
-  availableBookingsForReview: authProtectedProcedure.query(
-    async ({ ctx }) =>
-      await ctx.db.query.tripBooking
-        .findMany({
-          where: ({ userId, status }, { eq, and }) =>
-            and(eq(userId, ctx.userId), eq(status, "done")),
+  adminListByDate: adminProcedure
+    .input(
+      z.object({
+        tripId: z.number(),
+        date: z.date(),
+      }),
+    )
+    .query(
+      async ({ ctx, input }) =>
+        await ctx.db.query.tripBooking.findMany({
+          where: ({ tripId, bookingDate }, { and, eq }) =>
+            and(
+              eq(tripId, input.tripId),
+              eq(bookingDate, format(input.date, "yyyy-MM-dd")),
+            ),
+        }),
+    ),
+  adminConfirmBooking: adminProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await ctx.db
+          .update(tripBooking)
+          .set({
+            status: "accepted",
+          })
+          .where(eq(tripBooking.id, input));
+
+        const booking = await tx.query.tripBooking.findFirst({
+          where: ({ id }, { eq }) => eq(id, input),
           columns: {
             id: true,
+            tripId: true,
+            userId: true,
           },
-          with: {
-            review: {
-              columns: {
-                id: true,
-              },
-            },
-            trip: {
-              columns: {
-                titleEn: true,
-                titleRu: true,
-              },
-            },
+        });
+
+        if (!booking) return;
+
+        const trip = await tx.query.trip.findFirst({
+          where: ({ id }, { eq }) => eq(id, booking.tripId),
+          columns: {
+            titleEn: true,
+            titleRu: true,
           },
-        })
-        .then((res) => 
-          res
-            .filter((item) => !item.review)
-            .map((item) => ({
-              bookingId: item.id,
-              titleEn: item.trip.titleEn,
-              titleRu: item.trip.titleRu,
-            })),
-        ),
-  ),
+        });
+
+        if (!trip) return;
+
+        await tx.insert(confirmNotification).values({
+          userId: booking.userId,
+          tripBookingId: booking.id,
+          tripTitleEn: trip.titleEn,
+          tripTitleRu: trip.titleRu,
+          isCancelled: false,
+        });
+      });
+
+      return {
+        message: "booking has been confirmed successfully",
+      };
+    }),
+  adminCancelBooking: adminProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        const booking = await tx.query.tripBooking.findFirst({
+          where: ({ id }, { eq }) => eq(id, input),
+          columns: {
+            id: true,
+            tripId: true,
+            userId: true,
+          },
+        });
+
+        if (!booking) return;
+
+        const trip = await tx.query.trip.findFirst({
+          where: ({ id }, { eq }) => eq(id, booking.tripId),
+          columns: {
+            titleEn: true,
+            titleRu: true,
+            isConfirmationRequired: true,
+          },
+        });
+
+        if (!trip) return;
+
+        if (!trip.isConfirmationRequired)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "you can only cancel bookings for confirm required trips",
+          });
+
+        await ctx.db
+          .update(tripBooking)
+          .set({
+            status: "cancelled",
+          })
+          .where(eq(tripBooking.id, input));
+
+        await tx.insert(confirmNotification).values({
+          userId: booking.userId,
+          tripBookingId: booking.id,
+          tripTitleEn: trip.titleEn,
+          tripTitleRu: trip.titleRu,
+          isCancelled: false,
+        });
+      });
+
+      return {
+        message: "booking has been cancelled successfully",
+      };
+    }),
+  adminMarkAsDoneBooking: adminProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await ctx.db
+          .update(tripBooking)
+          .set({
+            status: "done",
+          })
+          .where(eq(tripBooking.id, input));
+
+        const booking = await tx.query.tripBooking.findFirst({
+          where: ({ id }, { eq }) => eq(id, input),
+          columns: {
+            id: true,
+            tripId: true,
+            userId: true,
+          },
+        });
+
+        if (!booking) return;
+
+        const trip = await tx.query.trip.findFirst({
+          where: ({ id }, { eq }) => eq(id, booking.tripId),
+          columns: {
+            titleEn: true,
+            titleRu: true,
+          },
+        });
+
+        if (!trip) return;
+
+        await tx.insert(reviewNotification).values({
+          userId: booking.userId,
+          tripBookingId: booking.id,
+          tripTitleEn: trip.titleEn,
+          tripTitleRu: trip.titleRu,
+        });
+      });
+
+      return {
+        message: "booking has been marked as done successfully",
+      };
+    }),
 });

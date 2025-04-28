@@ -31,11 +31,10 @@ export const tripRouter = createTRPCRouter({
         id: true,
         assetsUrls: true,
         titleEn: true,
-        duration: true,
         tripPriceInCents: true,
         isAvailable: true,
         isFeatured: true,
-        tripType: true,
+        isConfirmationRequired: true,
       },
     });
   }),
@@ -49,18 +48,33 @@ export const tripRouter = createTRPCRouter({
         },
       }),
   ),
-  adminViewDetailed: adminProcedure.input(z.number().int()).query(
+  adminViewDetailsPage: adminProcedure.input(z.number().int()).query(
     async ({ ctx, input }) =>
       await ctx.db.query.trip.findFirst({
         where: ({ id }, { eq }) => eq(id, input),
+        columns: {
+          id: true,
+          titleEn: true,
+          titleRu: true,
+          tripPriceInCents: true,
+          assetsUrls: true,
+          descriptionEn: true,
+          descriptionRu: true,
+          isFeatured: true,
+          isConfirmationRequired: true,
+        },
         with: {
-          destination: true,
-          bookings: true,
-          features: {
+          destination: {
+            columns: {
+              id: true,
+              nameEn: true,
+              nameRu: true,
+            },
             with: {
-              feature: true,
+              country: true,
             },
           },
+          reviews: true,
         },
       }),
   ),
@@ -302,6 +316,26 @@ export const tripRouter = createTRPCRouter({
             reviewsValue: 4.7, // TODO: continue after finishing reviews
           })),
         ),
+  ),
+  listByDestination: publicProcedure.input(z.number().int()).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.destination.findFirst({
+        where: ({ id }, { eq }) => eq(id, input),
+        with: {
+          trips: {
+            columns: {
+              id: true,
+              titleEn: true,
+              titleRu: true,
+              descriptionEn: true,
+              descriptionRu: true,
+              duration: true,
+              tripPriceInCents: true,
+              assetsUrls: true,
+            },
+          },
+        },
+      }),
   ),
   view: publicProcedure.input(z.number().int()).query(
     async ({ ctx, input }) =>

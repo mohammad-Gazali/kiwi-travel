@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PLACEHOLDER_IMAGE } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "@/i18n/routing";
 import { api } from "@/trpc/react";
@@ -66,7 +67,7 @@ export function DestinationsList() {
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 overflow-hidden rounded-md">
               <img
-                src={destination.imageUrl || "https://placehold.co/300x200?text=Kiwi+Travel"}
+                src={destination.imageUrl || PLACEHOLDER_IMAGE}
                 alt={destination.nameEn}
                 className="h-full w-full object-cover"
               />

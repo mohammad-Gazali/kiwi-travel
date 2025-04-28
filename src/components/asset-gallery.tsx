@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 // Import styles
-import { cn } from "@/lib/utils";
+import { PLACEHOLDER_IMAGE } from "@/constants";
 import { Play } from "lucide-react";
 import "yet-another-react-lightbox/plugins/counter.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
@@ -68,7 +68,7 @@ export function AssetGallery({ assets, title }: AssetGalleryProps) {
         onClick={() => openLightbox(0)}
       >
         <AssetItem
-          url={assets[0] ?? "https://placehold.co/300x200?text=Kiwi+Travel"}
+          url={assets[0] ?? PLACEHOLDER_IMAGE}
           title={title}
           index={0}
           className="object-cover transition-transform duration-300 hover:scale-105"
@@ -108,7 +108,7 @@ export function AssetGallery({ assets, title }: AssetGalleryProps) {
             onClick={() => openLightbox(visibleThumbnailsCount + 1)}
           >
             <AssetItem
-              url={assets[visibleThumbnailsCount + 1] ?? "https://placehold.co/300x200?text=Kiwi+Travel"}
+              url={assets[visibleThumbnailsCount + 1] ?? PLACEHOLDER_IMAGE}
               title={title}
               index={visibleThumbnailsCount + 1}
               className="object-cover"
@@ -179,7 +179,7 @@ const AssetItem = ({
     </div>
   ) : (
     <Image
-      src={url || "https://placehold.co/300x200?text=Kiwi+Travel"}
+      src={url || PLACEHOLDER_IMAGE}
       alt={index === 0 ? title : `${title} - image ${index + 2}`}
       fill
       className={className}

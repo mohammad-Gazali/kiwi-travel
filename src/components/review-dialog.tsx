@@ -1,7 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
 import { api } from "@/trpc/react";
-import { dismissingReviewStore } from "@/lib/dismissing-reviews-store";
 
 interface ReviewDialogProps {
   open: boolean;
@@ -47,14 +46,6 @@ export function ReviewDialog({
 
   const { mutate: addReview, isPending } =
     api.review.create.useMutation(response);
-
-  // when this dialog open the id of the booking will
-  // be dismissed anyway for reviewing
-  useEffect(() => {
-    if (open) {
-      dismissingReviewStore.add(bookingId);
-    }
-  }, [open])
 
   const handleSubmit = () => {
     addReview({
@@ -124,9 +115,12 @@ export function ReviewDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => {
-            onOpenChange(false);
-          }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
             Cancel
           </Button>
           <Button

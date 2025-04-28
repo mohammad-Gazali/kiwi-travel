@@ -85,6 +85,69 @@
       "when": 1745682785348,
       "tag": "0011_famous_mojo",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1745752749548,
+      "tag": "0012_sleepy_santa_claus",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1745767878425,
+      "tag": "0013_fast_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1745768338326,
+      "tag": "0014_nostalgic_moira_mactaggert",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1745768412025,
+      "tag": "0015_icy_reptil",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1745775196601,
+      "tag": "0016_closed_malice",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1745794596858,
+      "tag": "0017_small_micromacro",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1745796017615,
+      "tag": "0018_youthful_richard_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1745800337405,
+      "tag": "0019_redundant_warstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1745801289549,
+      "tag": "0020_regular_randall_flagg",
+      "breakpoints": true
     }
   ]
 }

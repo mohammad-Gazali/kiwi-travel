@@ -1,7 +1,6 @@
 "use client";
 
 import { ReviewDialog } from "@/components/review-dialog";
-import { dismissingReviewStore } from "@/lib/dismissing-reviews-store";
 import { localeAttributeFactory } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { useLocale } from "next-intl";
@@ -13,22 +12,20 @@ const ReviewFeedback = () => {
 
   const [open, setOpen] = useState(false);
 
-  const { data } = api.tripBooking.availableBookingsForReview.useQuery();
-
-  const bookingToReview = data?.find(
-    (item) => !dismissingReviewStore.isDismissed(item.bookingId),
-  );
+  const { data: notification } = api.notifications.viewReviewNotification.useQuery();
 
   useEffect(() => {
-    setOpen(bookingToReview !== undefined);
-  }, [bookingToReview]);
+    if (notification) {
+      setOpen(true)
+    }
+  }, [notification])
 
-  return bookingToReview ? (
+  return notification ? (
     <ReviewDialog
       open={open}
       onOpenChange={setOpen}
-      bookingId={bookingToReview.bookingId}
-      title={localeAttribute(bookingToReview, "title")}
+      bookingId={notification.tripBookingId}
+      title={localeAttribute(notification, "tripTitle")}
       disableManualClose
     />
   ) : null;

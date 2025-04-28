@@ -2,6 +2,7 @@ import { routing } from "@/i18n/routing";
 import Header from "./_components/header";
 import Footer from "./_components/footer";
 import ReviewFeedback from "./_components/review-feedback";
+import ConfirmFeedback from "./_components/confirm-feedback";
 import { PageParams } from "@/types/page-params";
 import { getTranslations } from "next-intl/server";
 
@@ -31,6 +32,7 @@ export default async function MainLayout({
       {children}
       <Footer />
       <ReviewFeedback />
+      <ConfirmFeedback />
     </>
   );
 }

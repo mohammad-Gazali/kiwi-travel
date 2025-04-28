@@ -3,6 +3,7 @@ import { index, pgTable, primaryKey } from "drizzle-orm/pg-core";
 import { destination } from "./destination";
 import { days, tripTypes } from "@/validators/trip-schema";
 import { tripBooking } from "./trip-booking";
+import { review } from "./review";
 
 export const trip = pgTable("trips", (c) => ({
   id: c.integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -66,6 +67,7 @@ export const tripToFeature = pgTable(
 export const tripRelations = relations(trip, ({ many, one }) => ({
   bookings: many(tripBooking),
   features: many(tripToFeature),
+  reviews: many(review),
   destination: one(destination, {
     fields: [trip.destinationId],
     references: [destination.id],
