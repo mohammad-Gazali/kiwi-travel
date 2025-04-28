@@ -20,19 +20,33 @@ interface CancelDialogProps {
   title: string;
 }
 
-export function CancelDialog({ open, onOpenChange, bookingId, title }: CancelDialogProps) {
+export function CancelDialog({
+  open,
+  onOpenChange,
+  bookingId,
+  title,
+}: CancelDialogProps) {
   const t = useTranslations("CancelBookingDialog");
+  const t_ToastMessage = useTranslations("ToastMessages");
 
   const { invalidate: invalidateList } = api.useUtils().tripBooking.list;
   const { invalidate: invalidateView } = api.useUtils().tripBooking.view;
 
-  const response = useCommonMutationResponse(undefined, () => {
-    invalidateList();
-    invalidateView();
-    onOpenChange(false);
-  });
+  const response = useCommonMutationResponse(
+    undefined,
+    () => {
+      invalidateList();
+      invalidateView();
+      onOpenChange(false);
+    },
+    {
+      success: t_ToastMessage("SuccessTitle"),
+      error: t_ToastMessage("ErrorTitle"),
+    },
+  );
 
-  const { mutate: cancel, isPending } = api.tripBooking.cancel.useMutation(response);
+  const { mutate: cancel, isPending } =
+    api.tripBooking.cancel.useMutation(response);
 
   return (
     <Dialog
@@ -45,14 +59,24 @@ export function CancelDialog({ open, onOpenChange, bookingId, title }: CancelDia
     >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="mt-2">{t("cancelBookingTitle", { title })}</DialogTitle>
+          <DialogTitle className="mt-2">
+            {t("cancelBookingTitle", { title })}
+          </DialogTitle>
           <DialogDescription>{t("cancelBookingDescription")}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isPending}
+          >
             {t("keepBooking")}
           </Button>
-          <Button variant="destructive" onClick={() => cancel(bookingId)} disabled={isPending}>
+          <Button
+            variant="destructive"
+            onClick={() => cancel(bookingId)}
+            disabled={isPending}
+          >
             {isPending ? t("cancelling") : t("confirmCancellation")}
           </Button>
         </DialogFooter>

@@ -196,6 +196,7 @@
     "reviewYourTrip": "Review your trip to {title}",
     "shareExperience": "Share your experience to help other travelers plan their journey.",
     "ratingLabel": "Rating",
+    "rateStars": "Rate {star} stars",
     "yourReviewLabel": "Your Review",
     "reviewPlaceholder": "Share details of your experience...",
     "cancel": "Cancel",
@@ -288,5 +289,12 @@
   },
   "Metadata": {
     "title": "kiwi travel"
+  },
+  "ToastMessages": {
+    "SuccessTitle": "Success",
+    "ErrorTitle": "Error",
+    "AddReview": "review has been added successfully",
+    "DeleteReview": "review has been deleted successfully",
+    "CancelBooking": "booking has been cancelled successfully"
   }
 }

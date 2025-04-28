@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// TODO: translate error messages
 
 export const tripBookingFormSchema = z.object({
   date: z.date({

@@ -196,6 +196,7 @@
     "reviewYourTrip": "Оставьте отзыв о поездке в {title}",
     "shareExperience": "Поделитесь своим опытом, чтобы помочь другим путешественникам спланировать свое путешествие.",
     "ratingLabel": "Оценка",
+    "rateStars": "Оцените {star} звезды",
     "yourReviewLabel": "Ваш отзыв",
     "reviewPlaceholder": "Расскажите подробности о вашем опыте...",
     "cancel": "Отмена",
@@ -288,5 +289,12 @@
   },
   "Metadata": {
     "title": "kiwi travel"
+  },
+  "ToastMessages": {
+    "SuccessTitle": "Успех",
+    "ErrorTitle": "Ошибка",
+    "AddReview": "отзыв был успешно добавлен",
+    "DeleteReview": "отзыв был успешно удален",
+    "CancelBooking": "бронирование было успешно отменено"
   }
 }

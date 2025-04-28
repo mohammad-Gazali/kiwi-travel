@@ -10,6 +10,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { review, review as reviewTableSchema } from "@/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
 export const reviewRouter = createTRPCRouter({
   create: authProtectedProcedure
@@ -61,9 +62,10 @@ export const reviewRouter = createTRPCRouter({
         userFullName: user.fullName,
       });
 
-      // TODO
+      const t = await getTranslations("ToastMessages");
+
       return {
-        message: "review has been added successfully",
+        message: t("AddReview"),
       };
     }),
   delete: authProtectedProcedure
@@ -78,9 +80,11 @@ export const reviewRouter = createTRPCRouter({
           ),
         );
 
-      // TODO
+
+      const t = await getTranslations("ToastMessages");
+      
       return {
-        message: "review has been deleted successfully",
+        message: t("DeleteReview"),
       };
     }),
   adminHide: adminProcedure

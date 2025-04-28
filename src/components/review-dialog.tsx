@@ -33,6 +33,7 @@ export function ReviewDialog({
   disableManualClose,
 }: ReviewDialogProps) {
   const t = useTranslations("ReviewDialog");
+  const t_ToastMessage = useTranslations("ToastMessages");
 
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -40,12 +41,19 @@ export function ReviewDialog({
 
   const { invalidate } = api.useUtils().tripBooking.view;
 
-  const response = useCommonMutationResponse(undefined, () => {
-    invalidate();
-    onOpenChange(false);
-    setRating(0);
-    setReview("");
-  });
+  const response = useCommonMutationResponse(
+    undefined,
+    () => {
+      invalidate();
+      onOpenChange(false);
+      setRating(0);
+      setReview("");
+    },
+    {
+      success: t_ToastMessage("SuccessTitle"),
+      error: t_ToastMessage("ErrorTitle"),
+    },
+  );
 
   const { mutate: addReview, isPending } =
     api.review.create.useMutation(response);

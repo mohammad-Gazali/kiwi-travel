@@ -19,17 +19,30 @@ interface DeleteDialogProps {
   reviewId: number;
 }
 
-export function DeleteDialog({ open, onOpenChange, reviewId }: DeleteDialogProps) {
+export function DeleteDialog({
+  open,
+  onOpenChange,
+  reviewId,
+}: DeleteDialogProps) {
   const t = useTranslations("DeleteReviewDialog");
+  const t_ToastMessage = useTranslations("ToastMessages");
 
   const { invalidate } = api.useUtils().tripBooking.view;
 
-  const response = useCommonMutationResponse(undefined, () => {
-    invalidate();
-    onOpenChange(false);
-  });
+  const response = useCommonMutationResponse(
+    undefined,
+    () => {
+      invalidate();
+      onOpenChange(false);
+    },
+    {
+      success: t_ToastMessage("SuccessTitle"),
+      error: t_ToastMessage("ErrorTitle"),
+    },
+  );
 
-  const { mutate: deleteReview, isPending } = api.review.delete.useMutation(response);
+  const { mutate: deleteReview, isPending } =
+    api.review.delete.useMutation(response);
 
   return (
     <Dialog
@@ -46,10 +59,18 @@ export function DeleteDialog({ open, onOpenChange, reviewId }: DeleteDialogProps
           <DialogDescription>{t("deleteReviewDescription")}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isPending}
+          >
             {t("cancel")}
           </Button>
-          <Button variant="destructive" onClick={() => deleteReview(reviewId)} disabled={isPending}>
+          <Button
+            variant="destructive"
+            onClick={() => deleteReview(reviewId)}
+            disabled={isPending}
+          >
             {isPending ? t("deleting") : t("confirmDeletion")}
           </Button>
         </DialogFooter>

@@ -1,31 +1,35 @@
 import { useRouter } from "next/navigation";
-import { useToast } from "./use-toast"
+import { useToast } from "./use-toast";
 
-export const useCommonMutationResponse = (backUrl?: string, invalidate?: () => void) => {
+export const useCommonMutationResponse = (
+  backUrl?: string,
+  invalidate?: () => void,
+  customTitles?: { success: string; error: string },
+) => {
   const { toast } = useToast();
   const router = useRouter();
 
   return {
     onSuccess: ({ message }: { message: string }) => {
       toast({
-        title: "Success",
+        title: customTitles?.success ?? "Success",
         description: message,
-      })
+      });
 
       if (invalidate) {
-        invalidate()
+        invalidate();
       }
-      
+
       if (backUrl) {
-        router.push(backUrl)
+        router.push(backUrl);
       }
     },
     onError: ({ message }: { message: string }) => {
       toast({
-        title: "Error",
+        title: customTitles?.error ?? "Error",
         description: message,
         variant: "destructive",
-      })
-    }
-  }
-}
+      });
+    },
+  };
+};

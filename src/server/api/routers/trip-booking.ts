@@ -212,9 +212,10 @@ export const tripBookingRouter = createTRPCRouter({
         })
         .where(eq(tripBooking.id, input));
 
-      // TODO
+      const t = await getTranslations("ToastMessages");
+
       return {
-        message: "booking has been cancelled successfully",
+        message: t("CancelBooking"),
       };
     }),
   adminListByDate: adminProcedure
