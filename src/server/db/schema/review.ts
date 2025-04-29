@@ -21,7 +21,7 @@ export const review = pgTable("reviews", (c) => ({
   userFullName: c.text("user_full_name"),
   message: c.text("message").notNull(),
   ratingValue: c.integer("rating_value").notNull(),
-  isHiddenByAdmin: c.boolean("is_hidden_by_admin").default(false),
+  isHiddenByAdmin: c.boolean("is_hidden_by_admin").notNull().default(false),
   createdAt: c
     .timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)

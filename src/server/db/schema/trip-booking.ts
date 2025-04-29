@@ -15,7 +15,7 @@ export const tripBooking = pgTable(
       .references(() => trip.id, { onDelete: "cascade" }),
     bookingDate: c.date("booking_date").notNull(),
     travelersCount: c.integer("travelers_count").notNull(),
-    isSeenByAdmin: c.boolean("is_seen_by_admin").default(false),
+    isSeenByAdmin: c.boolean("is_seen_by_admin").notNull().default(false),
     status: c.text("status", {
       enum: ["pending", "accepted", "cancelled", "done", "missed"],
     }).notNull(),

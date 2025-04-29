@@ -20,28 +20,36 @@ export const trip = pgTable("trips", (c) => ({
    */
   assetsUrls: c.text("assets_urls").array().notNull(),
   travelTime: c.time("travel_time").notNull(),
-  destinationId: c.integer("destination_id")
+  destinationId: c
+    .integer("destination_id")
     .notNull()
     .references(() => destination.id, { onDelete: "restrict" }),
   tripPriceInCents: c.integer("trip_price_in_cents").notNull(),
   isAvailable: c.boolean("is_available").notNull(),
   isFeatured: c.boolean("is_featured").notNull(),
-  isConfirmationRequired: c.boolean("is_confirmation_required").default(false),
+  isConfirmationRequired: c
+    .boolean("is_confirmation_required")
+    .notNull()
+    .default(false),
   duration: c.text("duration").notNull(),
-  availableDays: c.text("available_days", {
-    enum: days,
-  })
+  availableDays: c
+    .text("available_days", {
+      enum: days,
+    })
     .array()
     .notNull(),
-  tripType: c.text("trip_type", {
-    enum: tripTypes
-  }).notNull(),
-  createdAt: c.timestamp("created_at", { withTimezone: true })
+  tripType: c
+    .text("trip_type", {
+      enum: tripTypes,
+    })
+    .notNull(),
+  createdAt: c
+    .timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updatedAt: c.timestamp("updated_at", { withTimezone: true }).$onUpdate(
-    () => new Date(),
-  ),
+  updatedAt: c
+    .timestamp("updated_at", { withTimezone: true })
+    .$onUpdate(() => new Date()),
 }));
 
 export const tripFeature = pgTable("trip_features", (c) => ({
@@ -53,10 +61,12 @@ export const tripFeature = pgTable("trip_features", (c) => ({
 export const tripToFeature = pgTable(
   "trip_to_feature",
   (c) => ({
-    tripId: c.integer("trip_id")
+    tripId: c
+      .integer("trip_id")
       .notNull()
       .references(() => trip.id, { onDelete: "cascade" }),
-    featureId: c.integer("feature_id")
+    featureId: c
+      .integer("feature_id")
       .notNull()
       .references(() => tripFeature.id, { onDelete: "cascade" }),
   }),
@@ -82,5 +92,5 @@ export const tripToFeatureRelations = relations(tripToFeature, ({ one }) => ({
   trip: one(trip, {
     fields: [tripToFeature.tripId],
     references: [trip.id],
-  })
+  }),
 }));

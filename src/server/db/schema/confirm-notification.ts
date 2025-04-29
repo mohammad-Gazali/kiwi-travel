@@ -8,7 +8,7 @@ export const confirmNotification = pgTable("confirm_notifications", c => ({
   tripTitleRu: c.text("trip_title_ru").notNull(),
   tripBookingId: c.integer("trip_booking_id").notNull().references(() => tripBooking.id),
   isCancelled: c.boolean("is_cancelled").notNull(),
-  isShown: c.boolean("is_shown").default(false),
+  isShown: c.boolean("is_shown").notNull().default(false),
 }), t => [
   index("confirm_notifications_user_id_idx").on(t.userId),
 ]);
