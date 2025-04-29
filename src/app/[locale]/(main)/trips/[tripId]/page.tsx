@@ -212,55 +212,59 @@ export default async function TripDetailsPage({
               </div>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2 mt-6 p-4 pb-0 bg-muted w-full rounded-t-lg font-medium">
-              <MessageCircle className="h-5 w-5 text-primary" />
-              <h3 className="font-medium">{t("reviews")}</h3>
-          </div>
-          <div className="bg-muted space-y-4 p-4 rounded-b-lg max-h-[500px] overflow-y-auto">
-            {trip.reviews.map((review) => (
-              <Card key={review.id}>
-                <CardHeader className="flex-row items-center gap-4">
-                  {review.userImageUrl ? (
-                    <Image
-                      src={review.userImageUrl}
-                      alt={review.userEmail}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="grid size-10 place-items-center rounded-full bg-muted text-muted-foreground">
-                      <User className="size-6" />
-                    </div>
-                  )}
-                  <div>
-                    <CardTitle>{review.userFullName}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {review.userEmail}
-                    </p>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="mb-4">{review.message}</p>
-                  <div className="flex">
-                    {Array(5)
-                      .fill(null)
-                      .map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < review.ratingValue
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "fill-muted text-muted"
-                          }`}
+
+          {trip.reviews.length !== 0 && (
+            <>
+              <div className="mt-6 flex w-full items-center gap-2 rounded-t-lg bg-muted p-4 pb-0 font-medium">
+                <MessageCircle className="h-5 w-5 text-primary" />
+                <h3 className="font-medium">{t("reviews")}</h3>
+              </div>
+              <div className="max-h-[500px] space-y-4 overflow-y-auto rounded-b-lg bg-muted p-4">
+                {trip.reviews.map((review) => (
+                  <Card key={review.id}>
+                    <CardHeader className="flex-row items-center gap-4">
+                      {review.userImageUrl ? (
+                        <Image
+                          src={review.userImageUrl}
+                          alt={review.userEmail}
+                          width={40}
+                          height={40}
+                          className="rounded-full"
                         />
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      ) : (
+                        <div className="grid size-10 place-items-center rounded-full bg-muted text-muted-foreground">
+                          <User className="size-6" />
+                        </div>
+                      )}
+                      <div>
+                        <CardTitle>{review.userFullName}</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {review.userEmail}
+                        </p>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="mb-4">{review.message}</p>
+                      <div className="flex">
+                        {Array(5)
+                          .fill(null)
+                          .map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.ratingValue
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "fill-muted text-muted"
+                              }`}
+                            />
+                          ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </main>
