@@ -288,7 +288,9 @@
     }
   },
   "Metadata": {
-    "title": "kiwi travel"
+    "title": "Kiwi Travel",
+    "description": "Awesome website for booking your next travel",
+    "keywords": "book travel, trip booking, flight booking, hotel reservation, vacation packages, cheap flights, travel deals, online travel agency, adventure travel, family vacations, business travel, last minute deals, travel discounts, holiday booking, destination guides"
   },
   "ToastMessages": {
     "SuccessTitle": "Success",

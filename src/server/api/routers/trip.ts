@@ -407,6 +407,13 @@ export const tripRouter = createTRPCRouter({
         },
       }),
   ),
+  listStaticParams: publicProcedure.query(async ({ ctx }) => ctx.db.query.trip.findMany({
+    where: ({ isAvailable }, { eq }) => eq(isAvailable, true),
+    columns: {
+      id: true,
+      updatedAt: true,
+    },
+  })),
   view: publicProcedure.input(z.number().int()).query(
     async ({ ctx, input }) =>
       await ctx.db.query.trip.findFirst({
