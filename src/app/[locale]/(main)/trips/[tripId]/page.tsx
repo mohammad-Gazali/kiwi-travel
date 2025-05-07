@@ -27,14 +27,6 @@ import { AssetGallery } from "@/components/asset-gallery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
 
-// TODO: finish SEO here
-// export const revalidate = 0;
-
-// export async function generateStaticParams() {
-//   return (await api.trip.listStaticParams()).map(item => ({
-//     tripId: String(item.id)
-//   }))
-// }
 
 export async function generateMetadata({ params }: PageParams<{ tripId: string }>): Promise<Metadata> {
   const { tripId } = await params;
