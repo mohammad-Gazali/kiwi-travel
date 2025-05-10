@@ -5,10 +5,6 @@ import { getLocale, getTranslations } from "next-intl/server"
 import { localeAttributeFactory } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 
-export const metadata: Metadata = {
-  title: "Popular Travel Destinations | Explore Your Next Adventure",
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("DestinationsPage")
 
