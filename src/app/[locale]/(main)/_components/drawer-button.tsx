@@ -34,7 +34,7 @@ export const DrawerButton = () => {
 
   const { user } = useUser();
 
-  const isAdmin = !!user?.publicMetadata.isAdmin;
+  const isAdmin = !!user?.publicMetadata?.isAdmin;
 
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
@@ -46,7 +46,7 @@ export const DrawerButton = () => {
       <DrawerContent className="w-80">
         <DrawerHeader>
           <DrawerTitle className="flex items-center justify-between">
-            Kiwi Travel
+            Karim Tour
             <div className="flex items-center gap-4">
               <ThemeToggle />
               <LanguageToggle />

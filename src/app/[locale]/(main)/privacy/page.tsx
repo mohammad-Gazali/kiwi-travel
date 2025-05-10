@@ -5,7 +5,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("PrivacyPolicyPage");
 
   return {
-    title: t("title"),
+    title: `${t("title")} | Karim Tour`,
     description: t("description"),
   };
 }

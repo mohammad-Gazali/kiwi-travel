@@ -36,16 +36,16 @@ export default function SearchCard() {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000);
 
-  const { data: trips, isLoading } =
-    api.trip.tinyListSearch.useQuery(debouncedSearchTerm);
+  const { data: destinations, isLoading } =
+    api.destination.tinyListSearch.useQuery(debouncedSearchTerm);
 
   return (
-    <Card className="mx-auto w-full max-w-3xl">
+    <Card className="mx-auto w-full max-w-3xl sm:rounded-xl rounded-none">
       <CardContent className="p-6">
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex sm:flex-row flex-col gap-2 items-center justify-between">
             <h2 className="text-xl font-semibold">{t("cardTitle")}</h2>
             <Link href="/trips">
               <Button variant="secondary" className="flex items-center gap-2">
@@ -85,7 +85,7 @@ export default function SearchCard() {
                   {!isLoading && <CommandEmpty>{t("notFound")}</CommandEmpty>}
                   <CommandGroup
                     heading={
-                      isLoading || trips?.length !== 0
+                      isLoading || destinations?.length !== 0
                         ? t("suggestions")
                         : undefined
                     }
@@ -97,7 +97,7 @@ export default function SearchCard() {
                             key={item}
                             className="flex items-center gap-3 px-2 py-2"
                           >
-                            <Skeleton className="h-8 w-8 rounded-md" />
+                            <Skeleton className="sm:block hidden h-8 w-8 rounded-md" />
                             <div className="flex-1 space-y-1">
                               <Skeleton className="h-3 w-3/4 rounded" />
                               <Skeleton className="h-2 w-1/2 rounded" />
@@ -105,32 +105,29 @@ export default function SearchCard() {
                             <Skeleton className="h-5 w-10 rounded-full" />
                           </div>
                         ))
-                      : trips?.map((trip) => (
-                          <Link key={trip.id} href={`/trips/${trip.id}`}>
+                      : destinations?.map((destination) => (
+                          <Link key={destination.id} href={`/destinations/${destination.id}`}>
                             <CommandItem
                               onSelect={() => {
-                                router.push(`/trips/${trip.id}`);
+                                router.push(`/destinations/${destination.id}`);
                                 setOpen(false);
                               }}
                               className="flex items-center px-2 py-2"
                             >
                               <img
-                                src={trip.image}
-                                alt={localeAttribute(trip, "title")}
-                                className="mr-3 h-8 w-8 rounded-md object-cover"
+                                src={destination.image}
+                                alt={localeAttribute(destination, "location")}
+                                className="mr-3 h-8 w-8 rounded-md object-cover sm:block hidden"
                               />
                               <div className="flex-1">
                                 <div className="text-sm font-medium">
-                                  {localeAttribute(trip, "title")}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  {localeAttribute(trip, "location")}
+                                  {localeAttribute(destination, "location")}
                                 </div>
                               </div>
                               {
-                                trip.reviewsValue !== 0 && (
+                                destination.tripsCount !== 0 && (
                                   <div className="flex items-center rounded-full bg-green-400/20 px-2 py-0.5 text-xs font-medium text-green-800 dark:text-green-400">
-                                    {trip.reviewsValue} ★
+                                    {t("tripsCount", { count: destination.tripsCount })}
                                   </div>
                                 )
                               }

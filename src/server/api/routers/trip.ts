@@ -158,65 +158,6 @@ export const tripRouter = createTRPCRouter({
         message: "Deleted successfully",
       };
     }),
-  tinyListSearch: publicProcedure
-    .input(z.string())
-    .query(async ({ ctx, input }) => {
-      const _reviews = await ctx.db.query.review.findMany({
-        where: (fields, { eq, and }) => and(eq(fields.isHiddenByAdmin, false)),
-        columns: {
-          tripId: true,
-          ratingValue: true,
-        },
-      });
-
-      const calculateReviewsValue = (tripId: number) => {
-        const arr = _reviews.filter((r) => r.tripId === tripId);
-
-        const res = arr.reduce((acc, curr) => acc + curr.ratingValue, 0) / arr.length;
-
-        return isNaN(res) ? 0 : res;
-      };
-
-      return await ctx.db
-        .select({
-          id: trip.id,
-          titleEn: trip.titleEn,
-          titleRu: trip.titleRu,
-          assets: trip.assetsUrls,
-          countryEn: country.nameEn,
-          countryRu: country.nameRu,
-          destinationEn: destination.nameEn,
-          destinationRu: destination.nameRu,
-        })
-        .from(trip)
-        .innerJoin(destination, eq(trip.destinationId, destination.id))
-        .innerJoin(country, eq(destination.countryId, country.id))
-        .where(
-          input
-            ? or(
-                ilike(trip.titleEn, `%${input}%`),
-                ilike(trip.titleRu, `%${input}%`),
-                ilike(destination.nameEn, `%${input}%`),
-                ilike(destination.nameRu, `%${input}%`),
-                ilike(country.nameEn, `%${input}%`),
-                ilike(country.nameRu, `%${input}%`),
-              )
-            : undefined,
-        )
-        .orderBy(trip.isFeatured)
-        .limit(TRIP_SEARCH_PAGE_SIZE)
-        .then((res) =>
-          res.map((item) => ({
-            id: item.id,
-            titleEn: item.titleEn,
-            titleRu: item.titleRu,
-            locationEn: `${item.countryEn}, ${item.destinationEn}`,
-            locationRu: `${item.countryRu}, ${item.destinationRu}`,
-            image: mainImage(item.assets),
-            reviewsValue: calculateReviewsValue(item.id),
-          })),
-        );
-    }),
   listSearch: publicProcedure
     .input(tripSearchFormSchema)
     .query(async ({ ctx, input }) => {

@@ -1,0 +1,3 @@
+- finish SEO metadata
+- create XML sitemap
+- edit footer contact and socials

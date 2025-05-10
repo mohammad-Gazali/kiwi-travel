@@ -5,10 +5,11 @@
       "subheadline": "Find and book amazing trips around the world",
       "cardTitle": "Find your Next Travel",
       "advancedFilters": "Advanced Filters",
-      "searchPlaceholder": "Search destinations, trips, countries...",
+      "searchPlaceholder": "Search destinations...",
       "search": "Search",
       "notFound": "No results found.",
-      "suggestions": "Suggestions"
+      "suggestions": "Suggestions",
+      "tripsCount": "{count} trips"
     },
     "featuredTrips": {
       "sectionTitle": "Featured Trips",
@@ -288,7 +289,7 @@
     }
   },
   "Metadata": {
-    "title": "Kiwi Travel",
+    "title": "Karim Tour",
     "description": "Awesome website for booking your next travel",
     "keywords": "book travel, trip booking, flight booking, hotel reservation, vacation packages, cheap flights, travel deals, online travel agency, adventure travel, family vacations, business travel, last minute deals, travel discounts, holiday booking, destination guides"
   },

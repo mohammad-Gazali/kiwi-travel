@@ -37,6 +37,7 @@ import { Switch } from "@/components/ui/switch";
 import { api } from "@/trpc/react";
 import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
 import { useTranslations } from "next-intl";
+import { RichTextEditor } from "./rich-text-editor";
 
 const clientFormSchema = tripFormSchema.omit({ assets: true });
 
@@ -320,10 +321,10 @@ export function TripForm({ initialData, id }: TripFormProps) {
               <FormItem className="col-span-1 md:col-span-2">
                 <FormLabel>English Long Description</FormLabel>
                 <FormControl>
-                  <Textarea
+                  <RichTextEditor
                     placeholder="Enter detailed English description"
-                    className="min-h-[120px]"
-                    {...field}
+                    content={field.value}
+                    setContent={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -339,10 +340,10 @@ export function TripForm({ initialData, id }: TripFormProps) {
               <FormItem className="col-span-1 md:col-span-2">
                 <FormLabel>Russian Long Description</FormLabel>
                 <FormControl>
-                  <Textarea
+                  <RichTextEditor
                     placeholder="Enter detailed Russian description"
-                    className="min-h-[120px]"
-                    {...field}
+                    content={field.value}
+                    setContent={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />

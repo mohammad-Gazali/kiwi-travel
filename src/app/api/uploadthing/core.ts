@@ -9,7 +9,7 @@ const adminMiddleware = async () => {
   const { sessionClaims } = await auth();
 
   // If you throw, the user will not be able to upload
-  if (!sessionClaims?.metadata.isAdmin) throw new UploadThingError("Forbidden");
+  if (!sessionClaims?.metadata?.isAdmin) throw new UploadThingError("Forbidden");
 
   return {};
 };

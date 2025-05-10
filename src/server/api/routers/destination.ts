@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
-import { country, destination } from "@/server/db/schema";
-import { asc, eq, sql } from "drizzle-orm";
+import { country, destination, trip } from "@/server/db/schema";
+import { asc, count, eq, ilike, or, sql } from "drizzle-orm";
 import { destinationFormSchema } from "@/validators/destination-schema";
 
 export const destinationRouter = createTRPCRouter({
@@ -56,7 +56,12 @@ export const destinationRouter = createTRPCRouter({
       };
     }),
   list: publicProcedure
-    .input(z.object({ isPopularOnly: z.boolean().nullish(), limitFour: z.boolean().nullish() }))
+    .input(
+      z.object({
+        isPopularOnly: z.boolean().nullish(),
+        limitFour: z.boolean().nullish(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.destination.findMany({
         where: input.isPopularOnly
@@ -65,5 +70,49 @@ export const destinationRouter = createTRPCRouter({
         orderBy: input.limitFour ? sql`random()` : undefined,
         limit: input.limitFour ? 4 : undefined,
       });
+    }),
+  tinyListSearch: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db
+        .select({
+          id: destination.id,
+          destinationEn: destination.nameEn,
+          destinationRu: destination.nameRu,
+          countryEn: country.nameEn,
+          countryRu: country.nameRu,
+          image: destination.imageUrl,
+          tripsCount: count(trip.id),
+        })
+        .from(destination)
+        .innerJoin(country, eq(destination.countryId, country.id))
+        .leftJoin(trip, eq(trip.destinationId, destination.id))
+        .where(
+          input
+            ? or(
+                ilike(destination.nameEn, `%${input}%`),
+                ilike(destination.nameRu, `%${input}%`),
+                ilike(country.nameEn, `%${input}%`),
+                ilike(country.nameRu, `%${input}%`),
+              )
+            : undefined,
+        )
+        .groupBy(
+          destination.id,
+          destination.nameEn,
+          destination.nameRu,
+          destination.imageUrl,
+          country.nameEn,
+          country.nameRu,
+        )
+        .then((res) =>
+          res.map((item) => ({
+            id: item.id,
+            locationEn: `${item.countryEn}, ${item.destinationEn}`,
+            locationRu: `${item.countryRu}, ${item.destinationRu}`,
+            image: item.image,
+            tripsCount: item.tripsCount,
+          })),
+        );
     }),
 });

@@ -100,7 +100,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 const adminMiddleware = t.middleware(async ({ next }) => {
   const { sessionClaims } = await auth();
 
-  if (!sessionClaims?.metadata.isAdmin)
+  if (!sessionClaims?.metadata?.isAdmin)
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "admin only procedure",

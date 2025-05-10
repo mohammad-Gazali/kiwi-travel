@@ -23,7 +23,11 @@ export async function generateMetadata({
     title: t("title"),
     description: t("description"),
     keywords: t("keywords"),
-    metadataBase: new URL(env.NEXT_PUBLIC_APP_URL || 'https://kiwi-travel.com'),
+    metadataBase: new URL(env.NEXT_PUBLIC_APP_URL || 'https://karimtor.com'),
+    manifest: '/manifest.webmanifest',
+    appleWebApp: {
+      title: "Karim Tour",
+    },
     alternates: {
       canonical: '/',
       languages: {
@@ -36,23 +40,21 @@ export async function generateMetadata({
       description: t("description"),
       url: '/',
       siteName: t("title"),
-      // TODO: add decent logo
-      // images: [
-      //   {
-      //     url: '/images/og-image.jpg',
-      //     width: 1200,
-      //     height: 630,
-      //     alt: t("ogImageAlt"),
-      //   },
-      // ],
+      images: [
+        {
+          url: '/logo.png',
+          width: 1080,
+          height: 182,
+          alt: t("title"),
+        },
+      ],
       locale,
       type: 'website',
     },
     twitter: {
       title: t("title"),
       description: t("description"),
-      // TODO
-      // images: ['/images/og-image.jpg'], // Optional
+      images: ['/logo.png'],
       card: 'summary_large_image',
     },
     robots: {

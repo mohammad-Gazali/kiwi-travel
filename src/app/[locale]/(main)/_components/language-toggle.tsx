@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Languages } from "lucide-react";
+import { Globe } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useTransition } from "react";
 import { usePathname, useRouter } from "@/i18n/routing";
@@ -37,7 +37,7 @@ const LanguageToggle = () => {
     <DropdownMenu>
       <DropdownMenuTrigger disabled={isPending} title={t("changeLanguage")} asChild>
         <Button variant="outline" size="icon">
-          <Languages className="size-[1.2rem]" />
+          <Globe className="size-[1.2rem]" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

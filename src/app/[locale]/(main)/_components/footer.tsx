@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing";
-import { Mail, MapPin, Phone, Plane } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function Footer() {
@@ -11,8 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <Link href="/" className="flex items-center space-x-2">
-              <Plane className="h-6 w-6" />
-              <span className="text-xl font-bold">Kiwi Travel</span>
+              <img className="-mt-2 w-48" src="/logo.png" alt="Karim Tour" />
             </Link>
             <p className="mt-2 text-sm">{t("discoverTheWorld")}</p>
 
@@ -94,7 +93,7 @@ export default function Footer() {
         </div>
         <div className="mt-8 border-t border-foreground/20 pt-8 text-center">
           <p>
-            &copy; {new Date().getFullYear()} Kiwi Travel. {t("copyright")}
+            &copy; {new Date().getFullYear()} Karim Tour. {t("copyright")}
           </p>
         </div>
       </div>

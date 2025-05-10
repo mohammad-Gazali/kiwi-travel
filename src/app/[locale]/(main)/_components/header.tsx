@@ -1,4 +1,6 @@
-import { Suspense } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/routing";
 import {
   SignedIn,
   SignedOut,
@@ -6,14 +8,12 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Link } from "@/i18n/routing";;
-import { Plane } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import DrawerButton from "./drawer-button";
 import { useTranslations } from "next-intl";
-import LanguageToggle from "./language-toggle";
+import { Suspense } from "react";
 import DashboardButton from "./dashboard-button";
+import DrawerButton from "./drawer-button";
+import LanguageToggle from "./language-toggle";
+;
 
 export const Header = () => {
   const t = useTranslations("General.header");
@@ -22,10 +22,8 @@ export const Header = () => {
     <header className="z-20 fixed w-full top-0 h-16 border-b shadow bg-background text-foreground p-4">
       <nav className="container flex items-center justify-between gap-4 mx-auto">
         <Link className="flex gap-2 items-center" href="/">
-          <Plane className="h-8 w-8 text-primary" />
-          <h1 className="font-medium text-2xl">
-            Kiwi Travel
-          </h1>
+          <img className="-mt-2 w-56 sm:block hidden" src="/logo.png" alt="Karim Tour" />
+          <img className="-mt-2 size-11 sm:hidden" src="/logo-icon.png" alt="Karim Tour" />
         </Link>
         <div className="md:flex hidden gap-4">
           <SignedOut>

@@ -1,8 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "@/i18n/routing";
 import { localeAttributeFactory, mainImage } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import { PageParams } from "@/types/page-params";
@@ -27,30 +25,32 @@ import { AssetGallery } from "@/components/asset-gallery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
 
-
-export async function generateMetadata({ params }: PageParams<{ tripId: string }>): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageParams<{ tripId: string }>): Promise<Metadata> {
   const { tripId } = await params;
 
   const locale = await getLocale();
   const localeAttribute = localeAttributeFactory(locale);
 
-
   const trip = await api.trip.view(Number(tripId));
 
-  if (!trip) return {}
+  if (!trip) return {};
 
-  const title = `${localeAttribute(trip, "title")} | Kiwi Travel`
+  const title = `${localeAttribute(trip, "title")} | Karim Tour`;
 
   return {
     title,
     openGraph: {
       title,
-      images: [{ 
-        url: mainImage(trip.assetsUrls), 
-        alt: localeAttribute(trip, "title")
-      }],
+      images: [
+        {
+          url: mainImage(trip.assetsUrls),
+          alt: localeAttribute(trip, "title"),
+        },
+      ],
     },
-  }
+  };
 }
 
 export default async function TripDetailsPage({
@@ -141,12 +141,12 @@ export default async function TripDetailsPage({
               <TabsTrigger value="details">{t("tabs.details")}</TabsTrigger>
             </TabsList>
             <TabsContent value="description" className="mt-6 space-y-4">
-              <p className="text-muted-foreground">
-                {localeAttribute(trip, "description")}
-              </p>
-              <p className="whitespace-pre-line text-muted-foreground">
-                {localeAttribute(trip, "longDescription")}
-              </p>
+              <div
+                className="prose"
+                dangerouslySetInnerHTML={{
+                  __html: localeAttribute(trip, "longDescription"),
+                }}
+              />
             </TabsContent>
             <TabsContent value="details" className="mt-6">
               <div className="grid gap-6">

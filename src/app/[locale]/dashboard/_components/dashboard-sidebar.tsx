@@ -13,14 +13,14 @@ import {
   Folder,
   Globe,
   Map,
-  ShoppingCart,
+  Plane,
   Sparkles,
   SquareArrowOutUpRight,
   Users
 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "./sidebar-provider";
 import { BookingsOption } from "./bookings-option";
+import { useSidebar } from "./sidebar-provider";
 ;
 
 const sidebarNavItems = [
@@ -80,7 +80,7 @@ export function DashboardSidebar() {
                       variant: "outline",
                     })}
                   >
-                    <Globe />
+                    <Plane />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>

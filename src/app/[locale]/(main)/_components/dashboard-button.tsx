@@ -8,7 +8,7 @@ const DashboardButton = async () => {
 
   const { sessionClaims } = await auth();
 
-  return !!sessionClaims?.metadata.isAdmin ? (
+  return !!sessionClaims?.metadata?.isAdmin ? (
     <Link href="/dashboard">
       <Button>{t("dashboard")}</Button>
     </Link>

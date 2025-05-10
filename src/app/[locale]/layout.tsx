@@ -15,9 +15,8 @@ import { Toaster } from "@/components/ui/toaster"
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "Kiwi Travel",
+  title: "Karim Tour",
   description: "Awesome website for booking your next travel",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 async function UTSSR() {
