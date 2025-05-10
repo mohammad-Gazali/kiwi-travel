@@ -14,6 +14,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { localeAttributeFactory } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("BookingsPage");
+
+  return {
+    title: `${t("title")} | Karim Tour`
+  }
+}
 
 export default async function BookingsPage() {
   const locale = await getLocale();

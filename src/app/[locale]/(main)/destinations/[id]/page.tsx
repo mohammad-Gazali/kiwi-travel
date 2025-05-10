@@ -5,9 +5,38 @@ import { localeAttributeFactory, mainImage } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import { PageParams } from "@/types/page-params";
 import { ArrowLeft, Clock } from "lucide-react";
+import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: PageParams<{ id: string }>): Promise<Metadata> {
+  const { id } = await params;
+
+  const locale = await getLocale();
+  const localeAttribute = localeAttributeFactory(locale);
+
+  const destination = await api.trip.listByDestination(Number(id));
+
+  if (!destination) return {};
+
+  const title = `${localeAttribute(destination, "name")} | Karim Tour`;
+
+  return {
+    title,
+    openGraph: {
+      title,
+      images: [
+        {
+          url: destination.imageUrl,
+          alt: localeAttribute(destination, "name"),
+        },
+      ],
+    },
+  };
+}
 
 export default async function DestinationTripsPage({
   params,

@@ -7,21 +7,14 @@ import { Link } from "@/i18n/routing"
 
 export const metadata: Metadata = {
   title: "Popular Travel Destinations | Explore Your Next Adventure",
-  description:
-    "Discover amazing travel destinations around the world. Find the perfect location for your next vacation with our curated list of popular destinations.",
-  openGraph: {
-    title: "Popular Travel Destinations | Explore Your Next Adventure",
-    description:
-      "Discover amazing travel destinations around the world. Find the perfect location for your next vacation.",
-    images: [
-      {
-        url: "/og-destinations.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Popular Travel Destinations",
-      },
-    ],
-  },
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("DestinationsPage")
+
+  return {
+    title: `${t("destinations")} | Karim Tour`
+  }
 }
 
 export default async function DestinationsPage() {
