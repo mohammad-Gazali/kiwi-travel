@@ -62,7 +62,7 @@ export default async function BookingsPage() {
       <h1 className="mb-6 text-3xl font-bold">{t("title")}</h1>
 
       <Tabs defaultValue="all" className="mb-8">
-        <TabsList className="mb-4">
+        <TabsList className="w-fit mb-4 flex items-center justify-start flex-wrap h-auto gap-y-1">
           <TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
           <TabsTrigger value="pending">{t("tabs.pending")}</TabsTrigger>
           <TabsTrigger value="accepted">{t("tabs.accepted")}</TabsTrigger>

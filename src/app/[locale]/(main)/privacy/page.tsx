@@ -28,10 +28,10 @@ export default async function PrivacyPage() {
         <p className="mt-2 text-sm text-muted-foreground">{t("lastUpdated")}</p>
       </div>
 
-      <div className="prose prose-slate max-w-none">
+      <div className="prose max-w-none">
         {privacyData.map((section) => (
-          <section key={section.title} className="mb-8">
-            <h2 className="mb-4 text-2xl font-semibold">{t(section.title)}</h2>
+          <section key={section.title} className="mb-8 text-foreground">
+            <h2 className="mb-4 text-2xl text-foreground font-semibold">{t(section.title)}</h2>
             <p>{t(section.content)}</p>
           </section>
         ))}

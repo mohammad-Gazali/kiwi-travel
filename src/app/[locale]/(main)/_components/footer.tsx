@@ -1,9 +1,42 @@
 import { Link } from "@/i18n/routing";
-import { Mail, MapPin, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+interface Social {
+  name: string;
+  link: string;
+}
 
 export default function Footer() {
   const t = useTranslations("General.footer");
+
+  const phones = ["+201003637624", "+905352699881", "+79645056936"];
+
+  const socials: Social[] = [
+    {
+      name: "Instagram",
+      link: "https://www.instagram.com/kiwitraveleg?igsh=MXJzZjFwY2Fzc2E2Zw==",
+    },
+    {
+      name: "Facebook",
+      link: "https://www.facebook.com/share/16NjtcXwqN/?mibextid=wwXIfr",
+    },
+    {
+      name: "VK",
+      link: "https://vk.com/kiwitravelseg",
+    },
+    {
+      name: "WhatsApp",
+      link: "https://chat.whatsapp.com/CPsj1lzPPb8A5VtdaVOZ20",
+    },
+    {
+      name: "Telegram",
+      link: "https://t.me/karimkiwi",
+    },
+    {
+      name: "Viber",
+      link: "https://invite.viber.com/?g2=AQA0x%2BECmdFOrlSTvNRusTVCZ9u6iaAtDGMI1Ok8C480GH8eKU2hM9%2F8J8kWlMHp",
+    },
+  ];
 
   return (
     <footer className="bg-muted py-8 text-foreground">
@@ -16,20 +49,20 @@ export default function Footer() {
             <p className="mt-2 text-sm">{t("discoverTheWorld")}</p>
 
             {/* Contact information added here */}
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 grid gap-2">
               <h3 className="text-sm font-semibold">{t("contactUs")}</h3>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4" />
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4" />
-                <span>support@kiwitravel.com</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm">
-                <MapPin className="mt-0.5 h-4 w-4" />
-                <span>123 Travel Street, Adventure City, AC 12345</span>
-              </div>
+              <ul>
+                {phones.map((phone) => (
+                  <li key={phone}>
+                    <a
+                      className="text-sm text-primary hover:underline"
+                      href={`tel:${phone}`}
+                    >
+                      {phone}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
           <div>
@@ -78,17 +111,20 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="mb-4 text-lg font-semibold">{t("followUsTitle")}</h3>
-            <div className="flex flex-col gap-4">
-              <Link href="#" className="hover:text-primary">
-                {t("socialLinks.facebook")}
-              </Link>
-              <Link href="#" className="hover:text-primary">
-                {t("socialLinks.twitter")}
-              </Link>
-              <Link href="#" className="hover:text-primary">
-                {t("socialLinks.instagram")}
-              </Link>
-            </div>
+            <ul className="grid list-disc grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
+              {socials.map((social) => (
+                <li key={social.name}>
+                  <a
+                    key={social.name}
+                    href={social.link}
+                    target="_blank"
+                    className="hover:text-primary"
+                  >
+                    {social.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
         <div className="mt-8 border-t border-foreground/20 pt-8 text-center">
