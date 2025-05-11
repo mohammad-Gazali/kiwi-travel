@@ -11,7 +11,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 /**
  * 1. CONTEXT
@@ -98,9 +98,9 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 });
 
 const adminMiddleware = t.middleware(async ({ next }) => {
-  const { sessionClaims } = await auth();
+  const user = await currentUser();
 
-  if (!sessionClaims?.metadata?.isAdmin)
+  if (!user?.publicMetadata?.isAdmin)
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "admin only procedure",
