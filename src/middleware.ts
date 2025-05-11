@@ -1,5 +1,5 @@
 import createIntlMiddleware from "next-intl/middleware";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, currentUser } from "@clerk/nextjs/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import { ipAddress } from "@vercel/functions";
@@ -27,9 +27,9 @@ const isBookingsRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  const { sessionClaims } = await auth();
+  const user = await currentUser();
   
-  if (isAdminRoute(req) && !sessionClaims?.metadata?.isAdmin) {
+  if (isAdminRoute(req) && !user?.publicMetadata?.isAdmin) {
     await auth.protect();
   }
 

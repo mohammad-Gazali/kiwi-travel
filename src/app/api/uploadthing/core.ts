@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -6,10 +6,10 @@ const f = createUploadthing();
 
 const adminMiddleware = async () => {
   // This code runs on your server before upload
-  const { sessionClaims } = await auth();
+  const user = await currentUser();
 
   // If you throw, the user will not be able to upload
-  if (!sessionClaims?.metadata?.isAdmin) throw new UploadThingError("Forbidden");
+  if (!user?.publicMetadata?.isAdmin) throw new UploadThingError("Forbidden");
 
   return {};
 };
