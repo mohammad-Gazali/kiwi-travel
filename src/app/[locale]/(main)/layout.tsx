@@ -42,9 +42,9 @@ export async function generateMetadata({
       siteName: t("title"),
       images: [
         {
-          url: '/logo.png',
-          width: 1080,
-          height: 182,
+          url: '/logo-icon.png',
+          width: 343,
+          height: 350,
           alt: t("title"),
         },
       ],
@@ -54,7 +54,7 @@ export async function generateMetadata({
     twitter: {
       title: t("title"),
       description: t("description"),
-      images: ['/logo.png'],
+      images: ['/logo-icon.png'],
       card: 'summary_large_image',
     },
     robots: {
