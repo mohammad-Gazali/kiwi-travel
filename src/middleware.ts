@@ -15,7 +15,6 @@ const ratelimit = new Ratelimit({
 const isAdminRoute = createRouteMatcher([
   "/en/dashboard(.*)",
   "/ru/dashboard(.*)",
-  "/api/uploadthing",
 ])
 
 const isAPIRoute = createRouteMatcher([
@@ -29,8 +28,6 @@ const isBookingsRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   const { sessionClaims } = await auth();
-
-  console.log("Clerk Claims\n", sessionClaims);
   
   if (isAdminRoute(req) && !sessionClaims?.metadata.isAdmin) {
     await auth.protect();
