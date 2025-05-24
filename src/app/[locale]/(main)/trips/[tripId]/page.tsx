@@ -142,7 +142,7 @@ export default async function TripDetailsPage({
             </TabsList>
             <TabsContent value="description" className="mt-6 space-y-4">
               <div
-                className="prose"
+                className="prose rich-text-editor-cotent"
                 dangerouslySetInnerHTML={{
                   __html: localeAttribute(trip, "longDescription"),
                 }}

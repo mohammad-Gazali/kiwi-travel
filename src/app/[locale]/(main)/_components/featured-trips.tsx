@@ -32,7 +32,7 @@ export default function FeaturedTrips() {
   const { data: featuredTrips, isLoading } = api.trip.listFeatured.useQuery();
 
   return (
-    <section className="bg-accent py-16 dark:bg-accent/20">
+    <section className="bg-accent py-16">
       <div className="container mx-auto">
         <h2 className="mb-8 text-center text-3xl font-bold">
           {t("sectionTitle")}

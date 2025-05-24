@@ -1,6 +1,5 @@
 "use client";
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -88,7 +87,6 @@ export function DashboardSidebar() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <ThemeToggle />
           </div>
         </div>
         <ScrollArea className="flex-1 py-4">
