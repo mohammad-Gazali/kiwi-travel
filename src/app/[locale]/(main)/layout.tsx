@@ -3,6 +3,7 @@ import Header from "./_components/header";
 import Footer from "./_components/footer";
 import ReviewFeedback from "./_components/review-feedback";
 import ConfirmFeedback from "./_components/confirm-feedback";
+import ContactsSidebar from "./_components/contacts-sidebar";
 import { PageParams } from "@/types/page-params";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
@@ -42,7 +43,7 @@ export async function generateMetadata({
       siteName: t("title"),
       images: [
         {
-          url: '/logo-icon.png',
+          url: '/logo-icon.svg',
           width: 343,
           height: 350,
           alt: t("title"),
@@ -54,7 +55,7 @@ export async function generateMetadata({
     twitter: {
       title: t("title"),
       description: t("description"),
-      images: ['/logo-icon.png'],
+      images: ['/logo-icon.svg'],
       card: 'summary_large_image',
     },
     robots: {
@@ -90,6 +91,7 @@ export default async function MainLayout({
           </>
         )
       }
+      <ContactsSidebar />
     </>
   );
 }

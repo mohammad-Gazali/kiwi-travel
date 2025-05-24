@@ -122,7 +122,7 @@ const UploadFilesField = ({ assets, setAssets }: UploadFilesFieldProps) => {
           multiple
         />
         <div
-          className={`rounded-lg border border-dashed border-gray-900/25 p-4 text-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-input ${assets.length === 0 ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-100/5" : ""}`}
+          className={`rounded-lg border border-dashed border-gray-900/25 p-4 text-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${assets.length === 0 ? "cursor-pointer hover:bg-gray-100" : ""}`}
           {...getRootProps()}
         >
           <input {...getInputProps()} accept="image/*,video/*" />

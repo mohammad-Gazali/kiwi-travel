@@ -219,12 +219,6 @@
     "deleting": "Deleting..."
   },
   "General": {
-    "themeToggle": {
-      "toggleTheme": "Toggle theme",
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System"
-    },
     "tripType": {
       "adventure": "Adventure",
       "cultural": "Cultural",

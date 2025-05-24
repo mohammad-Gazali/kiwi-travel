@@ -39,12 +39,12 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-muted py-8 text-foreground">
+    <footer className="bg-[#0b3275] py-8 text-primary-foreground">
       <div className="container mx-auto px-4 md:px-0">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <Link href="/" className="flex items-center space-x-2">
-              <img className="-mt-2 w-48" src="/logo.png" alt="Karim Tour" />
+              <img className="-mt-2 w-48" src="/logo-footer.svg" alt="Karim Tour" />
             </Link>
             <p className="mt-2 text-sm">{t("discoverTheWorld")}</p>
 
@@ -55,7 +55,7 @@ export default function Footer() {
                 {phones.map((phone) => (
                   <li key={phone}>
                     <a
-                      className="text-sm text-primary hover:underline"
+                      className="text-sm text-[#ff8106] hover:underline"
                       href={`tel:${phone}`}
                     >
                       {phone}
@@ -118,7 +118,7 @@ export default function Footer() {
                     key={social.name}
                     href={social.link}
                     target="_blank"
-                    className="hover:text-primary"
+                    className="hover:text-[#ff8106]"
                   >
                     {social.name}
                   </a>

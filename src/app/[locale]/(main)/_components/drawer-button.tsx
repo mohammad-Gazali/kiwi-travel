@@ -20,7 +20,6 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { LogOut, Menu, User, X } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
 import { Link } from "@/i18n/routing";;
 import { useTranslations } from "next-intl";
@@ -48,7 +47,6 @@ export const DrawerButton = () => {
           <DrawerTitle className="flex items-center justify-between">
             Karim Tour
             <div className="flex items-center gap-4">
-              <ThemeToggle />
               <LanguageToggle />
               <Button
                 variant="outline"

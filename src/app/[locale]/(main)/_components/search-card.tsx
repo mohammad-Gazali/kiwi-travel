@@ -126,7 +126,7 @@ export default function SearchCard() {
                               </div>
                               {
                                 destination.tripsCount !== 0 && (
-                                  <div className="flex items-center rounded-full bg-green-400/20 px-2 py-0.5 text-xs font-medium text-green-800 dark:text-green-400">
+                                  <div className="flex items-center rounded-full bg-green-400/20 px-2 py-0.5 text-xs font-medium text-green-800">
                                     {t("tripsCount", { count: destination.tripsCount })}
                                   </div>
                                 )
