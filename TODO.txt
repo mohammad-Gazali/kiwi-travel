@@ -1,4 +1,0 @@
-- show email for trip booking
-- make trip type as table
-- make trip type as multi select
-- sending email for notifications

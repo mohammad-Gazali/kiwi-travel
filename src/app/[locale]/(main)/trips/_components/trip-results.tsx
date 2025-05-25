@@ -1,8 +1,17 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PLACEHOLDER_IMAGE, TRIP_SEARCH_PAGE_SIZE } from "@/constants";
+import { Link } from "@/i18n/routing";
+import { localeAttributeFactory } from "@/lib/utils";
+import { api } from "@/trpc/react";
 import {
   Calendar,
   ChevronLeft,
@@ -10,20 +19,10 @@ import {
   MapPin,
   Star,
 } from "lucide-react";
-import Image from "next/image";
-import { Link } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { use, useState } from "react";
 import { SearchContext } from "./search-provider";
-import { api } from "@/trpc/react";
-import { localeAttributeFactory } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination";
-import { PLACEHOLDER_IMAGE, TRIP_SEARCH_PAGE_SIZE } from "@/constants";
 
 export function TripResults() {
   const t = useTranslations("TripsPage");
@@ -119,9 +118,6 @@ export function TripResults() {
                 fill
                 className="object-cover"
               />
-              <div className="absolute right-2 top-2">
-                <Badge>{trip.type}</Badge>
-              </div>
             </div>
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
@@ -147,10 +143,14 @@ export function TripResults() {
                   <Calendar className="mr-1 h-4 w-4" />
                   {getDuration(trip.duration)}
                 </div>
-                <div className="flex items-center">
-                  <Star className="mr-1 h-4 w-4 text-yellow-500" />
-                  {trip.reviewsValue} ({trip.reviewsCount})
-                </div>
+                {
+                  trip.reviewsCount !== 0 && (
+                    <div className="flex items-center">
+                      <Star className="mr-1 h-4 w-4 text-yellow-500" />
+                      {trip.reviewsValue} ({trip.reviewsCount})
+                    </div>
+                  )
+                }
               </div>
             </CardContent>
             <CardFooter className="p-4 pt-0">

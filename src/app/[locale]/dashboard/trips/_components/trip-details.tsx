@@ -238,6 +238,7 @@ export function TripDetails({ trip }: { trip: Trip }) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>User Phone</TableHead>
+                      <TableHead>User Email</TableHead>
                       <TableHead>Travelers Count</TableHead>
                       <TableHead>Created At</TableHead>
                       <TableHead>Status</TableHead>
@@ -250,6 +251,9 @@ export function TripDetails({ trip }: { trip: Trip }) {
                         <TableRow key={request.id}>
                           <TableCell className="font-medium">
                             {request.userPhone}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {request.userEmail}
                           </TableCell>
                           <TableCell>{request.travelersCount}</TableCell>
                           <TableCell>

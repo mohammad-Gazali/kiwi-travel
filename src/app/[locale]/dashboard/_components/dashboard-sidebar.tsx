@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
+  ChartBarStacked,
   CircleGauge,
   CircleHelp,
   Flag,
@@ -32,6 +33,11 @@ const sidebarNavItems = [
     title: "Trips Features",
     href: "/dashboard/features",
     icon: Sparkles,
+  },
+  {
+    title: "Trips Types",
+    href: "/dashboard/types",
+    icon: ChartBarStacked,
   },
   {
     title: "Countries",

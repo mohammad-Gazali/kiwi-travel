@@ -16,14 +16,11 @@ import {
 import { CheckCircle, CircleX, Edit, Eye, Trash } from "lucide-react";
 import { api } from "@/trpc/react";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { PLACEHOLDER_IMAGE } from "@/constants";
 
 
 export function TripsList() {
-  const t = useTranslations("General.tripType");
-
   const { toast } = useToast();
 
   const { data, refetch } = api.trip.adminList.useQuery();

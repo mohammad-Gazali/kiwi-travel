@@ -21,7 +21,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useUploadThing } from "@/hooks/use-upload-thing";
-import { days, tripFormSchema, tripTypes } from "@/validators/trip-schema";
+import { days, tripFormSchema } from "@/validators/trip-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,12 +49,12 @@ interface TripFormProps {
 }
 
 export function TripForm({ initialData, id }: TripFormProps) {
-  const t = useTranslations("General.tripType");
-
   const { data: destinations, isLoading: isDestinationsLoading } =
     api.destination.adminList.useQuery();
   const { data: tripFeatures, isLoading: isTripFeaturesLoading } =
     api.tripFeature.adminList.useQuery();
+  const { data: tripTypes, isLoading: isTripTypesLoading } =
+    api.tripType.list.useQuery();
 
   const { invalidate } = api.useUtils().trip.adminList;
 
@@ -184,7 +184,7 @@ export function TripForm({ initialData, id }: TripFormProps) {
       isAvailable: initialData?.isAvailable || true,
       isFeatured: initialData?.isFeatured || false,
       isConfirmationRequired: initialData?.isConfirmationRequired || false,
-      tripType: initialData?.tripType,
+      tripTypes: initialData?.tripTypes,
     },
   });
 
@@ -367,7 +367,7 @@ export function TripForm({ initialData, id }: TripFormProps) {
                         value: f.id.toString(),
                       })) ?? []
                     }
-                    defaultValue={field.value.map((v) => v.toString())}
+                    defaultValue={field.value?.map((v) => v.toString())}
                     onValueChange={(value) => field.onChange(value.map(Number))}
                     placeholder="Select features"
                   />
@@ -490,31 +490,24 @@ export function TripForm({ initialData, id }: TripFormProps) {
           {/* Trip Type */}
           <FormField
             control={form.control}
-            name="tripType"
+            name="tripTypes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Trip Type</FormLabel>
-                <Select
-                  onValueChange={(value) => field.onChange(value)
-                  }
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {tripTypes.map((type) => (
-                      <SelectItem
-                        key={type}
-                        value={type}
-                      >
-                        {t(type)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormLabel>Trip Types</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    disabled={isTripTypesLoading}
+                    options={
+                      tripTypes?.map((f) => ({
+                        label: f.nameEn,
+                        value: f.id.toString(),
+                      })) ?? []
+                    }
+                    defaultValue={field.value?.map((v) => v.toString())}
+                    onValueChange={(value) => field.onChange(value.map(Number))}
+                    placeholder="Select trip types"
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

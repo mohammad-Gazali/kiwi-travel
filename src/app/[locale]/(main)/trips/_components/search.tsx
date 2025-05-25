@@ -23,7 +23,6 @@ import { api } from "@/trpc/react";
 import {
   tripSearchFormSchema,
   TripSearchFormValues,
-  tripTypes,
 } from "@/validators/trip-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -40,7 +39,6 @@ export function Search({ initialValue }: { initialValue?: string }) {
     use(SearchContext);
 
   const t = useTranslations("TripsPage");
-  const t_TripType = useTranslations("General.tripType");
 
   const locale = useLocale();
   const localeAttribute = localeAttributeFactory(locale);
@@ -55,7 +53,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
       },
       destinations: [],
       countries: [],
-      type: [],
+      types: [],
     },
   });
 
@@ -63,6 +61,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
     isPopularOnly: true,
   });
   const { data: countries } = api.country.list.useQuery();
+  const { data: tripTypes } = api.tripType.list.useQuery();
 
   const price = form.watch("price");
 
@@ -331,7 +330,7 @@ export function Search({ initialValue }: { initialValue?: string }) {
                   {/* Trip Type */}
                   <FormField
                     control={form.control}
-                    name="type"
+                    name="types"
                     render={() => (
                       <FormItem>
                         <FormLabel className="mb-4">
@@ -344,36 +343,36 @@ export function Search({ initialValue }: { initialValue?: string }) {
                               "repeat(auto-fill, minmax(120px, 1fr))",
                           }}
                         >
-                          {tripTypes.map((type) => (
+                          {tripTypes?.map((type) => (
                             <FormField
-                              key={type}
+                              key={type.id}
                               control={form.control}
-                              name="type"
+                              name="types"
                               render={({ field }) => (
                                 <FormItem className="flex items-end gap-2">
                                   <FormControl>
                                     <Checkbox
                                       checked={
-                                        !!field.value?.includes(type)
+                                        !!field.value?.includes(type.id)
                                       }
                                       onCheckedChange={(checked) =>
                                         checked
                                           ? field.onChange([
                                               ...(field.value ?? []),
-                                              type,
+                                              type.id,
                                             ])
                                           : field.onChange(
                                               (field.value ?? []).filter(
                                                 (value) =>
-                                                  value !== type,
+                                                  value !== type.id,
                                               ),
                                             )
                                       }
-                                      value={type}
+                                      value={type.id}
                                     />
                                   </FormControl>
                                   <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    {t_TripType(type)}
+                                    {localeAttribute(type, "name")}
                                   </FormLabel>
                                 </FormItem>
                               )}

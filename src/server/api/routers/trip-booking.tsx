@@ -10,11 +10,27 @@ import { format } from "date-fns";
 import { count, desc, eq, inArray } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
+import nodemailer from "nodemailer";
 import {
   adminProcedure,
   authProtectedProcedure,
   createTRPCRouter,
 } from "../trpc";
+import { env } from "@/env";
+import { render } from "@react-email/components";
+import { BookingEmail } from "../email/booking-email";
+import { currentUser } from "@clerk/nextjs/server";
+
+const emailTransporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: true,
+  auth: {
+    user: env.EMAIL_SENDING_ADDRESS,
+    pass: env.EMAIL_SENDING_PASSWORD,
+  },
+});
+
 
 export const tripBookingRouter = createTRPCRouter({
   list: authProtectedProcedure.query(
@@ -151,12 +167,15 @@ export const tripBookingRouter = createTRPCRouter({
         });
       }
 
+      const user = (await currentUser())!;
+
       await ctx.db.insert(tripBooking).values({
         userId: ctx.userId,
+        userPhone: input.phone,
+        userEmail: user.emailAddresses[0]!.emailAddress,
         priceInCents: trip.tripPriceInCents,
         travelersCount: input.travelersCount,
         tripId: input.tripId,
-        userPhone: input.phone,
         bookingDate: format(input.date, "yyyy-MM-dd"),
         status: trip.isConfirmationRequired ? "pending" : "accepted",
       });
@@ -238,7 +257,7 @@ export const tripBookingRouter = createTRPCRouter({
   adminConfirmBooking: adminProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.transaction(async (tx) => {
+      const userEmailAddress = await ctx.db.transaction(async (tx) => {
         await ctx.db
           .update(tripBooking)
           .set({
@@ -252,6 +271,7 @@ export const tripBookingRouter = createTRPCRouter({
             id: true,
             tripId: true,
             userId: true,
+            userEmail: true,
           },
         });
 
@@ -274,7 +294,25 @@ export const tripBookingRouter = createTRPCRouter({
           tripTitleRu: trip.titleRu,
           isCancelled: false,
         });
+
+        return booking.userEmail;
       });
+
+      const t = await getTranslations("General.bookingEmail.accepted");
+
+      const email = await render(
+        <BookingEmail 
+          bookingId={input}
+          bookingLink={`${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`}
+          translations={t}
+        />
+      )
+
+      sendEmail({
+        email,
+        to: userEmailAddress ?? '',
+        subject: t("title"),
+      })
 
       return {
         message: "booking has been confirmed successfully",
@@ -283,13 +321,14 @@ export const tripBookingRouter = createTRPCRouter({
   adminCancelBooking: adminProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.transaction(async (tx) => {
+      const userEmailAddress = await ctx.db.transaction(async (tx) => {
         const booking = await tx.query.tripBooking.findFirst({
           where: ({ id }, { eq }) => eq(id, input),
           columns: {
             id: true,
             tripId: true,
             userId: true,
+            userEmail: true,
           },
         });
 
@@ -324,9 +363,27 @@ export const tripBookingRouter = createTRPCRouter({
           tripBookingId: booking.id,
           tripTitleEn: trip.titleEn,
           tripTitleRu: trip.titleRu,
-          isCancelled: false,
+          isCancelled: true,
         });
+
+        return booking.userEmail;
       });
+
+      const t = await getTranslations("General.bookingEmail.rejected");
+
+      const email = await render(
+        <BookingEmail 
+          bookingId={input}
+          bookingLink={`${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`}
+          translations={t}
+        />
+      )
+
+      sendEmail({
+        email,
+        to: userEmailAddress ?? '',
+        subject: t("title"),
+      })
 
       return {
         message: "booking has been cancelled successfully",
@@ -335,7 +392,7 @@ export const tripBookingRouter = createTRPCRouter({
   adminMarkAsDoneBooking: adminProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.transaction(async (tx) => {
+      const userEmailAddress = await ctx.db.transaction(async (tx) => {
         await ctx.db
           .update(tripBooking)
           .set({
@@ -349,6 +406,7 @@ export const tripBookingRouter = createTRPCRouter({
             id: true,
             tripId: true,
             userId: true,
+            userEmail: true,
           },
         });
 
@@ -370,7 +428,25 @@ export const tripBookingRouter = createTRPCRouter({
           tripTitleEn: trip.titleEn,
           tripTitleRu: trip.titleRu,
         });
+
+        return booking.userEmail;
       });
+
+      const t = await getTranslations("General.bookingEmail.completed");
+
+      const email = await render(
+        <BookingEmail 
+          bookingId={input}
+          bookingLink={`${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`}
+          translations={t}
+        />
+      )
+
+      sendEmail({
+        email,
+        to: userEmailAddress ?? '',
+        subject: t("title"),
+      })
 
       return {
         message: "booking has been marked as done successfully",
@@ -407,3 +483,12 @@ export const tripBookingRouter = createTRPCRouter({
       }),
   ),
 });
+
+async function sendEmail({ email, to, subject }: { email: string; to: string; subject: string; }): Promise<any> {
+  return emailTransporter.sendMail({
+    from: env.EMAIL_SENDING_ADDRESS,
+    to,
+    subject,
+    html: email,
+  }).catch(() => {})
+}

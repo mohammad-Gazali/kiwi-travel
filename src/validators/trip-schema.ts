@@ -2,24 +2,6 @@ import { z } from "zod";
 
 export const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
 
-export const tripTypes = [
-  'adventure',
-  'cultural',
-  'beach',
-  'nature',
-  'road',
-  'cruise',
-  'wellness',
-  'city',
-  'food_wine',
-  'volunteer',
-  'family',
-  'romantic',
-  'solo',
-  'eco_tourism',
-  'festival',
-] as const;
-
 
 export const tripFormSchema = z.object({
   titleEn: z.string().min(1, "English title is required"),
@@ -39,7 +21,7 @@ export const tripFormSchema = z.object({
       "Must be in format HH:MM",
     ),
   availableDays: z.array(z.enum(days)).min(1, "At least one day must be an available day"),
-  tripType: z.enum(tripTypes, { message: "Trip type is required" }),
+  tripTypes: z.array(z.number({ message: "trip type is required" })).min(1, "At least one type must be provided"),
   duration: z.string().min(1, "Duration is required"),
   isAvailable: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
@@ -62,7 +44,7 @@ export const tripSearchFormSchema = z.object({
   }).optional(),
   destinations: z.array(z.number()).optional(),
   countries: z.array(z.number()).optional(),
-  type: z.array(z.enum(tripTypes)).optional(),
+  types: z.array(z.number()).optional(),
   page: z.number().optional(),
 })
 

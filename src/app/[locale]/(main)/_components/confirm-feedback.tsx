@@ -19,6 +19,7 @@ const ConfirmFeedback = () => {
 
   useEffect(() => {
     if (notification) {
+      console.log(localeAttribute(notification, "tripTitle"))
       setOpen(true);
     }
   }, [notification]);
@@ -40,7 +41,7 @@ const ConfirmFeedback = () => {
           <Button variant="outline" onClick={() => setOpen(false)}>
             {t("cancel")}
           </Button>
-          <Link onClick={() => setOpen(false)} href={`/bookings/${notification.tripBookingId}`}>
+          <Link className="w-fit" onClick={() => setOpen(false)} href={`/bookings/${notification.tripBookingId}`}>
             <Button>{t("viewBookingDetails")}</Button>
           </Link>
         </DialogFooter>

@@ -9,6 +9,7 @@ export const tripBooking = pgTable(
     id: c.integer("id").primaryKey().generatedByDefaultAsIdentity(),
     userId: c.text("user_id").notNull(),
     userPhone: c.text("user_phone").notNull(),
+    userEmail: c.text("user_email").notNull(),
     priceInCents: c.integer("price_in_cents").notNull(),
     tripId: c.integer("trip_id")
       .notNull()
