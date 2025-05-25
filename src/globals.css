@@ -62,3 +62,8 @@
 .rich-text-editor-cotent h6 {
   margin-bottom: 0;
 }
+
+.rich-text-editor-cotent ol,
+.rich-text-editor-cotent ul {
+  list-style: disc;
+}

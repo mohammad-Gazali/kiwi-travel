@@ -27,7 +27,7 @@ export const RichTextEditor = ({
             ["bold", "italic", "underline", "strike"],
             [{ color: [] }, { background: [] }],
             ["blockquote"],
-            [{ list: "ordered" }, { list: "bullet" }],
+            [{ list: "bullet" }],
             [{ align: [] }, { indent: "-1" }, { indent: "+1" }],
             ["clean"],
           ],
