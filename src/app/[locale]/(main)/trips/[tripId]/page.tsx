@@ -63,7 +63,6 @@ export default async function TripDetailsPage({
 
   const t = await getTranslations("TripDetailsPage");
 
-  const t_TripType = await getTranslations("General.tripType");
   const t_Amenities = await getTranslations("General.amenities");
   const t_TimeUnits = await getTranslations("General.timeUnits");
 
@@ -123,7 +122,15 @@ export default async function TripDetailsPage({
                 </span>
               </div>
             </div>
-            <Badge className="w-fit">{t_TripType(trip.tripType)}</Badge>
+            <ul className="flex flex-wrap gap-2">
+              {
+                trip.tripTypes.map(({ tripType }) => <li key={tripType.id}>
+                  <Badge>
+                    {localeAttribute(tripType, "name")}
+                  </Badge>
+                </li>)
+              }
+            </ul>
           </div>
 
           {/* Main Image Gallery */}
@@ -229,7 +236,7 @@ export default async function TripDetailsPage({
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("type")}</span>
-                <span className="font-medium">{t_TripType(trip.tripType)}</span>
+                <span className="font-medium">{trip.tripTypes.map(t => localeAttribute(t.tripType, "name")).join(", ")}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("travelTime")}</span>

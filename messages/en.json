@@ -188,8 +188,8 @@
   "ConfirmFeedback": {
     "bookingCancelled": "Booking Cancelled",
     "bookingConfirmed": "Booking Confirmed",
-    "cancelledMessage": "Unfortunately, the booking for trip '{tripTitle}' has been cancelled for organizational reasons. You can proceed to your booking details.",
-    "confirmedMessage": "Congratulations! The booking for trip '{tripTitle}' has been accepted. You can proceed to your booking details.",
+    "cancelledMessage": "Unfortunately, the booking for trip {tripTitle} has been cancelled for organizational reasons. You can proceed to your booking details.",
+    "confirmedMessage": "Congratulations! The booking for trip {tripTitle} has been accepted. You can proceed to your booking details.",
     "cancel": "Cancel",
     "viewBookingDetails": "View Booking Details"
   },
@@ -219,23 +219,6 @@
     "deleting": "Deleting..."
   },
   "General": {
-    "tripType": {
-      "adventure": "Adventure",
-      "cultural": "Cultural",
-      "beach": "Beach Vacation",
-      "nature": "Nature Retreat",
-      "road": "Road Trip",
-      "cruise": "Cruise Vacation",
-      "wellness": "Wellness Trip",
-      "city": "City Escape",
-      "food_wine": "Food & Wine Journey",
-      "volunteer": "Volunteer Vacation",
-      "family": "Family Getaway",
-      "romantic": "Romantic Escape",
-      "solo": "Solo Adventure",
-      "eco_tourism": "Eco-Tourism",
-      "festival": "Festival Tour"
-    },
     "amenities": {
       "transfer": "Transfers from/to Hotel ",
       "guide": "Professional Tour Guide",
@@ -275,6 +258,23 @@
       "followUsTitle": "Follow Us",
       "discoverTheWorld": "Discover the world with us",
       "copyright": "All rights reserved."
+    },
+    "bookingEmail": {
+      "accepted": {
+        "title": "Your booking has been accepted!",
+        "description": "We're happy to confirm your booking.",
+        "buttonText": "View Booking"
+      },
+      "rejected": {
+        "title": "Your booking has been cancelled.",
+        "description": "Unfortunately, your booking could not be processed.",
+        "buttonText": "View Booking"
+      },
+      "completed": {
+        "title": "Your booking is completed!",
+        "description": "Thank you for choosing us.",
+        "buttonText": "View Booking"
+      }
     }
   },
   "Metadata": {

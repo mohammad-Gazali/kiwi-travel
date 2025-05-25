@@ -9,7 +9,8 @@ import {
   country,
   destination,
   trip,
-  tripToFeature
+  tripToFeature,
+  tripToTripType
 } from "@/server/db/schema";
 import {
   days,
@@ -18,7 +19,7 @@ import {
 } from "@/validators/trip-schema";
 import {
   and,
-  count,
+  countDistinct,
   eq,
   gte,
   ilike,
@@ -114,6 +115,13 @@ export const tripRouter = createTRPCRouter({
             featureId,
           })),
         );
+
+        await tx.insert(tripToTripType).values(
+          input.tripTypes.map(tripTypeId => ({
+            tripId,
+            tripTypeId,
+          }))
+        );
       });
 
       return {
@@ -137,11 +145,22 @@ export const tripRouter = createTRPCRouter({
           .delete(tripToFeature)
           .where(eq(tripToFeature.tripId, input.id));
 
+        await tx
+          .delete(tripToTripType)
+          .where(eq(tripToTripType.tripId, input.id));
+
         await tx.insert(tripToFeature).values(
           input.features.map((featureId) => ({
             tripId: input.id,
             featureId,
           })),
+        );
+
+        await tx.insert(tripToTripType).values(
+          input.tripTypes.map(tripTypeId => ({
+            tripId: input.id,
+            tripTypeId,
+          }))
         );
       });
 
@@ -161,14 +180,16 @@ export const tripRouter = createTRPCRouter({
   listSearch: publicProcedure
     .input(tripSearchFormSchema)
     .query(async ({ ctx, input }) => {
+      console.log("Input\n", input)
+
       // ========= query conditions =========
       const dateCondition =
         input.date &&
         sql`${days[input.date.getDay()]} = ANY(${trip.availableDays})`;
 
       const typeCondition =
-        input.type && input.type.length !== 0
-          ? inArray(trip.tripType, input.type)
+        input.types && input.types.length !== 0
+          ? inArray(tripToTripType.tripTypeId, input.types)
           : undefined;
 
       const priceLowerCondition =
@@ -218,10 +239,11 @@ export const tripRouter = createTRPCRouter({
       const pageIndex = input.page ?? 0;
 
       const totalCountResult = await ctx.db
-        .select({ count: count() })
+        .selectDistinct({ count: countDistinct(trip.id) })
         .from(trip)
         .innerJoin(destination, eq(trip.destinationId, destination.id))
         .innerJoin(country, eq(destination.countryId, country.id))
+        .leftJoin(tripToTripType, eq(trip.id, tripToTripType.tripId))
         .where(conditions);
 
       const _reviews = await ctx.db.query.review.findMany({
@@ -247,12 +269,11 @@ export const tripRouter = createTRPCRouter({
       };
 
       return await ctx.db
-        .select({
+        .selectDistinct({
           id: trip.id,
           titleEn: trip.titleEn,
           titleRu: trip.titleRu,
           assets: trip.assetsUrls,
-          type: trip.tripType,
           priceInCents: trip.tripPriceInCents,
           duration: trip.duration,
           isFeatured: trip.isFeatured,
@@ -265,6 +286,7 @@ export const tripRouter = createTRPCRouter({
         .from(trip)
         .innerJoin(destination, eq(trip.destinationId, destination.id))
         .innerJoin(country, eq(destination.countryId, country.id))
+        .leftJoin(tripToTripType, eq(trip.id, tripToTripType.tripId))
         .where(conditions)
         .orderBy(trip.isFeatured)
         .limit(TRIP_SEARCH_PAGE_SIZE)
@@ -282,7 +304,6 @@ export const tripRouter = createTRPCRouter({
               locationEn: `${item.countryEn}, ${item.destinationEn}`,
               locationRu: `${item.countryRu}, ${item.destinationRu}`,
               price: Math.floor(item.priceInCents / 100),
-              type: item.type,
               duration: item.duration,
               isFeatured: item.isFeatured,
               image: mainImage(item.assets),
@@ -360,6 +381,11 @@ export const tripRouter = createTRPCRouter({
       await ctx.db.query.trip.findFirst({
         where: ({ id }, { eq }) => eq(id, input),
         with: {
+          tripTypes: {
+            with: {
+              tripType: true,
+            },
+          },
           destination: {
             with: {
               country: true,

@@ -1,7 +1,7 @@
 import { sql, relations } from "drizzle-orm";
-import { index, pgTable, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, primaryKey } from "drizzle-orm/pg-core";
 import { destination } from "./destination";
-import { days, tripTypes } from "@/validators/trip-schema";
+import { days } from "@/validators/trip-schema";
 import { tripBooking } from "./trip-booking";
 import { review } from "./review";
 
@@ -38,11 +38,6 @@ export const trip = pgTable("trips", (c) => ({
     })
     .array()
     .notNull(),
-  tripType: c
-    .text("trip_type", {
-      enum: tripTypes,
-    })
-    .notNull(),
   createdAt: c
     .timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -73,10 +68,32 @@ export const tripToFeature = pgTable(
   (t) => [primaryKey({ columns: [t.tripId, t.featureId] })],
 );
 
+export const tripType = pgTable("trip_type", (c) => ({
+  id: c.integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  nameEn: c.text("name_en").notNull(),
+  nameRu: c.text("name_ru").notNull(),
+}));
+
+export const tripToTripType = pgTable(
+  "trip_to_trip_type",
+  (c) => ({
+    tripId: c
+      .integer("trip_id")
+      .notNull()
+      .references(() => trip.id, { onDelete: "cascade" }),
+    tripTypeId: c
+      .integer("trip_type_id")
+      .notNull()
+      .references(() => tripType.id, { onDelete: "cascade" }),
+  }),
+  (t) => [primaryKey({ columns: [t.tripId, t.tripTypeId] })],
+);
+
 // ======================== relations ========================
 export const tripRelations = relations(trip, ({ many, one }) => ({
   bookings: many(tripBooking),
   features: many(tripToFeature),
+  tripTypes: many(tripToTripType),
   reviews: many(review),
   destination: one(destination, {
     fields: [trip.destinationId],
@@ -94,3 +111,14 @@ export const tripToFeatureRelations = relations(tripToFeature, ({ one }) => ({
     references: [trip.id],
   }),
 }));
+
+export const tripToTripTypeRelations = relations(tripToTripType, ({ one }) => ({
+  tripType: one(tripType, {
+    fields: [tripToTripType.tripTypeId],
+    references: [tripType.id],
+  }),
+  trip: one(trip, {
+    fields: [tripToTripType.tripId],
+    references: [trip.id],
+  }),
+}))
