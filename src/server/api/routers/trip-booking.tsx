@@ -490,5 +490,5 @@ async function sendEmail({ email, to, subject }: { email: string; to: string; su
     to,
     subject,
     html: email,
-  }).catch(() => {})
+  }).catch((err) => console.error("Error Sending Email\n", err))
 }
