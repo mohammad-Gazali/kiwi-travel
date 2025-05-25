@@ -22,8 +22,8 @@ import { BookingEmail } from "../email/booking-email";
 import { currentUser } from "@clerk/nextjs/server";
 
 const emailTransporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
+  host: env.EMAIL_SENDING_HOST,
+  port: Number(env.EMAIL_SENDING_PORT),
   secure: true,
   auth: {
     user: env.EMAIL_SENDING_ADDRESS,
