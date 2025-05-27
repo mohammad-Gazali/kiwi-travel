@@ -15,6 +15,7 @@ import {
   adminProcedure,
   authProtectedProcedure,
   createTRPCRouter,
+  publicProcedure,
 } from "../trpc";
 import { env } from "@/env";
 import { render } from "@react-email/components";
@@ -24,7 +25,7 @@ import { currentUser } from "@clerk/nextjs/server";
 const emailTransporter = nodemailer.createTransport({
   host: env.EMAIL_SENDING_HOST,
   port: Number(env.EMAIL_SENDING_PORT),
-  secure: true,
+  secure: false,
   auth: {
     user: env.EMAIL_SENDING_ADDRESS,
     pass: env.EMAIL_SENDING_PASSWORD,
@@ -179,6 +180,11 @@ export const tripBookingRouter = createTRPCRouter({
         bookingDate: format(input.date, "yyyy-MM-dd"),
         status: trip.isConfirmationRequired ? "pending" : "accepted",
       });
+
+      const bookingLink = `${env.NEXT_PUBLIC_APP_URL}/dashboard/bookings`;
+      await sendTelegramNotification(
+        `🧾 <b>Новая бронь</b>\nПользователь: ${user.emailAddresses[0]!.emailAddress}\nТелефон: ${input.phone}\nТур: ${input.tripId}\nДата: ${format(input.date, "yyyy-MM-dd")}\n<a href="${bookingLink}">Открыть в админке</a>`
+      );
 
       return {
         message: trip.isConfirmationRequired
@@ -447,6 +453,11 @@ export const tripBookingRouter = createTRPCRouter({
         to: userEmailAddress ?? '',
         subject: t("title"),
       })
+      const bookingLink = `${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`;
+
+      await sendTelegramNotification(
+        `📩 New booking confirmed\n<a href="${bookingLink}">View booking</a>`
+      );
 
       return {
         message: "booking has been marked as done successfully",
@@ -482,13 +493,98 @@ export const tripBookingRouter = createTRPCRouter({
         return result;
       }),
   ),
+    testNotify: publicProcedure.mutation(async () => {
+    const bookingId = 999;
+    const bookingLink = `${env.NEXT_PUBLIC_APP_URL}/bookings/${bookingId}`;
+    const fakeEmail = "test@example.com";
+
+    const t = await getTranslations("General.bookingEmail.accepted");
+
+    const emailHtml = await render(
+      <BookingEmail 
+        bookingId={bookingId}
+        bookingLink={bookingLink}
+        translations={t}
+      />
+    );
+
+    await sendEmail({
+      email: emailHtml,
+      to: fakeEmail,
+      subject: "📧 Тестовое письмо",
+    });
+
+    return { message: "✅ Тестовое уведомление отправлено" };
+  }),
 });
 
-async function sendEmail({ email, to, subject }: { email: string; to: string; subject: string; }): Promise<any> {
-  return emailTransporter.sendMail({
-    from: env.EMAIL_SENDING_ADDRESS,
-    to,
-    subject,
-    html: email,
-  }).catch((err) => console.error("Error Sending Email\n", err))
+async function sendEmail({
+  email,
+  to,
+  subject,
+  copyToAdmin = true,
+}: {
+  email: string;
+  to: string;
+  subject: string;
+  copyToAdmin?: boolean;
+}): Promise<void> {
+  try {
+    await emailTransporter.sendMail({
+      from: env.EMAIL_SENDING_ADDRESS,
+      to,
+      subject,
+      html: email,
+    });
+    console.log(`✅ Email sent to ${to}`);
+  } catch (err) {
+    console.error("❌ Error sending email to user", err);
+  }
+
+  if (copyToAdmin && env.EMAIL_ADMIN_ADDRESS) {
+    try {
+      await emailTransporter.sendMail({
+        from: env.EMAIL_SENDING_ADDRESS,
+        to: env.EMAIL_ADMIN_ADDRESS,
+        subject: `[ADMIN COPY] ${subject}`,
+        html: email,
+      });
+      console.log(`📬 Admin copy sent to ${env.EMAIL_ADMIN_ADDRESS}`);
+    } catch (err) {
+      console.error("⚠️ Error sending admin copy", err);
+    }
+  }
 }
+
+async function sendTelegramNotification(message: string) {
+  const token = env.TELEGRAM_BOT_TOKEN;
+  const chatId = env.TELEGRAM_ADMIN_CHAT_ID;
+
+  if (!token || !chatId) {
+    console.warn("⚠️ Telegram config missing");
+    return;
+  }
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: "HTML",
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("❌ Telegram API error", await res.text());
+    } else {
+      console.log("📨 Sent Telegram message");
+    }
+  } catch (err) {
+    console.error("❌ Telegram fetch error", err);
+  }
+}
+

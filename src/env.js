@@ -13,9 +13,13 @@ export const env = createEnv({
       .default("development"),
     UPLOADTHING_HOST: z.string(),
     EMAIL_SENDING_ADDRESS: z.string(),
+    EMAIL_ADMIN_ADDRESS: z.string(),
     EMAIL_SENDING_PASSWORD: z.string(),
     EMAIL_SENDING_HOST: z.string(),
-    EMAIL_SENDING_PORT: z.string(),
+    EMAIL_SENDING_PORT: z.string()  ,
+    TELEGRAM_BOT_TOKEN: z.string(),
+    TELEGRAM_ADMIN_CHAT_ID: z.string(),
+
   },
 
   /**
@@ -37,9 +41,12 @@ export const env = createEnv({
     UPLOADTHING_HOST: process.env.UPLOADTHING_HOST,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     EMAIL_SENDING_ADDRESS: process.env.EMAIL_SENDING_ADDRESS,
+    EMAIL_ADMIN_ADDRESS: process.env.EMAIL_ADMIN_ADDRESS,
     EMAIL_SENDING_PASSWORD: process.env.EMAIL_SENDING_PASSWORD,
     EMAIL_SENDING_HOST: process.env.EMAIL_SENDING_HOST,
     EMAIL_SENDING_PORT: process.env.EMAIL_SENDING_PORT,
+    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+    TELEGRAM_ADMIN_CHAT_ID: process.env.TELEGRAM_ADMIN_CHAT_ID
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
