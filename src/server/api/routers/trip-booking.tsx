@@ -25,7 +25,7 @@ import { currentUser } from "@clerk/nextjs/server";
 const emailTransporter = nodemailer.createTransport({
   host: env.EMAIL_SENDING_HOST,
   port: Number(env.EMAIL_SENDING_PORT),
-  secure: false,
+  secure: true,
   auth: {
     user: env.EMAIL_SENDING_ADDRESS,
     pass: env.EMAIL_SENDING_PASSWORD,
@@ -185,6 +185,22 @@ export const tripBookingRouter = createTRPCRouter({
       await sendTelegramNotification(
         `🧾 <b>Новая бронь</b>\nПользователь: ${user.emailAddresses[0]!.emailAddress}\nТелефон: ${input.phone}\nТур: ${input.tripId}\nДата: ${format(input.date, "yyyy-MM-dd")}\n<a href="${bookingLink}">Открыть в админке</a>`
       );
+
+      const tEmail = await getTranslations("General.bookingEmail.new");
+
+      const emailHtml = await render(
+        <BookingEmail
+          bookingId={0} // или реальный ID, если захочешь получить его из insert
+          bookingLink={bookingLink}
+          translations={tEmail}
+        />
+      );
+
+      await sendEmail({
+        email: emailHtml,
+        to: user.emailAddresses[0]!.emailAddress,
+        subject: tEmail("title"), // например, "📩 Новая бронь"
+      });
 
       return {
         message: trip.isConfirmationRequired
@@ -493,29 +509,6 @@ export const tripBookingRouter = createTRPCRouter({
         return result;
       }),
   ),
-    testNotify: publicProcedure.mutation(async () => {
-    const bookingId = 999;
-    const bookingLink = `${env.NEXT_PUBLIC_APP_URL}/bookings/${bookingId}`;
-    const fakeEmail = "test@example.com";
-
-    const t = await getTranslations("General.bookingEmail.accepted");
-
-    const emailHtml = await render(
-      <BookingEmail 
-        bookingId={bookingId}
-        bookingLink={bookingLink}
-        translations={t}
-      />
-    );
-
-    await sendEmail({
-      email: emailHtml,
-      to: fakeEmail,
-      subject: "📧 Тестовое письмо",
-    });
-
-    return { message: "✅ Тестовое уведомление отправлено" };
-  }),
 });
 
 async function sendEmail({
