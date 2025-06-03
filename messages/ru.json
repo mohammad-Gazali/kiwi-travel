@@ -112,6 +112,13 @@
     },
     "bookingForm": {
       "perPerson": "за человека",
+      "perChild": "на дитя",
+      "perInfant": "на младенца",
+      "agesBetween": "возраст {first}-{second}",
+      "ageUnder": "до {age} лет",
+      "adults": "Взрослые",
+      "children": "Дети",
+      "infants": "Младенцы",
       "bookingDate": "Дата бронирования",
       "selectDate": "Выберите дату",
       "travelersCount": "Количество путешественников",
@@ -166,6 +173,9 @@
     "delete": "Удалить",
     "person": "человек",
     "people": "человека",
+    "adults": "Взрослые",
+    "children": "Дети",
+    "infants": "Младенцы",
     "statuses": {
       "all": "Все",
       "pending": "Ожидающие",

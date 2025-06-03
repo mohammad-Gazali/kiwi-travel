@@ -28,7 +28,9 @@ export default async function EditTripPage({
         initialData={{
           ...trip,
           assets: trip.assetsUrls,
-          price: trip.tripPriceInCents / 100,
+          adultPrice: trip.adultTripPriceInCents / 100,
+          childPrice: trip.childTripPriceInCents / 100,
+          infantPrice: trip.infantTripPriceInCents / 100,
           features: trip.features.map((f) => f.featureId),
         }}
       />

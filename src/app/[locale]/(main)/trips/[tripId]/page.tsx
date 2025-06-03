@@ -70,7 +70,9 @@ export default async function TripDetailsPage({
 
   if (!trip) notFound();
 
-  const price = trip.tripPriceInCents / 100;
+  const adultPrice = trip.adultTripPriceInCents / 100;
+  const childPrice = trip.childTripPriceInCents / 100;
+  const infantPrice = trip.infantTripPriceInCents / 100;
 
   const amenities = [
     {
@@ -204,7 +206,11 @@ export default async function TripDetailsPage({
           <BookingForm
             availableDays={trip.availableDays}
             tripId={trip.id}
-            price={price}
+            adultPrice={adultPrice}
+            childPrice={trip.childAge !== 0 ? childPrice : null}
+            infantPrice={trip.infantAge !== 0 ? infantPrice : null}
+            childAge={trip.childAge}
+            infantAge={trip.infantAge}
             duration={duration}
             reviewsValue={reviewsValue}
             reviewsCount={reviewsCount}

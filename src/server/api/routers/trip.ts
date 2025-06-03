@@ -47,7 +47,7 @@ export const tripRouter = createTRPCRouter({
         id: true,
         assetsUrls: true,
         titleEn: true,
-        tripPriceInCents: true,
+        adultTripPriceInCents: true,
         isAvailable: true,
         isFeatured: true,
         isConfirmationRequired: true,
@@ -72,7 +72,11 @@ export const tripRouter = createTRPCRouter({
           id: true,
           titleEn: true,
           titleRu: true,
-          tripPriceInCents: true,
+          adultTripPriceInCents: true,
+          childTripPriceInCents: true,
+          childAge: true,
+          infantTripPriceInCents: true,
+          infantAge: true,
           assetsUrls: true,
           descriptionEn: true,
           descriptionRu: true,
@@ -103,7 +107,9 @@ export const tripRouter = createTRPCRouter({
           .values({
             ...input,
             assetsUrls: input.assets,
-            tripPriceInCents: Math.floor(input.price * 100),
+            adultTripPriceInCents: Math.floor(input.adultPrice * 100),
+            childTripPriceInCents: Math.floor(input.childPrice * 100),
+            infantTripPriceInCents: Math.floor(input.infantPrice * 100),
           })
           .returning({ id: trip.id });
 
@@ -137,7 +143,9 @@ export const tripRouter = createTRPCRouter({
           .set({
             ...input,
             assetsUrls: input.assets,
-            tripPriceInCents: Math.floor(input.price * 100),
+            adultTripPriceInCents: Math.floor(input.adultPrice * 100),
+            childTripPriceInCents: Math.floor(input.childPrice * 100),
+            infantTripPriceInCents: Math.floor(input.infantPrice * 100),
           })
           .where(eq(trip.id, input.id));
 
@@ -194,12 +202,12 @@ export const tripRouter = createTRPCRouter({
 
       const priceLowerCondition =
         input.price?.lower !== undefined
-          ? gte(trip.tripPriceInCents, input.price.lower * 100)
+          ? gte(trip.adultTripPriceInCents, input.price.lower * 100)
           : undefined;
 
       const priceGreaterCondition =
         input.price?.greater !== undefined
-          ? lte(trip.tripPriceInCents, input.price.greater * 100)
+          ? lte(trip.adultTripPriceInCents, input.price.greater * 100)
           : undefined;
 
       const destinationsCondition =
@@ -274,7 +282,7 @@ export const tripRouter = createTRPCRouter({
           titleEn: trip.titleEn,
           titleRu: trip.titleRu,
           assets: trip.assetsUrls,
-          priceInCents: trip.tripPriceInCents,
+          priceInCents: trip.adultTripPriceInCents,
           duration: trip.duration,
           isFeatured: trip.isFeatured,
           countryEn: country.nameEn,
@@ -322,7 +330,7 @@ export const tripRouter = createTRPCRouter({
             id: true,
             titleEn: true,
             titleRu: true,
-            tripPriceInCents: true,
+            adultTripPriceInCents: true,
             assetsUrls: true,
           },
           with: {
@@ -342,7 +350,7 @@ export const tripRouter = createTRPCRouter({
               id: item.id,
               titleEn: item.titleEn,
               titleRu: item.titleRu,
-              price: Math.floor(item.tripPriceInCents / 100),
+              price: Math.floor(item.adultTripPriceInCents / 100),
               image: mainImage(item.assetsUrls),
               reviewsValue: isNaN(_reviewsValue) ? 0 : _reviewsValue,
             }
@@ -362,7 +370,7 @@ export const tripRouter = createTRPCRouter({
               descriptionEn: true,
               descriptionRu: true,
               duration: true,
-              tripPriceInCents: true,
+              adultTripPriceInCents: true,
               assetsUrls: true,
             },
           },

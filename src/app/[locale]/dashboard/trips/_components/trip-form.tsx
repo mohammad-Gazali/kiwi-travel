@@ -170,7 +170,11 @@ export function TripForm({ initialData, id }: TripFormProps) {
       features: initialData?.features || [],
       travelTime: initialData?.travelTime || "00:00",
       destinationId: initialData?.destinationId || ("" as any),
-      price: initialData?.price || 0,
+      adultPrice: initialData?.adultPrice || 0,
+      childPrice: initialData?.childPrice || 0,
+      infantPrice: initialData?.infantPrice || 0,
+      childAge: initialData?.childAge || 0,
+      infantAge: initialData?.infantAge || 0,
       availableDays: initialData?.availableDays || [
         "Sunday",
         "Monday",
@@ -513,13 +517,13 @@ export function TripForm({ initialData, id }: TripFormProps) {
             )}
           />
 
-          {/* Trip Price */}
+          {/* Adult Trip Price */}
           <FormField
             control={form.control}
-            name="price"
+            name="adultPrice"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>Adult Price</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -529,6 +533,90 @@ export function TripForm({ initialData, id }: TripFormProps) {
                   />
                 </FormControl>
                 <FormDescription>Enter the price (e.g. 10.00)</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Child Trip Price */}
+          <FormField
+            control={form.control}
+            name="childPrice"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Child Price</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter price"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
+                  />
+                </FormControl>
+                <FormDescription>Enter the price (e.g. 10.00)</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Infant Trip Price */}
+          <FormField
+            control={form.control}
+            name="infantPrice"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Infant Price</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter price"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
+                  />
+                </FormControl>
+                <FormDescription>Enter the price (e.g. 10.00)</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Child Age */}
+          <FormField
+            control={form.control}
+            name="childAge"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Child Age</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter age"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
+                  />
+                </FormControl>
+                <FormDescription>Enter the age or enter zero if child is not included in the trip plan</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Infant Age */}
+          <FormField
+            control={form.control}
+            name="infantAge"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Infant Age</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter age"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
+                  />
+                </FormControl>
+                <FormDescription>Enter the age or enter zero if infant is not included in the trip plan</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

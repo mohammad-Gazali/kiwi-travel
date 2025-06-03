@@ -83,8 +83,17 @@ export const BookingsList = () => {
       ),
     },
     {
-      accessorKey: "travelersCount",
+      id: "travelersCount",
       header: "Travelers Count",
+      cell: ({ row }) => (
+        <>
+          {row.original.adultsCount}
+          {row.original.childrenCount !== 0 &&
+            ` + ${row.original.childrenCount} children`}
+          {row.original.infantsCount !== 0 &&
+            ` + ${row.original.infantsCount} infants`}
+        </>
+      ),
     },
     {
       accessorKey: "createdAt",
