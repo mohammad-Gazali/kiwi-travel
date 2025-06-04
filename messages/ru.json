@@ -114,8 +114,7 @@
       "perPerson": "за человека",
       "perChild": "на дитя",
       "perInfant": "на младенца",
-      "agesBetween": "возраст {first}-{second}",
-      "ageUnder": "до {age} лет",
+      "free": "Бесплатно",
       "adults": "Взрослые",
       "children": "Дети",
       "infants": "Младенцы",
@@ -176,6 +175,7 @@
     "adults": "Взрослые",
     "children": "Дети",
     "infants": "Младенцы",
+    "free": "Бесплатно",
     "statuses": {
       "all": "Все",
       "pending": "Ожидающие",

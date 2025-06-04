@@ -49,10 +49,9 @@ interface BookingFormProps {
   reviewsCount: number;
   reviewsValue: number;
   adultPrice: number;
-  childAge: number;
-  infantAge: number;
+  childAge: string;
+  infantAge: string;
   childPrice: number | null;
-  infantPrice: number | null;
 }
 
 const BookingForm = ({
@@ -63,7 +62,6 @@ const BookingForm = ({
   reviewsValue,
   adultPrice,
   childPrice,
-  infantPrice,
   childAge,
   infantAge,
 }: BookingFormProps) => {
@@ -93,23 +91,17 @@ const BookingForm = ({
                 <span className="text-xl font-semibold">${childPrice}</span>
                 <span className="text-sm text-muted-foreground">
                   {t("perChild")}{" "}
-                  ({
-                    infantPrice !== null ? (
-                      t("agesBetween", { first: infantAge + 1, second: childAge })
-                    ) : (
-                      t("ageUnder", { age: childAge + 1 })
-                    )
-                  })
+                  ({childAge})
                 </span>
               </div>
             )}
 
             {/* Infant Price - only show if not null */}
-            {infantPrice !== null && (
+            {!!infantAge.trim() && (
               <div className="flex items-center justify-between">
-                <span className="text-xl font-semibold">${infantPrice}</span>
+                <span className="text-xl font-semibold">{t("free")}</span>
                 <span className="text-sm text-muted-foreground">
-                  {t("perInfant")} ({t("ageUnder", { age: infantAge + 1 })})
+                  {t("perInfant")} ({infantAge})
                 </span>
               </div>
             )}
@@ -142,7 +134,6 @@ const BookingForm = ({
             mappedDays={mappedDays}
             adultPrice={adultPrice}
             childPrice={childPrice}
-            infantPrice={infantPrice}
             childAge={childAge}
             infantAge={infantAge}
             tripId={tripId}
@@ -174,10 +165,9 @@ interface BookingSubmitDialog {
   mappedDays: number[];
   tripId: number;
   adultPrice: number;
-  childAge: number;
-  infantAge: number;
+  childAge: string;
+  infantAge: string;
   childPrice: number | null;
-  infantPrice: number | null;
 }
 
 const BookingSubmitDialog = ({
@@ -185,7 +175,6 @@ const BookingSubmitDialog = ({
   tripId,
   adultPrice,
   childPrice,
-  infantPrice,
   childAge,
   infantAge,
 }: BookingSubmitDialog) => {
@@ -234,8 +223,7 @@ const BookingSubmitDialog = ({
   // Calculate total price based on traveler types
   const adultTotal = adultPrice * adults
   const childTotal = (childPrice ?? 0) * children
-  const infantTotal = (infantPrice ?? 0) * infants
-  const totalPrice = (adultTotal + childTotal + infantTotal).toFixed(2)
+  const totalPrice = (adultTotal + childTotal).toFixed(2)
 
   const handleIncreaseCount = (field: "adultsCount" | "childrenCount" | "infantsCount") => {
     const current = form.getValues(field) || 0
@@ -406,13 +394,7 @@ const BookingSubmitDialog = ({
                             <div>
                               <p className="text-sm font-medium">{t("children")}</p>
                               <p className="text-xs text-muted-foreground">
-                              {
-                                infantAge !== 0 ? (
-                                  t("agesBetween", { first: infantAge + 1, second: childAge })
-                                ) : (
-                                  t("ageUnder", { age: childAge + 1 })
-                                )
-                              }
+                                {childAge}
                               </p>
                             </div>
                             <div className="flex items-center">
@@ -458,7 +440,7 @@ const BookingSubmitDialog = ({
                 }
 
                 {
-                  infantPrice !== null && (
+                  !!infantAge.trim() && (
                     <FormField
                       control={form.control}
                       name="infantsCount"
@@ -467,7 +449,7 @@ const BookingSubmitDialog = ({
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm font-medium">{t("infants")}</p>
-                              <p className="text-xs text-muted-foreground">{t("ageUnder", { age: infantAge + 1 })}</p>
+                              <p className="text-xs text-muted-foreground">{infantAge}</p>
                             </div>
                             <div className="flex items-center">
                               <Button
@@ -535,9 +517,9 @@ const BookingSubmitDialog = ({
                 {infants > 0 && (
                   <div className="flex items-center justify-between">
                     <span>
-                      {t("infants")} ({infants}) &times; ${infantPrice}
+                      {t("infants")} ({infants}) &times; {t("free")}
                     </span>
-                    <span>${infantTotal.toFixed(2)}</span>
+                    <span>{t("free")}</span>
                   </div>
                 )}
               </div>

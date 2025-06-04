@@ -30,8 +30,8 @@ export default async function EditTripPage({
           assets: trip.assetsUrls,
           adultPrice: trip.adultTripPriceInCents / 100,
           childPrice: trip.childTripPriceInCents / 100,
-          infantPrice: trip.infantTripPriceInCents / 100,
           features: trip.features.map((f) => f.featureId),
+          tripTypes: trip.tripTypes.map((t) => t.tripTypeId),
         }}
       />
     </div>

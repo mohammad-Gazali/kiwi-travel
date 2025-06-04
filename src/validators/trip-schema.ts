@@ -46,19 +46,8 @@ export const tripFormSchema = z.object({
   childPrice: z
     .number({ message: "Child price is required" })
     .positive("Child price must be a positive number"),
-  infantPrice: z
-    .number({ message: "Infant price is required" })
-    .positive("Infant price must be a positive number"),
-  childAge: z
-    .number({ message: "Child age is required" })
-    .positive(
-      "Child age must be a positive number or a zero if it doesn't exist",
-    ),
-  infantAge: z
-    .number({ message: "Infant age is required" })
-    .positive(
-      "Infant age must be a positive number or a zero if it doesn't exist",
-    ),
+  childAge: z.string(),
+  infantAge: z.string(),
 });
 
 export const tripSearchFormSchema = z.object({

@@ -61,6 +61,7 @@ export const tripRouter = createTRPCRouter({
         with: {
           destination: true,
           features: true,
+          tripTypes: true,
         },
       }),
   ),
@@ -75,7 +76,6 @@ export const tripRouter = createTRPCRouter({
           adultTripPriceInCents: true,
           childTripPriceInCents: true,
           childAge: true,
-          infantTripPriceInCents: true,
           infantAge: true,
           assetsUrls: true,
           descriptionEn: true,
@@ -109,7 +109,6 @@ export const tripRouter = createTRPCRouter({
             assetsUrls: input.assets,
             adultTripPriceInCents: Math.floor(input.adultPrice * 100),
             childTripPriceInCents: Math.floor(input.childPrice * 100),
-            infantTripPriceInCents: Math.floor(input.infantPrice * 100),
           })
           .returning({ id: trip.id });
 
@@ -145,7 +144,6 @@ export const tripRouter = createTRPCRouter({
             assetsUrls: input.assets,
             adultTripPriceInCents: Math.floor(input.adultPrice * 100),
             childTripPriceInCents: Math.floor(input.childPrice * 100),
-            infantTripPriceInCents: Math.floor(input.infantPrice * 100),
           })
           .where(eq(trip.id, input.id));
 

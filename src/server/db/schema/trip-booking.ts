@@ -12,7 +12,6 @@ export const tripBooking = pgTable(
     userEmail: c.text("user_email").notNull(),
     adultPriceInCents: c.integer("adult_price_in_cents").notNull(),
     childPriceInCents: c.integer("child_price_in_cents").notNull().default(0),
-    infantPriceInCents: c.integer("infant_price_in_cents").notNull().default(0),
     tripId: c.integer("trip_id")
       .notNull()
       .references(() => trip.id, { onDelete: "cascade" }),

@@ -105,7 +105,6 @@ export const tripBookingRouter = createTRPCRouter({
               assetsUrls: true,
               adultTripPriceInCents: true,
               childTripPriceInCents: true,
-              infantTripPriceInCents: true,
               isConfirmationRequired: true,
             },
             with: {
@@ -138,7 +137,6 @@ export const tripBookingRouter = createTRPCRouter({
           id: true,
           adultTripPriceInCents: true,
           childTripPriceInCents: true,
-          infantTripPriceInCents: true,
           isConfirmationRequired: true,
         },
         where: ({ id }, { eq }) => eq(id, input.tripId),
@@ -179,7 +177,6 @@ export const tripBookingRouter = createTRPCRouter({
         userEmail: user.emailAddresses[0]!.emailAddress,
         adultPriceInCents: trip.adultTripPriceInCents,
         childPriceInCents: trip.childTripPriceInCents,
-        infantPriceInCents: trip.infantTripPriceInCents,
         adultsCount: input.adultsCount,
         childrenCount: input.childrenCount,
         infantsCount: input.infantsCount,

@@ -72,7 +72,6 @@ export default async function TripDetailsPage({
 
   const adultPrice = trip.adultTripPriceInCents / 100;
   const childPrice = trip.childTripPriceInCents / 100;
-  const infantPrice = trip.infantTripPriceInCents / 100;
 
   const amenities = [
     {
@@ -207,8 +206,7 @@ export default async function TripDetailsPage({
             availableDays={trip.availableDays}
             tripId={trip.id}
             adultPrice={adultPrice}
-            childPrice={trip.childAge !== 0 ? childPrice : null}
-            infantPrice={trip.infantAge !== 0 ? infantPrice : null}
+            childPrice={!!trip.childAge.trim() ? childPrice : null}
             childAge={trip.childAge}
             infantAge={trip.infantAge}
             duration={duration}

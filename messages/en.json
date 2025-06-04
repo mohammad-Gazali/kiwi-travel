@@ -114,8 +114,7 @@
       "perPerson": "per person",
       "perChild": "per child",
       "perInfant": "per infant",
-      "agesBetween": "ages {first}-{second}",
-      "ageUnder": "under {age}",
+      "free": "Free",
       "adults": "Adults",
       "children": "Children",
       "infants": "Infants",
@@ -176,6 +175,7 @@
     "adults": "Adults",
     "children": "Children",
     "infants": "Infants",
+    "free": "Free",
     "statuses": {
       "all": "All",
       "pending": "Pending",

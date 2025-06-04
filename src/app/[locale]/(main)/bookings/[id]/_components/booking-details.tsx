@@ -90,11 +90,9 @@ export function BookingDetails({ booking }: { booking: Booking }) {
 
   const adultPrice = data.adultPriceInCents / 100;
   const childPrice = data.childPriceInCents / 100;
-  const infantPrice = data.infantPriceInCents / 100;
 
   const adultTotal = adults * adultPrice;
   const childTotal = children * childPrice;
-  const infantTotal = infants * infantPrice;
 
   return (
     <main className="container mx-auto mt-14 px-4 py-8 lg:px-0">
@@ -204,8 +202,6 @@ export function BookingDetails({ booking }: { booking: Booking }) {
                       (data.trip.adultTripPriceInCents * data.adultsCount) / 100,
                     ) + Math.floor(
                       (data.trip.childTripPriceInCents * data.childrenCount) / 100,
-                    ) + Math.floor(
-                      (data.trip.infantTripPriceInCents * data.infantsCount) / 100,
                     )}
                   </span>
                 </div>
@@ -236,9 +232,9 @@ export function BookingDetails({ booking }: { booking: Booking }) {
                       <span>
                         <span className="w-24 inline-block">{t("infants")}</span>
                         {" "} 
-                        {infants} &times; ${infantPrice}
+                        {infants} &times; {t("free")}
                       </span>
-                      <span className="font-medium">${infantTotal.toFixed(2)}</span>
+                      <span className="font-medium">{t("free")}</span>
                     </div>
                   )}
                 </div>

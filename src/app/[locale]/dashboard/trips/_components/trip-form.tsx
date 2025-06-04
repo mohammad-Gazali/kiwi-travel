@@ -1,5 +1,6 @@
 "use client";
 
+import { MultiSelect } from "@/components/multi-select";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,26 +19,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
 import { useToast } from "@/hooks/use-toast";
 import { useUploadThing } from "@/hooks/use-upload-thing";
+import { api } from "@/trpc/react";
 import { days, tripFormSchema } from "@/validators/trip-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { RichTextEditor } from "./rich-text-editor";
 import UploadFilesField, { AssetFile } from "./upload-files-field";
 import {
   UploadProgressDialog,
   type FileWithProgress,
 } from "./upload-progress-dialog";
-import { MultiSelect } from "@/components/multi-select";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Switch } from "@/components/ui/switch";
-import { api } from "@/trpc/react";
-import { useCommonMutationResponse } from "@/hooks/use-common-mutation-response";
-import { useTranslations } from "next-intl";
-import { RichTextEditor } from "./rich-text-editor";
 
 const clientFormSchema = tripFormSchema.omit({ assets: true });
 
@@ -172,9 +171,8 @@ export function TripForm({ initialData, id }: TripFormProps) {
       destinationId: initialData?.destinationId || ("" as any),
       adultPrice: initialData?.adultPrice || 0,
       childPrice: initialData?.childPrice || 0,
-      infantPrice: initialData?.infantPrice || 0,
-      childAge: initialData?.childAge || 0,
-      infantAge: initialData?.infantAge || 0,
+      childAge: initialData?.childAge || "",
+      infantAge: initialData?.infantAge || "",
       availableDays: initialData?.availableDays || [
         "Sunday",
         "Monday",
@@ -559,27 +557,6 @@ export function TripForm({ initialData, id }: TripFormProps) {
             )}
           />
 
-          {/* Infant Trip Price */}
-          <FormField
-            control={form.control}
-            name="infantPrice"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Infant Price</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter price"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
-                  />
-                </FormControl>
-                <FormDescription>Enter the price (e.g. 10.00)</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* Child Age */}
           <FormField
             control={form.control}
@@ -589,13 +566,11 @@ export function TripForm({ initialData, id }: TripFormProps) {
                 <FormLabel>Child Age</FormLabel>
                 <FormControl>
                   <Input
-                    type="number"
                     placeholder="Enter age"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
                   />
                 </FormControl>
-                <FormDescription>Enter the age or enter zero if child is not included in the trip plan</FormDescription>
+                <FormDescription>Enter the age or keep it empty if child is not included in the trip plan</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -610,13 +585,11 @@ export function TripForm({ initialData, id }: TripFormProps) {
                 <FormLabel>Infant Age</FormLabel>
                 <FormControl>
                   <Input
-                    type="number"
                     placeholder="Enter age"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || '')}
                   />
                 </FormControl>
-                <FormDescription>Enter the age or enter zero if infant is not included in the trip plan</FormDescription>
+                <FormDescription>Enter the age or keep it empty if infant is not included in the trip plan</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
