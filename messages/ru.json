@@ -111,9 +111,9 @@
       "details": "Детали и особенности"
     },
     "bookingForm": {
-      "perPerson": "за человека",
-      "perChild": "на дитя",
-      "perInfant": "на младенца",
+      "perPerson": "Взрослые",
+      "perChild": "Дети",
+      "perInfant": "Младенцы",
       "free": "Бесплатно",
       "adults": "Взрослые",
       "children": "Дети",
