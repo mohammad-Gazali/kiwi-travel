@@ -122,7 +122,7 @@ export default async function DestinationTripsPage({
                     ${Math.floor(trip.adultTripPriceInCents / 100)}
                   </span>
                   <Link href={`/trips/${trip.id}`}>
-                    <Button>{t("bookNow")}</Button>
+                    <Button id={`book-trip-outside-id-${trip.id}`}>{t("bookNow")}</Button>
                   </Link>
                 </div>
               </CardContent>

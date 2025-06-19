@@ -260,7 +260,7 @@ const BookingSubmitDialog = ({
       }}
     >
       <DialogTrigger asChild>
-        <Button type="button" className="w-full">
+        <Button type="button" id={`book-trip-open-dialog-id-${tripId}`} className="w-full">
           {t("bookNow")}
         </Button>
       </DialogTrigger>
@@ -271,7 +271,7 @@ const BookingSubmitDialog = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form id={`book-trip-form-id-${tripId}`} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="date"
@@ -530,7 +530,7 @@ const BookingSubmitDialog = ({
             </Card>
 
             <DialogFooter>
-              <Button disabled={isPending} type="submit" className="w-full">
+              <Button id={`book-trip-inside-dialog-id-${tripId}`} disabled={isPending} type="submit" className="w-full">
                 {t("completeBooking")}
               </Button>
             </DialogFooter>
