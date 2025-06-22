@@ -284,6 +284,11 @@
         "title": "Your booking is completed!",
         "description": "Thank you for choosing us.",
         "buttonText": "View Booking"
+      },
+      "new": {
+        "title": "📩 New Booking",
+        "description": "A new booking has been made. You can view the booking in the admin dashboard.",
+        "buttonText": "View Booking"
       }
     }
   },

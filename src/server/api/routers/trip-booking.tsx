@@ -15,6 +15,7 @@ import {
   adminProcedure,
   authProtectedProcedure,
   createTRPCRouter,
+  publicProcedure,
 } from "../trpc";
 import { env } from "@/env";
 import { render } from "@react-email/components";
@@ -183,6 +184,27 @@ export const tripBookingRouter = createTRPCRouter({
         tripId: input.tripId,
         bookingDate: format(input.date, "yyyy-MM-dd"),
         status: trip.isConfirmationRequired ? "pending" : "accepted",
+      });
+
+      const bookingLink = `${env.NEXT_PUBLIC_APP_URL}/dashboard/bookings`;
+      await sendTelegramNotification(
+        `🧾 <b>Новая бронь</b>\nПользователь: ${user.emailAddresses[0]!.emailAddress}\nТелефон: ${input.phone}\nТур: ${input.tripId}\nДата: ${format(input.date, "yyyy-MM-dd")}\n<a href="${bookingLink}">Открыть в админке</a>`
+      );
+
+      const tEmail = await getTranslations("General.bookingEmail.new");
+
+      const emailHtml = await render(
+        <BookingEmail
+          bookingId={0} // или реальный ID, если захочешь получить его из insert
+          bookingLink={bookingLink}
+          translations={tEmail}
+        />
+      );
+
+      await sendEmail({
+        email: emailHtml,
+        to: user.emailAddresses[0]!.emailAddress,
+        subject: tEmail("title"), // например, "📩 Новая бронь"
       });
 
       return {
@@ -451,7 +473,12 @@ export const tripBookingRouter = createTRPCRouter({
         email,
         to: userEmailAddress ?? "",
         subject: t("title"),
-      });
+      })
+      const bookingLink = `${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`;
+
+      await sendTelegramNotification(
+        `📩 New booking confirmed\n<a href="${bookingLink}">View booking</a>`
+      );
 
       return {
         message: "booking has been marked as done successfully",
@@ -502,17 +529,69 @@ async function sendEmail({
   email,
   to,
   subject,
+  copyToAdmin = true,
 }: {
   email: string;
   to: string;
   subject: string;
-}): Promise<any> {
-  return emailTransporter
-    .sendMail({
+  copyToAdmin?: boolean;
+}): Promise<void> {
+  try {
+    await emailTransporter.sendMail({
       from: env.EMAIL_SENDING_ADDRESS,
       to,
       subject,
       html: email,
-    })
-    .catch((err) => console.error("Error Sending Email\n", err));
+    });
+    console.log(`✅ Email sent to ${to}`);
+  } catch (err) {
+    console.error("❌ Error sending email to user", err);
+  }
+
+  if (copyToAdmin && env.EMAIL_ADMIN_ADDRESS) {
+    try {
+      await emailTransporter.sendMail({
+        from: env.EMAIL_SENDING_ADDRESS,
+        to: env.EMAIL_ADMIN_ADDRESS,
+        subject: `[ADMIN COPY] ${subject}`,
+        html: email,
+      });
+      console.log(`📬 Admin copy sent to ${env.EMAIL_ADMIN_ADDRESS}`);
+    } catch (err) {
+      console.error("⚠️ Error sending admin copy", err);
+    }
+  }
 }
+
+async function sendTelegramNotification(message: string) {
+  const token = env.TELEGRAM_BOT_TOKEN;
+  const chatId = env.TELEGRAM_ADMIN_CHAT_ID;
+
+  if (!token || !chatId) {
+    console.warn("⚠️ Telegram config missing");
+    return;
+  }
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: "HTML",
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("❌ Telegram API error", await res.text());
+    } else {
+      console.log("📨 Sent Telegram message");
+    }
+  } catch (err) {
+    console.error("❌ Telegram fetch error", err);
+  }
+}
+
