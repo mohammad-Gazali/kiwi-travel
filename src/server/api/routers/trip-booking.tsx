@@ -32,7 +32,6 @@ const emailTransporter = nodemailer.createTransport({
   },
 });
 
-
 export const tripBookingRouter = createTRPCRouter({
   list: authProtectedProcedure.query(
     async ({ ctx }) =>
@@ -51,7 +50,7 @@ export const tripBookingRouter = createTRPCRouter({
                 titleEn: true,
                 titleRu: true,
                 assetsUrls: true,
-                tripPriceInCents: true,
+                adultTripPriceInCents: true,
               },
               with: {
                 destination: {
@@ -73,14 +72,15 @@ export const tripBookingRouter = createTRPCRouter({
             id: item.id,
             status: item.status,
             bookingDate: item.bookingDate,
-            travelersCount: item.travelersCount,
+            travelersCount:
+              item.adultsCount + item.childrenCount + item.infantsCount,
             review: item.review,
             titleEn: item.trip.titleEn,
             titleRu: item.trip.titleRu,
             image: mainImage(item.trip.assetsUrls),
             locationEn: `${item.trip.destination.country.nameEn}, ${item.trip.destination.nameEn}`,
             locationRu: `${item.trip.destination.country.nameRu}, ${item.trip.destination.nameRu}`,
-            price: Math.floor(item.trip.tripPriceInCents / 100),
+            price: Math.floor(item.trip.adultTripPriceInCents / 100),
           })),
         ),
   ),
@@ -104,7 +104,8 @@ export const tripBookingRouter = createTRPCRouter({
               titleEn: true,
               titleRu: true,
               assetsUrls: true,
-              tripPriceInCents: true,
+              adultTripPriceInCents: true,
+              childTripPriceInCents: true,
               isConfirmationRequired: true,
             },
             with: {
@@ -135,7 +136,8 @@ export const tripBookingRouter = createTRPCRouter({
       const trip = await ctx.db.query.trip.findFirst({
         columns: {
           id: true,
-          tripPriceInCents: true,
+          adultTripPriceInCents: true,
+          childTripPriceInCents: true,
           isConfirmationRequired: true,
         },
         where: ({ id }, { eq }) => eq(id, input.tripId),
@@ -174,8 +176,11 @@ export const tripBookingRouter = createTRPCRouter({
         userId: ctx.userId,
         userPhone: input.phone,
         userEmail: user.emailAddresses[0]!.emailAddress,
-        priceInCents: trip.tripPriceInCents,
-        travelersCount: input.travelersCount,
+        adultPriceInCents: trip.adultTripPriceInCents,
+        childPriceInCents: trip.childTripPriceInCents,
+        adultsCount: input.adultsCount,
+        childrenCount: input.childrenCount,
+        infantsCount: input.infantsCount,
         tripId: input.tripId,
         bookingDate: format(input.date, "yyyy-MM-dd"),
         status: trip.isConfirmationRequired ? "pending" : "accepted",
@@ -323,18 +328,18 @@ export const tripBookingRouter = createTRPCRouter({
       const t = await getTranslations("General.bookingEmail.accepted");
 
       const email = await render(
-        <BookingEmail 
+        <BookingEmail
           bookingId={input}
           bookingLink={`${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`}
           translations={t}
-        />
-      )
+        />,
+      );
 
       sendEmail({
         email,
-        to: userEmailAddress ?? '',
+        to: userEmailAddress ?? "",
         subject: t("title"),
-      })
+      });
 
       return {
         message: "booking has been confirmed successfully",
@@ -394,18 +399,18 @@ export const tripBookingRouter = createTRPCRouter({
       const t = await getTranslations("General.bookingEmail.rejected");
 
       const email = await render(
-        <BookingEmail 
+        <BookingEmail
           bookingId={input}
           bookingLink={`${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`}
           translations={t}
-        />
-      )
+        />,
+      );
 
       sendEmail({
         email,
-        to: userEmailAddress ?? '',
+        to: userEmailAddress ?? "",
         subject: t("title"),
-      })
+      });
 
       return {
         message: "booking has been cancelled successfully",
@@ -457,16 +462,16 @@ export const tripBookingRouter = createTRPCRouter({
       const t = await getTranslations("General.bookingEmail.completed");
 
       const email = await render(
-        <BookingEmail 
+        <BookingEmail
           bookingId={input}
           bookingLink={`${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`}
           translations={t}
-        />
-      )
+        />,
+      );
 
       sendEmail({
         email,
-        to: userEmailAddress ?? '',
+        to: userEmailAddress ?? "",
         subject: t("title"),
       })
       const bookingLink = `${env.NEXT_PUBLIC_APP_URL}/bookings/${input}`;
@@ -509,6 +514,15 @@ export const tripBookingRouter = createTRPCRouter({
         return result;
       }),
   ),
+  adminDelete: adminProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.delete(tripBooking).where(eq(tripBooking.id, input));
+
+      return {
+        message: "Deleted Successfully",
+      };
+    }),
 });
 
 async function sendEmail({
