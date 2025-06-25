@@ -54,6 +54,56 @@ export async function generateMetadata({
   };
 }
 
+function SchemaMarkup({ trip }: { trip: any }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    "name": trip.title,
+    "description": trip.description,
+    "image": trip.assetsUrls,
+    "offers": {
+      "@type": "Offer",
+      "price": (trip.adultTripPriceInCents / 100).toFixed(2),
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": `https://karimtor.com/ru/trips/${trip.id}`
+    },
+    "touristType": "IndividualOrGroup",
+    "touristAgency": {
+      "@type": "TravelAgency",
+      "name": "Karim Tour",
+      "url": "https://karimtor.com",
+      "telephone": "+905352699881",
+      "priceRange": "$$",
+      "image": "https://karimtor.com/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Atatürk Blv. 123",
+        "addressLocality": "Alanya",
+        "addressRegion": "Antalya",
+        "postalCode": "07400",
+        "addressCountry": "TR"
+      }
+    }
+  };
+
+  return (
+    <>
+      <SchemaMarkup
+        trip={{
+          id: trip.id,
+          title: localeAttribute(trip, "title"),
+          description: localeAttribute(trip, "description"),
+          assetsUrls: trip.assetsUrls,
+          adultTripPriceInCents: trip.adultTripPriceInCents,
+        }}
+      />
+    <Head>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+    </Head>
+  );
+}
+
 export default async function TripDetailsPage({
   params,
 }: PageParams<{ tripId: string }>) {
@@ -106,85 +156,7 @@ export default async function TripDetailsPage({
   const reviewsCount = trip.reviews.length;
 
   return (
-  
-<>
-  <>
-  <Head>
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "TouristTrip",
-          name: localeAttribute(trip, "title"),
-          description: localeAttribute(trip, "description"),
-          image: trip.assetsUrls,
-          offers: {
-            "@type": "Offer",
-            price: (trip.adultTripPriceInCents / 100).toFixed(2),
-            priceCurrency: "USD",
-            availability: "https://schema.org/InStock",
-            url: `https://karimtor.com/ru/trips/${trip.id}`,
-          },
-          touristType: "IndividualOrGroup",
-          touristAgency: {
-            "@type": "TravelAgency",
-            name: "Karim Tour",
-            url: "https://karimtor.com",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "AtatГјrk Blv., Alanya",
-              addressLocality: "Antalya",
-              addressRegion: "TR",
-              postalCode: "07400",
-              addressCountry: "TR"
-            }
-          }
-        }),
-      }}
-    />
-  </Head>
-
-    <Head>
-  <script
-    key="trip-schema"
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "TouristTrip",
-        "name": localeAttribute(trip, "title"),
-        "description": localeAttribute(trip, "description"),
-        "image": trip.assetsUrls,
-        "offers": {
-          "@type": "Offer",
-          "price": (trip.adultTripPriceInCents / 100).toFixed(2),
-          "priceCurrency": "USD",
-          "availability": "https://schema.org/InStock",
-          "url": `https://karimtor.com/ru/trips/${trip.id}`
-        },
-        "touristType": "IndividualOrGroup",
-        "touristAgency": {
-          "@type": "TravelAgency",
-          "name": "Karim Tour",
-          "url": "https://karimtor.com",
-          "image": "https://karimtor.com/apple-icon.png",
-          "telephone": "+90 507 741 90 48",
-          "priceRange": "$$",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "AtatГјrk Blv., Alanya",
-            "addressLocality": "Antalya",
-            "addressRegion": "Antalya",
-            "postalCode": "07400",
-            "addressCountry": "TR"
-          }
-        }
-      })
-    }}
-  />
-</Head>
-<main className="container mx-auto mt-14 px-4 py-8 md:px-0">
+    <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content - 2/3 width on desktop */}
         <div className="space-y-8 lg:col-span-2">
@@ -264,45 +236,6 @@ export default async function TripDetailsPage({
                     {amenities.map((amenity) => {
                       const Icon = amenity.icon;
                       return (
-  
-<>
-  <>
-  <Head>
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "TouristTrip",
-          name: localeAttribute(trip, "title"),
-          description: localeAttribute(trip, "description"),
-          image: trip.assetsUrls,
-          offers: {
-            "@type": "Offer",
-            price: (trip.adultTripPriceInCents / 100).toFixed(2),
-            priceCurrency: "USD",
-            availability: "https://schema.org/InStock",
-            url: `https://karimtor.com/ru/trips/${trip.id}`,
-          },
-          touristType: "IndividualOrGroup",
-          touristAgency: {
-            "@type": "TravelAgency",
-            name: "Karim Tour",
-            url: "https://karimtor.com",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "AtatГјrk Blv., Alanya",
-              addressLocality: "Antalya",
-              addressRegion: "TR",
-              postalCode: "07400",
-              addressCountry: "TR"
-            }
-          }
-        }),
-      }}
-    />
-  </Head>
-
                         <div
                           key={amenity.title}
                           className="flex flex-col items-center justify-center rounded-lg bg-muted p-4"
@@ -377,45 +310,6 @@ export default async function TripDetailsPage({
                     {amenities.map((amenity) => {
                       const Icon = amenity.icon;
                       return (
-  
-<>
-  <>
-  <Head>
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "TouristTrip",
-          name: localeAttribute(trip, "title"),
-          description: localeAttribute(trip, "description"),
-          image: trip.assetsUrls,
-          offers: {
-            "@type": "Offer",
-            price: (trip.adultTripPriceInCents / 100).toFixed(2),
-            priceCurrency: "USD",
-            availability: "https://schema.org/InStock",
-            url: `https://karimtor.com/ru/trips/${trip.id}`,
-          },
-          touristType: "IndividualOrGroup",
-          touristAgency: {
-            "@type": "TravelAgency",
-            name: "Karim Tour",
-            url: "https://karimtor.com",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "AtatГјrk Blv., Alanya",
-              addressLocality: "Antalya",
-              addressRegion: "TR",
-              postalCode: "07400",
-              addressCountry: "TR"
-            }
-          }
-        }),
-      }}
-    />
-  </Head>
-
                         <div
                           key={amenity.title}
                           className="flex flex-col items-center justify-center rounded-lg bg-muted p-4"
@@ -525,6 +419,6 @@ export default async function TripDetailsPage({
         </div>
       </div>
     </main>
-  </>
+    </>
   );
 }
