@@ -73,7 +73,7 @@ function SchemaMarkup({ trip }: { trip: any }) {
       "@type": "TravelAgency",
       "name": "Karim Tour",
       "url": "https://karimtor.com",
-      "telephone": "+905352699881",
+      "telephone": "+90 507 741 90 48",
       "priceRange": "$$",
       "image": "https://karimtor.com/logo.svg",
       "address": {
@@ -88,16 +88,6 @@ function SchemaMarkup({ trip }: { trip: any }) {
   };
 
   return (
-    <>
-      <SchemaMarkup
-        trip={{
-          id: trip.id,
-          title: localeAttribute(trip, "title"),
-          description: localeAttribute(trip, "description"),
-          assetsUrls: trip.assetsUrls,
-          adultTripPriceInCents: trip.adultTripPriceInCents,
-        }}
-      />
     <Head>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
     </Head>
@@ -113,7 +103,6 @@ export default async function TripDetailsPage({
   const localeAttribute = localeAttributeFactory(locale);
 
   const t = await getTranslations("TripDetailsPage");
-
   const t_Amenities = await getTranslations("General.amenities");
   const t_TimeUnits = await getTranslations("General.timeUnits");
 
@@ -125,22 +114,10 @@ export default async function TripDetailsPage({
   const childPrice = trip.childTripPriceInCents / 100;
 
   const amenities = [
-    {
-      title: "transfer",
-      icon: Car,
-    },
-    {
-      title: "guide",
-      icon: BookCheck,
-    },
-    {
-      title: "free_cancel",
-      icon: BanknoteX,
-    },
-    {
-      title: "online_payment",
-      icon: CircleDollarSign,
-    },
+    { title: "transfer", icon: Car },
+    { title: "guide", icon: BookCheck },
+    { title: "free_cancel", icon: BanknoteX },
+    { title: "online_payment", icon: CircleDollarSign },
   ];
 
   const duration = trip.duration
@@ -154,42 +131,19 @@ export default async function TripDetailsPage({
     trip.reviews.length;
   const reviewsValue = isNaN(_avarage) ? 0 : _avarage;
   const reviewsCount = trip.reviews.length;
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "TouristTrip",
-  "name": localeAttribute(trip, "title"),
-  "description": localeAttribute(trip, "description"),
-  "image": trip.assetsUrls,
-  "offers": {
-    "@type": "Offer",
-    "price": (trip.adultTripPriceInCents / 100).toFixed(2),
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": `https://karimtor.com/ru/trips/${trip.id}`
-  },
-  "touristType": "IndividualOrGroup",
-  "touristAgency": {
-    "@type": "TravelAgency",
-    "name": "Karimtor",
-    "url": "https://karimtor.com",
-    "telephone": "+90 507 741 90 48",
-    "priceRange": "$$",
-    "image": "https://karimtor.com/logo.svg",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Atatürk Blv. 123",
-      "addressLocality": "Alanya",
-      "addressRegion": "Antalya",
-      "postalCode": "07400",
-      "addressCountry": "TR"
-    }
-  }
-};
+
   return (
-    <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
-	<Head>
-  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-</Head>
+    <>
+      <SchemaMarkup
+        trip={{
+          id: trip.id,
+          title: localeAttribute(trip, "title"),
+          description: localeAttribute(trip, "description"),
+          assetsUrls: trip.assetsUrls,
+          adultTripPriceInCents: trip.adultTripPriceInCents,
+        }}
+      />
+      <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content - 2/3 width on desktop */}
         <div className="space-y-8 lg:col-span-2">
