@@ -1,9 +1,22 @@
 import { NextResponse } from 'next/server';
+import { api } from '@/trpc/server'; // Убедись, что путь корректный
 
 async function getAllTrips() {
-  const res = await fetch("https://api.karimtor.com/trips");
-  if (!res.ok) return [];
-  return res.json();
+  try {
+    const response = await api.trips.findMany({ page: 1 });
+    const items = response.items || [];
+
+    return items.map((trip: any) => ({
+      id: trip.id,
+      title: trip.title,
+      description: trip.description || "",
+      assetsUrls: trip.images || [],
+      adultTripPriceInCents: Math.round((trip.price || 0) * 100),
+    }));
+  } catch (error) {
+    console.error("Ошибка при загрузке экскурсий:", error);
+    return [];
+  }
 }
 
 function escapeXml(unsafe: string) {
