@@ -1,29 +1,6 @@
 import { Search } from "./_components/search";
 import { SearchProvider } from "./_components/search-provider";
 import { TripResults } from "./_components/trip-results";
-import SchemaProduct from '@/components/SchemaProduct';
-
-export default async function TripsPage() {
-  const trips = await getAllTrips(); // твоя функция получения данных
-
-  return (
-    <>
-      {trips.length > 0 && (
-        <SchemaProduct
-          name={trips[0].title}
-          description={trips[0].description}
-          url={`https://karimtor.com/ru/trips/${trips[0].id}`}
-          price={trips[0].price}
-          currency="USD"
-          images={trips[0].images}
-          available={trips[0].isAvailable}
-        />
-      )}
-
-      {/* вывод всех экскурсий */}
-    </>
-  );
-}
 
 export default async function Page({
   searchParams,
