@@ -24,6 +24,7 @@ import BookingForm from "./_components/booking-form";
 import { AssetGallery } from "@/components/asset-gallery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
+import Head from "next/head";
 
 export async function generateMetadata({
   params,
@@ -51,37 +52,6 @@ export async function generateMetadata({
       ],
     },
   };
-}
-
-// вњ… Schema.org TouristTrip
-function SchemaMarkup({ trip }: { trip: any }) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "TouristTrip",
-    "name": trip.title,
-    "description": trip.description,
-    "image": trip.assetsUrls,
-    "offers": {
-      "@type": "Offer",
-      "price": (trip.adultTripPriceInCents / 100).toFixed(2),
-      "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock",
-      "url": `https://karimtor.com/ru/trips/${trip.id}`
-    },
-    "touristType": "IndividualOrGroup",
-    "touristAgency": {
-      "@type": "TravelAgency",
-      "name": "Karimtor",
-      "url": "https://karimtor.com"
-    }
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
 }
 
 export default async function TripDetailsPage({
@@ -136,16 +106,37 @@ export default async function TripDetailsPage({
   const reviewsCount = trip.reviews.length;
 
   return (
-    <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
-      <SchemaMarkup
-        trip={{
-          id: trip.id,
-          title: localeAttribute(trip, "title"),
+  
+<>
+  <Head>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "TouristTrip",
+          name: localeAttribute(trip, "title"),
           description: localeAttribute(trip, "description"),
-          assetsUrls: trip.assetsUrls,
-          adultTripPriceInCents: trip.adultTripPriceInCents,
-        }}
-      />
+          image: trip.assetsUrls,
+          offers: {
+            "@type": "Offer",
+            price: (trip.adultTripPriceInCents / 100).toFixed(2),
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            url: `https://karimtor.com/ru/trips/${trip.id}`,
+          },
+          touristType: "IndividualOrGroup",
+          touristAgency: {
+            "@type": "TravelAgency",
+            name: "Karimtor",
+            url: "https://karimtor.com",
+          },
+        }),
+      }}
+    />
+  </Head>
+
+    <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content - 2/3 width on desktop */}
         <div className="space-y-8 lg:col-span-2">
@@ -225,6 +216,36 @@ export default async function TripDetailsPage({
                     {amenities.map((amenity) => {
                       const Icon = amenity.icon;
                       return (
+  
+<>
+  <Head>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "TouristTrip",
+          name: localeAttribute(trip, "title"),
+          description: localeAttribute(trip, "description"),
+          image: trip.assetsUrls,
+          offers: {
+            "@type": "Offer",
+            price: (trip.adultTripPriceInCents / 100).toFixed(2),
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            url: `https://karimtor.com/ru/trips/${trip.id}`,
+          },
+          touristType: "IndividualOrGroup",
+          touristAgency: {
+            "@type": "TravelAgency",
+            name: "Karimtor",
+            url: "https://karimtor.com",
+          },
+        }),
+      }}
+    />
+  </Head>
+
                         <div
                           key={amenity.title}
                           className="flex flex-col items-center justify-center rounded-lg bg-muted p-4"
@@ -299,6 +320,36 @@ export default async function TripDetailsPage({
                     {amenities.map((amenity) => {
                       const Icon = amenity.icon;
                       return (
+  
+<>
+  <Head>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "TouristTrip",
+          name: localeAttribute(trip, "title"),
+          description: localeAttribute(trip, "description"),
+          image: trip.assetsUrls,
+          offers: {
+            "@type": "Offer",
+            price: (trip.adultTripPriceInCents / 100).toFixed(2),
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            url: `https://karimtor.com/ru/trips/${trip.id}`,
+          },
+          touristType: "IndividualOrGroup",
+          touristAgency: {
+            "@type": "TravelAgency",
+            name: "Karimtor",
+            url: "https://karimtor.com",
+          },
+        }),
+      }}
+    />
+  </Head>
+
                         <div
                           key={amenity.title}
                           className="flex flex-col items-center justify-center rounded-lg bg-muted p-4"
@@ -408,5 +459,6 @@ export default async function TripDetailsPage({
         </div>
       </div>
     </main>
+  </>
   );
 }
