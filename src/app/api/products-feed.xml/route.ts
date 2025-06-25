@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
-import { api } from '@/trpc/server'; // Убедись, что путь корректный
+import { api } from '@/src/trpc/server';
 
 async function getAllTrips() {
   try {
     const response = await api.trips.findMany({ page: 1 });
     const items = response.items || [];
+
+    console.log("Загруженные туры:", items);
 
     return items.map((trip: any) => ({
       id: trip.id,
@@ -66,3 +68,4 @@ export async function GET() {
     },
   });
 }
+
