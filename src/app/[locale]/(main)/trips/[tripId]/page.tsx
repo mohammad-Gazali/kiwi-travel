@@ -73,7 +73,7 @@ function SchemaMarkup({ trip }: { trip: any }) {
       "@type": "TravelAgency",
       "name": "Karim Tour",
       "url": "https://karimtor.com",
-      "telephone": "+90 507 741 90 48",
+      "telephone": "+905352699881",
       "priceRange": "$$",
       "image": "https://karimtor.com/logo.svg",
       "address": {
@@ -154,9 +154,42 @@ export default async function TripDetailsPage({
     trip.reviews.length;
   const reviewsValue = isNaN(_avarage) ? 0 : _avarage;
   const reviewsCount = trip.reviews.length;
-
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "TouristTrip",
+  "name": localeAttribute(trip, "title"),
+  "description": localeAttribute(trip, "description"),
+  "image": trip.assetsUrls,
+  "offers": {
+    "@type": "Offer",
+    "price": (trip.adultTripPriceInCents / 100).toFixed(2),
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": `https://karimtor.com/ru/trips/${trip.id}`
+  },
+  "touristType": "IndividualOrGroup",
+  "touristAgency": {
+    "@type": "TravelAgency",
+    "name": "Karimtor",
+    "url": "https://karimtor.com",
+    "telephone": "+90 507 741 90 48",
+    "priceRange": "$$",
+    "image": "https://karimtor.com/logo.svg",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Atatürk Blv. 123",
+      "addressLocality": "Alanya",
+      "addressRegion": "Antalya",
+      "postalCode": "07400",
+      "addressCountry": "TR"
+    }
+  }
+};
   return (
     <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
+	<Head>
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+</Head>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content - 2/3 width on desktop */}
         <div className="space-y-8 lg:col-span-2">
