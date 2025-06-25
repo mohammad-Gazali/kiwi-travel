@@ -19,19 +19,19 @@ function escapeXml(unsafe: string) {
 async function getAllTrips() {
   const allTrips: any[] = [];
   let page = 0;
-  const pageSize = 10;
+  const pageSize = 20;
 
   try {
     while (true) {
-      const batchInput = {
+      const input = {
         "0": { json: { page, pageSize } }
       };
 
-      const res = await fetch(`https://karimtor.com/api/trpc/trip.listSearch?batch=1&input=${encodeURIComponent(JSON.stringify(batchInput))}`, {
+      const res = await fetch(`https://karimtor.com/api/trpc/trip.listSearch?batch=1&input=${encodeURIComponent(JSON.stringify(input))}`, {
         headers: {
           'Content-Type': 'application/json',
         },
-        next: { revalidate: 0 },
+        cache: 'no-store',
       });
 
       const data = await res.json();
@@ -39,38 +39,35 @@ async function getAllTrips() {
 
       if (!tripsData.length) break;
 
-      const formatted = tripsData.map((trip: any) => ({
-        id: trip.id,
-        title: trip.title,
-        description: trip.description || '',
-        assetsUrls: trip.images || [],
-        adultTripPriceInCents: Math.round((trip.price || 0) * 100),
-      }));
-
-      allTrips.push(...formatted);
-
+      allTrips.push(...tripsData);
       if (tripsData.length < pageSize) break;
       page++;
     }
-  } catch (error) {
-    console.error('Ошибка при получении туров через fetch:', error);
+  } catch (err) {
+    console.error("Ошибка загрузки туров:", err);
   }
 
-  return allTrips;
+  return allTrips.map((trip: any) => ({
+    id: trip.id,
+    title: trip.title || '',
+    description: trip.description || '',
+    image: trip.image || '',
+    priceCents: Math.round((trip.price || 0) * 100),
+  }));
 }
 
 export async function GET() {
   const trips = await getAllTrips();
 
-  const items = trips.map((trip: any) => `
+  const items = trips.map((trip) => `
     <item>
       <g:id>${escapeXml(String(trip.id))}</g:id>
-      <g:title>${escapeXml(String(trip.title))}</g:title>
-      <g:description>${escapeXml(String(trip.description))}</g:description>
+      <g:title>${escapeXml(trip.title)}</g:title>
+      <g:description>${escapeXml(trip.description)}</g:description>
       <g:link>https://karimtor.com/ru/trips/${trip.id}</g:link>
-      <g:image_link>${trip.assetsUrls?.[0] ? escapeXml(trip.assetsUrls[0]) : 'https://karimtor.com/logo.svg'}</g:image_link>
+      <g:image_link>${escapeXml(trip.image || 'https://karimtor.com/logo.svg')}</g:image_link>
       <g:availability>in stock</g:availability>
-      <g:price>${(trip.adultTripPriceInCents / 100).toFixed(2)} USD</g:price>
+      <g:price>${(trip.priceCents / 100).toFixed(2)} USD</g:price>
       <g:brand>Karim Tour</g:brand>
       <g:condition>new</g:condition>
     </item>
