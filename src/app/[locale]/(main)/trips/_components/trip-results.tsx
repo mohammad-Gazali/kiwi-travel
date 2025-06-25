@@ -7,6 +7,7 @@ import { getDuration, localeAttributeFactory } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export async function TripResults() {
   const t = await getTranslations("TripCard");
@@ -18,8 +19,12 @@ export async function TripResults() {
   return (
     <div className="col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
       {trips.map((trip) => (
-        <Link href={`/trips/${trip.id}`} key={trip.id} className="block group">
-          <Card className="relative overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer">
+        <div
+          key={trip.id}
+          className="block group cursor-pointer"
+          onClick={() => window.location.href = `/trips/${trip.id}`}
+        >
+          <Card className="relative overflow-hidden hover:shadow-md transition-shadow duration-200">
             {trip.isFeatured && (
               <div className="absolute -left-10 top-10 z-10 w-48 -rotate-45 bg-red-500 py-[1px] text-center text-primary-foreground">
                 {t("featured")}
@@ -74,7 +79,7 @@ export async function TripResults() {
               </div>
             </CardFooter>
           </Card>
-        </Link>
+        </div>
       ))}
     </div>
   );
