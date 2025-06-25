@@ -15,20 +15,33 @@ function escapeXml(unsafe: string) {
 }
 
 async function getAllTrips() {
-  try {
-    const response = await api.trips.listSearch({ page: 0 });
+  const allTrips = [];
+  let page = 0;
+  const pageSize = 10;
 
-    return response.items.map((trip: any) => ({
-      id: trip.id,
-      title: trip.title,
-      description: trip.description || '',
-      assetsUrls: trip.images || [],
-      adultTripPriceInCents: Math.round((trip.price || 0) * 100),
-    }));
+  try {
+    while (true) {
+      const response = await api.trips.listSearch({ page, pageSize });
+      if (!response.items || response.items.length === 0) break;
+
+      const formatted = response.items.map((trip: any) => ({
+        id: trip.id,
+        title: trip.title,
+        description: trip.description || '',
+        assetsUrls: trip.images || [],
+        adultTripPriceInCents: Math.round((trip.price || 0) * 100),
+      }));
+
+      allTrips.push(...formatted);
+
+      if (response.items.length < pageSize) break;
+      page++;
+    }
   } catch (error) {
     console.error('Ошибка при получении туров:', error);
-    return [];
   }
+
+  return allTrips;
 }
 
 export async function GET() {
