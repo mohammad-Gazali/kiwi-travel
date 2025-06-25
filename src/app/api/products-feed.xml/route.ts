@@ -13,7 +13,7 @@ async function getAllTrips() {
       adultTripPriceInCents: Math.round((trip.price || 0) * 100),
     }));
   } catch (error) {
-    console.error('Ошибка при получении туров:', error);
+    console.error('❌ Ошибка при получении туров:', error);
     return [];
   }
 }
@@ -40,7 +40,7 @@ export async function GET() {
       <g:title>${escapeXml(trip.title)}</g:title>
       <g:description>${escapeXml(trip.description)}</g:description>
       <g:link>https://karimtor.com/ru/trips/${trip.id}</g:link>
-      <g:image_link>${trip.assetsUrls?.[0]}</g:image_link>
+      <g:image_link>${trip.assetsUrls?.[0] || 'https://karimtor.com/logo.svg'}</g:image_link>
       <g:availability>in stock</g:availability>
       <g:price>${(trip.adultTripPriceInCents / 100).toFixed(2)} USD</g:price>
       <g:brand>Karim Tour</g:brand>
