@@ -53,6 +53,37 @@ export async function generateMetadata({
   };
 }
 
+// вњ… Schema.org TouristTrip
+function SchemaMarkup({ trip }: { trip: any }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    "name": trip.title,
+    "description": trip.description,
+    "image": trip.assetsUrls,
+    "offers": {
+      "@type": "Offer",
+      "price": (trip.adultTripPriceInCents / 100).toFixed(2),
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": `https://karimtor.com/ru/trips/${trip.id}`
+    },
+    "touristType": "IndividualOrGroup",
+    "touristAgency": {
+      "@type": "TravelAgency",
+      "name": "Karimtor",
+      "url": "https://karimtor.com"
+    }
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
 export default async function TripDetailsPage({
   params,
 }: PageParams<{ tripId: string }>) {
@@ -106,6 +137,15 @@ export default async function TripDetailsPage({
 
   return (
     <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
+      <SchemaMarkup
+        trip={{
+          id: trip.id,
+          title: localeAttribute(trip, "title"),
+          description: localeAttribute(trip, "description"),
+          assetsUrls: trip.assetsUrls,
+          adultTripPriceInCents: trip.adultTripPriceInCents,
+        }}
+      />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content - 2/3 width on desktop */}
         <div className="space-y-8 lg:col-span-2">
