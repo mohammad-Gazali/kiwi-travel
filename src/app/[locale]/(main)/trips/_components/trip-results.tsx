@@ -7,7 +7,7 @@ import { getDuration, localeAttributeFactory } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export async function TripResults() {
   const t = await getTranslations("TripCard");
@@ -19,67 +19,50 @@ export async function TripResults() {
   return (
     <div className="col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
       {trips.map((trip) => (
-        <div
+        <Link
           key={trip.id}
-          className="block group cursor-pointer"
-          onClick={() => window.location.href = `/trips/${trip.id}`}
+          href={`/trips/${trip.id}`}
+          className="rounded-xl border bg-card text-card-foreground shadow overflow-hidden group"
+          id={`trip-details-id-${trip.id}`}
         >
-          <Card className="relative overflow-hidden hover:shadow-md transition-shadow duration-200">
-            {trip.isFeatured && (
-              <div className="absolute -left-10 top-10 z-10 w-48 -rotate-45 bg-red-500 py-[1px] text-center text-primary-foreground">
-                {t("featured")}
+          <div className="flex flex-col space-y-1.5 p-0">
+            <Image
+              alt={localeAttribute(trip, "title")}
+              src={trip.image || PLACEHOLDER_IMAGE}
+              width={300}
+              height={200}
+              className="h-48 w-full object-cover"
+            />
+          </div>
+          <div className="p-4 group-hover:bg-muted transition-colors">
+            <h3 className="text-lg font-bold text-center">
+              {localeAttribute(trip, "title")}
+            </h3>
+            <div className="mt-2 flex items-center justify-center text-sm text-muted-foreground">
+              <MapPin className="mr-1 h-4 w-4" />
+              {localeAttribute(trip, "location")}
+            </div>
+            <div className="mt-2 text-center text-lg font-bold">
+              ${trip.price}
+              <div className="text-xs text-muted-foreground">
+                {t("tripCardPricePerPerson")}
+              </div>
+            </div>
+            <div className="mt-2 flex items-center justify-center text-sm">
+              <Calendar className="mr-1 h-4 w-4" />
+              {getDuration(trip.duration)}
+            </div>
+            {trip.reviewsCount !== 0 && (
+              <div className="mt-1 flex items-center justify-center text-sm">
+                <Star className="mr-1 h-4 w-4 text-yellow-500" />
+                {trip.reviewsValue} ({trip.reviewsCount})
               </div>
             )}
-
-            <div className="relative h-48">
-              <Image
-                src={trip.image || PLACEHOLDER_IMAGE}
-                alt={localeAttribute(trip, "title")}
-                fill
-                className="object-cover"
-              />
+            <div className="mt-4 bg-primary text-primary-foreground text-center py-2 rounded">
+              {t("viewDetailsButton")}
             </div>
-
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-bold">
-                    {localeAttribute(trip, "title")}
-                  </h3>
-                  <span className="mt-1 flex items-center text-sm text-muted-foreground">
-                    <MapPin className="mr-1 h-4 w-4" />
-                    {localeAttribute(trip, "location")}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold">${trip.price}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {t("tripCardPricePerPerson")}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between text-sm">
-                <div className="flex items-center">
-                  <Calendar className="mr-1 h-4 w-4" />
-                  {getDuration(trip.duration)}
-                </div>
-                {trip.reviewsCount !== 0 && (
-                  <div className="flex items-center">
-                    <Star className="mr-1 h-4 w-4 text-yellow-500" />
-                    {trip.reviewsValue} ({trip.reviewsCount})
-                  </div>
-                )}
-              </div>
-            </CardContent>
-
-            <CardFooter className="p-4 pt-0">
-              <div className="w-full bg-primary text-primary-foreground text-center py-2 rounded">
-                {t("viewDetailsButton")}
-              </div>
-            </CardFooter>
-          </Card>
-        </div>
+          </div>
+        </Link>
       ))}
     </div>
   );
