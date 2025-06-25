@@ -3,7 +3,8 @@ import { api } from '@/src/trpc/server';
 
 async function getAllTrips() {
   try {
-    const response = await api.trips.findMany({ page: 1 });
+    const response = await api.trips.listSearch({ page: 0 });
+
     return response.items.map((trip: any) => ({
       id: trip.id,
       title: trip.title,
@@ -64,4 +65,3 @@ export async function GET() {
     },
   });
 }
-
