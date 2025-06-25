@@ -108,6 +108,7 @@ export default async function TripDetailsPage({
   return (
   
 <>
+  <>
   <Head>
     <script
       type="application/ld+json"
@@ -128,9 +129,17 @@ export default async function TripDetailsPage({
           touristType: "IndividualOrGroup",
           touristAgency: {
             "@type": "TravelAgency",
-            name: "Karimtor",
+            name: "Karim Tour",
             url: "https://karimtor.com",
-          },
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "AtatГјrk Blv., Alanya",
+              addressLocality: "Antalya",
+              addressRegion: "TR",
+              postalCode: "07400",
+              addressCountry: "TR"
+            }
+          }
         }),
       }}
     />
@@ -218,6 +227,7 @@ export default async function TripDetailsPage({
                       return (
   
 <>
+  <>
   <Head>
     <script
       type="application/ld+json"
@@ -238,9 +248,17 @@ export default async function TripDetailsPage({
           touristType: "IndividualOrGroup",
           touristAgency: {
             "@type": "TravelAgency",
-            name: "Karimtor",
+            name: "Karim Tour",
             url: "https://karimtor.com",
-          },
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "AtatГјrk Blv., Alanya",
+              addressLocality: "Antalya",
+              addressRegion: "TR",
+              postalCode: "07400",
+              addressCountry: "TR"
+            }
+          }
         }),
       }}
     />
@@ -322,6 +340,7 @@ export default async function TripDetailsPage({
                       return (
   
 <>
+  <>
   <Head>
     <script
       type="application/ld+json"
@@ -342,9 +361,17 @@ export default async function TripDetailsPage({
           touristType: "IndividualOrGroup",
           touristAgency: {
             "@type": "TravelAgency",
-            name: "Karimtor",
+            name: "Karim Tour",
             url: "https://karimtor.com",
-          },
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "AtatГјrk Blv., Alanya",
+              addressLocality: "Antalya",
+              addressRegion: "TR",
+              postalCode: "07400",
+              addressCountry: "TR"
+            }
+          }
         }),
       }}
     />
