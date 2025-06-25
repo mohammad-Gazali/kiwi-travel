@@ -24,7 +24,6 @@ import BookingForm from "./_components/booking-form";
 import { AssetGallery } from "@/components/asset-gallery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
-import Head from "next/head";
 
 export async function generateMetadata({
   params,
@@ -135,25 +134,16 @@ export default async function TripDetailsPage({
 
   return (
     <>
-      <SchemaMarkup
-        trip={{
-          id: trip.id,
-          title: localeAttribute(trip, "title"),
-          description: localeAttribute(trip, "description"),
-          assetsUrls: trip.assetsUrls,
-          adultTripPriceInCents: trip.adultTripPriceInCents,
-        }}
-      />
       <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
-  <SchemaMarkup
-    trip={{
-      id: trip.id,
-      title: localeAttribute(trip, "title"),
-      description: localeAttribute(trip, "description"),
-      assetsUrls: trip.assetsUrls,
-      adultTripPriceInCents: trip.adultTripPriceInCents,
-    }}
-  />
+        <SchemaMarkup
+          trip={{
+            id: trip.id,
+            title: localeAttribute(trip, "title"),
+            description: localeAttribute(trip, "description"),
+            assetsUrls: trip.assetsUrls,
+            adultTripPriceInCents: trip.adultTripPriceInCents,
+          }}
+        />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content - 2/3 width on desktop */}
         <div className="space-y-8 lg:col-span-2">
