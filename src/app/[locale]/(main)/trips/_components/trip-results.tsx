@@ -19,50 +19,56 @@ export async function TripResults() {
   return (
     <div className="col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
       {trips.map((trip) => (
-        <Link
+        <div
           key={trip.id}
-          href={`/trips/${trip.id}`}
-          className="rounded-xl border bg-card text-card-foreground shadow overflow-hidden group"
-          id={`trip-details-id-${trip.id}`}
+          className="relative group rounded-xl border bg-card text-card-foreground shadow overflow-hidden"
         >
-          <div className="flex flex-col space-y-1.5 p-0">
-            <Image
-              alt={localeAttribute(trip, "title")}
-              src={trip.image || PLACEHOLDER_IMAGE}
-              width={300}
-              height={200}
-              className="h-48 w-full object-cover"
-            />
-          </div>
-          <div className="p-4 group-hover:bg-muted transition-colors">
-            <h3 className="text-lg font-bold text-center">
-              {localeAttribute(trip, "title")}
-            </h3>
-            <div className="mt-2 flex items-center justify-center text-sm text-muted-foreground">
-              <MapPin className="mr-1 h-4 w-4" />
-              {localeAttribute(trip, "location")}
+          <Link
+            href={`/trips/${trip.id}`}
+            className="absolute inset-0 z-10"
+            aria-label={localeAttribute(trip, "title")}
+          />
+
+          <div className="relative z-0">
+            <div className="flex flex-col space-y-1.5 p-0">
+              <Image
+                alt={localeAttribute(trip, "title")}
+                src={trip.image || PLACEHOLDER_IMAGE}
+                width={300}
+                height={200}
+                className="h-48 w-full object-cover"
+              />
             </div>
-            <div className="mt-2 text-center text-lg font-bold">
-              ${trip.price}
-              <div className="text-xs text-muted-foreground">
-                {t("tripCardPricePerPerson")}
+            <div className="p-4 group-hover:bg-muted transition-colors">
+              <h3 className="text-lg font-bold text-center">
+                {localeAttribute(trip, "title")}
+              </h3>
+              <div className="mt-2 flex items-center justify-center text-sm text-muted-foreground">
+                <MapPin className="mr-1 h-4 w-4" />
+                {localeAttribute(trip, "location")}
+              </div>
+              <div className="mt-2 text-center text-lg font-bold">
+                ${trip.price}
+                <div className="text-xs text-muted-foreground">
+                  {t("tripCardPricePerPerson")}
+                </div>
+              </div>
+              <div className="mt-2 flex items-center justify-center text-sm">
+                <Calendar className="mr-1 h-4 w-4" />
+                {getDuration(trip.duration)}
+              </div>
+              {trip.reviewsCount !== 0 && (
+                <div className="mt-1 flex items-center justify-center text-sm">
+                  <Star className="mr-1 h-4 w-4 text-yellow-500" />
+                  {trip.reviewsValue} ({trip.reviewsCount})
+                </div>
+              )}
+              <div className="mt-4 bg-primary text-primary-foreground text-center py-2 rounded">
+                {t("viewDetailsButton")}
               </div>
             </div>
-            <div className="mt-2 flex items-center justify-center text-sm">
-              <Calendar className="mr-1 h-4 w-4" />
-              {getDuration(trip.duration)}
-            </div>
-            {trip.reviewsCount !== 0 && (
-              <div className="mt-1 flex items-center justify-center text-sm">
-                <Star className="mr-1 h-4 w-4 text-yellow-500" />
-                {trip.reviewsValue} ({trip.reviewsCount})
-              </div>
-            )}
-            <div className="mt-4 bg-primary text-primary-foreground text-center py-2 rounded">
-              {t("viewDetailsButton")}
-            </div>
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );
