@@ -73,7 +73,7 @@ function SchemaMarkup({ trip }: { trip: any }) {
       "@type": "TravelAgency",
       "name": "Karim Tour",
       "url": "https://karimtor.com",
-      "telephone": "+905352699881",
+      "telephone": "+90 507 741 90 48",
       "priceRange": "$$",
       "image": "https://karimtor.com/logo.svg",
       "address": {
