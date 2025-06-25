@@ -77,7 +77,7 @@ function SchemaMarkup({ trip }: { trip: any }) {
       "image": "https://karimtor.com/logo.svg",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Atatürk Blv. 123",
+        "streetAddress": "Ataturk Blv. 123",
         "addressLocality": "Alanya",
         "addressRegion": "Antalya",
         "postalCode": "07400",
@@ -359,8 +359,20 @@ export default async function TripDetailsPage({
               </div>
               <div className="max-h-[500px] space-y-4 overflow-y-auto rounded-b-lg bg-muted p-4">
                 {trip.reviews.map((review) => (
-                  <Card key={review.id}>
-                    <CardHeader className="flex-row items-center gap-4">
+                  <div className="relative group cursor-pointer rounded-xl border bg-card text-card-foreground shadow hover:shadow-md overflow-hidden transition-shadow">
+  <Link
+    href={`/trips/${trip.id}`}
+    className="absolute inset-0 z-10"
+    aria-label={localeAttribute(trip, "title")}
+  />
+  <Card key={review.id}>
+                    <div className="relative group cursor-pointer rounded-xl border bg-card text-card-foreground shadow hover:shadow-md overflow-hidden transition-shadow">
+  <Link
+    href={`/trips/${trip.id}`}
+    className="absolute inset-0 z-10"
+    aria-label={localeAttribute(trip, "title")}
+  />
+  <CardHeader className="flex-row items-center gap-4">
                       {review.userImageUrl ? (
                         <Image
                           src={review.userImageUrl}
@@ -375,13 +387,25 @@ export default async function TripDetailsPage({
                         </div>
                       )}
                       <div>
-                        <CardTitle>{review.userFullName}</CardTitle>
+                        <div className="relative group cursor-pointer rounded-xl border bg-card text-card-foreground shadow hover:shadow-md overflow-hidden transition-shadow">
+  <Link
+    href={`/trips/${trip.id}`}
+    className="absolute inset-0 z-10"
+    aria-label={localeAttribute(trip, "title")}
+  />
+  <CardTitle>{review.userFullName}</CardTitle>
                         <p className="text-sm text-muted-foreground">
                           {review.userEmail}
                         </p>
                       </div>
                     </CardHeader>
-                    <CardContent>
+                    <div className="relative group cursor-pointer rounded-xl border bg-card text-card-foreground shadow hover:shadow-md overflow-hidden transition-shadow">
+  <Link
+    href={`/trips/${trip.id}`}
+    className="absolute inset-0 z-10"
+    aria-label={localeAttribute(trip, "title")}
+  />
+  <CardContent>
                       <p className="mb-4">{review.message}</p>
                       <div className="flex">
                         {Array(5)
@@ -398,7 +422,7 @@ export default async function TripDetailsPage({
                           ))}
                       </div>
                     </CardContent>
-                  </Card>
+                  </Card></div>
                 ))}
               </div>
             </>
