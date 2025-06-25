@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { api } from '@/src/trpc/server';
 
 function escapeXml(unsafe: string) {
   return unsafe
@@ -24,10 +23,23 @@ async function getAllTrips() {
 
   try {
     while (true) {
-      const response = await api.trips.listSearch({ page, pageSize });
-      if (!response.items || response.items.length === 0) break;
+      const batchInput = {
+        "0": { json: { page, pageSize } }
+      };
 
-      const formatted = response.items.map((trip: any) => ({
+      const res = await fetch(`https://karimtor.com/api/trpc/trip.listSearch?batch=1&input=${encodeURIComponent(JSON.stringify(batchInput))}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        next: { revalidate: 0 },
+      });
+
+      const data = await res.json();
+      const tripsData = data?.[0]?.result?.data?.items || [];
+
+      if (!tripsData.length) break;
+
+      const formatted = tripsData.map((trip: any) => ({
         id: trip.id,
         title: trip.title,
         description: trip.description || '',
@@ -37,11 +49,11 @@ async function getAllTrips() {
 
       allTrips.push(...formatted);
 
-      if (response.items.length < pageSize) break;
+      if (tripsData.length < pageSize) break;
       page++;
     }
   } catch (error) {
-    console.error('Ошибка при получении туров:', error);
+    console.error('Ошибка при получении туров через fetch:', error);
   }
 
   return allTrips;
