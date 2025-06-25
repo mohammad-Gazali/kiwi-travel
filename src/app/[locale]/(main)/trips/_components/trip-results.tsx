@@ -19,16 +19,11 @@ export async function TripResults() {
   return (
     <div className="col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
       {trips.map((trip) => (
-        <div
+        <Link
           key={trip.id}
-          className="relative group rounded-xl border bg-card text-card-foreground shadow hover:shadow-md overflow-hidden transition-shadow cursor-pointer"
+          href={`/trips/${trip.id}`}
+          className="group block rounded-xl border bg-card text-card-foreground shadow hover:shadow-md overflow-hidden transition-shadow"
         >
-          <Link
-            href={`/trips/${trip.id}`}
-            className="absolute inset-0 z-10"
-            aria-label={localeAttribute(trip, "title")}
-          />
-
           <div className="flex flex-col space-y-1.5 p-0">
             <Image
               alt={localeAttribute(trip, "title")}
@@ -39,7 +34,7 @@ export async function TripResults() {
             />
           </div>
 
-          <div className="p-4 group-hover:bg-muted transition-colors relative z-20">
+          <div className="p-4 group-hover:bg-muted transition-colors">
             <h3 className="text-lg font-bold text-center">
               {localeAttribute(trip, "title")}
             </h3>
@@ -64,17 +59,19 @@ export async function TripResults() {
               </div>
             )}
             <div className="mt-4">
-              <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">
+              <button
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
+                onClick={(e) => e.preventDefault()}
+              >
                 {t("viewDetailsButton")}
-              </div>
+              </button>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
 }
-
 
   const pages = generatePages({
     pageIndex,
