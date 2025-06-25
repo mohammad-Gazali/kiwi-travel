@@ -1,24 +1,23 @@
 import { NextResponse } from 'next/server';
-import { api } from '@/src/trpc/server';
 
 async function getAllTrips() {
-  try {
-    const response = await api.trips.findMany({ page: 1 });
-    const items = response.items || [];
-
-    console.log("Загруженные туры:", items);
-
-    return items.map((trip: any) => ({
-      id: trip.id,
-      title: trip.title,
-      description: trip.description || "",
-      assetsUrls: trip.images || [],
-      adultTripPriceInCents: Math.round((trip.price || 0) * 100),
-    }));
-  } catch (error) {
-    console.error("Ошибка при загрузке экскурсий:", error);
-    return [];
-  }
+  // Заглушка: подставьте реальные данные, когда будет API
+  return [
+    {
+      id: 1,
+      title: 'Экскурсия в Памуккале "All Inclusive" из Алании',
+      description: 'Памуккале славится своими белоснежными травертинами и термальными источниками.',
+      assetsUrls: ['https://bcvtumk79h.ufs.sh/f/7uBQ9XZFPcZHdlECXT2DYKGLUc3IFOjQVo9sm2ZXl8iRnr0p?type=image'],
+      adultTripPriceInCents: 6700,
+    },
+    {
+      id: 2,
+      title: 'Дайвинг в Анталии',
+      description: 'Дайвинг — отличная возможность исследовать подводный мир Средиземного моря.',
+      assetsUrls: ['https://bcvtumk79h.ufs.sh/f/7uBQ9XZFPcZHKvb4Ws0K9GEgLAMYp3lV1ovqS5Rt62CFecPJ?type=image'],
+      adultTripPriceInCents: 3000,
+    },
+  ];
 }
 
 function escapeXml(unsafe: string) {
