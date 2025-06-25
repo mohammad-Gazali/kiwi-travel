@@ -48,18 +48,18 @@ export async function GET() {
   const trips = await getAllTrips();
 
   const items = trips.map((trip: any) => `
-    <item>
-      <g:id>${trip.id}</g:id>
-      <g:title>${escapeXml(trip.title)}</g:title>
-      <g:description>${escapeXml(trip.description)}</g:description>
-      <g:link>https://karimtor.com/ru/trips/${trip.id}</g:link>
-      <g:image_link>${trip.assetsUrls[0]}</g:image_link>
-      <g:availability>in stock</g:availability>
-      <g:price>${(trip.adultTripPriceInCents / 100).toFixed(2)} USD</g:price>
-      <g:brand>Karim Tour</g:brand>
-      <g:condition>new</g:condition>
-    </item>
-  `).join("\n");
+  <item>
+    <g:id>${trip.id}</g:id>
+    <g:title>${escapeXml(String(trip.title))}</g:title>
+    <g:description>${escapeXml(String(trip.description))}</g:description>
+    <g:link>https://karimtor.com/ru/trips/${trip.id}</g:link>
+    <g:image_link>${escapeXml(trip.assetsUrls?.[0] || 'https://karimtor.com/logo.svg')}</g:image_link>
+    <g:availability>in stock</g:availability>
+    <g:price>${(trip.adultTripPriceInCents / 100).toFixed(2)} USD</g:price>
+    <g:brand>Karim Tour</g:brand>
+    <g:condition>new</g:condition>
+  </item>
+`).join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
