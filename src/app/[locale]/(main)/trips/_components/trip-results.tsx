@@ -1,86 +1,87 @@
 "use client";
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Calendar, MapPin, Star } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
-import { getDuration, localeAttributeFactory } from "@/lib/utils";
-import { api } from "@/trpc/server";
-import { PLACEHOLDER_IMAGE } from "@/lib/constants";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PLACEHOLDER_IMAGE, TRIP_SEARCH_PAGE_SIZE } from "@/constants";
+import { Link } from "@/i18n/routing";
+import { localeAttributeFactory } from "@/lib/utils";
+import { api } from "@/trpc/react";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Star,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import { use, useState } from "react";
+import { SearchContext } from "./search-provider";
 
-export async function TripResults() {
-  const t = await getTranslations("TripCard");
-  const locale = await getLocale();
+export function TripResults() {
+  const t = useTranslations("TripsPage");
+  const t_TimeUnits = useTranslations("General.timeUnits");
+
+  const { searchValue, isExtraFiltersOpen } = use(SearchContext);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const { data, isLoading } = api.trip.listSearch.useQuery(
+    Object.assign(searchValue, {
+      page: pageIndex,
+    }),
+  );
+
+  const locale = useLocale();
   const localeAttribute = localeAttributeFactory(locale);
 
-  const trips = await api.trip.list();
-
-  return (
-    <div className="col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
-      {trips.map((trip) => (
-        <Link href={`/trips/${trip.id}`} key={trip.id} className="block">
-          <Card className="relative overflow-hidden hover:shadow-md transition-shadow duration-200">
-            {trip.isFeatured && (
-              <div className="absolute -left-10 top-10 z-10 w-48 -rotate-45 bg-red-500 py-[1px] text-center text-primary-foreground">
-                {t("featured")}
-              </div>
-            )}
-
-            <div className="relative h-48">
-              <Image
-                src={trip.image || PLACEHOLDER_IMAGE}
-                alt={localeAttribute(trip, "title")}
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-bold">
-                    {localeAttribute(trip, "title")}
-                  </h3>
-                  <span className="mt-1 flex items-center text-sm text-muted-foreground">
-                    <MapPin className="mr-1 h-4 w-4" />
-                    {localeAttribute(trip, "location")}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold">${trip.price}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {t("tripCardPricePerPerson")}
+  if (!data || isLoading) {
+    return (
+      <div className="col-span-2">
+        <div className="mb-6 flex items-center justify-between">
+          <Skeleton
+            aria-hidden="true"
+            className="select-none text-xl font-bold text-transparent"
+          >
+            {t("tripsFoundHeader", { count: 0 })}
+          </Skeleton>
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {(isExtraFiltersOpen ? [1, 2, 3, 4, 5, 6] : [1, 2]).map((item) => (
+            <Card key={item} className="overflow-hidden">
+              <Skeleton className="h-48 w-full rounded-b-none" />
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <Skeleton className="h-7 w-60" />
+                    <Skeleton className="h-5 w-60" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="ms-auto h-7 w-16" />
+                    <Skeleton className="h-5 w-20" />
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between text-sm">
-                <div className="flex items-center">
-                  <Calendar className="mr-1 h-4 w-4" />
-                  {getDuration(trip.duration)}
-                </div>
-                {trip.reviewsCount !== 0 && (
-                  <div className="flex items-center">
-                    <Star className="mr-1 h-4 w-4 text-yellow-500" />
-                    {trip.reviewsValue} ({trip.reviewsCount})
-                  </div>
-                )}
-              </div>
-            </CardContent>
-
-            <CardFooter className="p-4 pt-0">
-              <Link href={`/trips/${trip.id}`} className="w-full">
-                <Button className="w-full">{t("viewDetailsButton")}</Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </Link>
-      ))}
-    </div>
-  );
-}
+                <Skeleton className="mt-4 h-5 w-full" />
+              </CardContent>
+              <CardFooter className="p-4 pt-0">
+                <Skeleton
+                  aria-hidden="true"
+                  className="h-9 select-none text-transparent"
+                >
+                  {t("viewDetailsButton")}
+                </Skeleton>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const pages = generatePages({
     pageIndex,
