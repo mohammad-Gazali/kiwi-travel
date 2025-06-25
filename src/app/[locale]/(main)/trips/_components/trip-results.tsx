@@ -1,73 +1,88 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Calendar, MapPin, Star } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
-import { getDuration, localeAttributeFactory } from "@/lib/utils";
-import { api } from "@/trpc/server";
-import { PLACEHOLDER_IMAGE } from "@/lib/constants";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PLACEHOLDER_IMAGE, TRIP_SEARCH_PAGE_SIZE } from "@/constants";
+import { Link } from "@/i18n/routing";
+import { localeAttributeFactory } from "@/lib/utils";
+import { api } from "@/trpc/react";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Star,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
+import { use, useState } from "react";
+import { SearchContext } from "./search-provider";
 
-export async function TripResults() {
-  const t = await getTranslations("TripCard");
-  const locale = await getLocale();
+export function TripResults() {
+  const t = useTranslations("TripsPage");
+  const t_TimeUnits = useTranslations("General.timeUnits");
+
+  const { searchValue, isExtraFiltersOpen } = use(SearchContext);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const { data, isLoading } = api.trip.listSearch.useQuery(
+    Object.assign(searchValue, {
+      page: pageIndex,
+    }),
+  );
+
+  const locale = useLocale();
   const localeAttribute = localeAttributeFactory(locale);
 
-  const trips = await api.trip.list();
+  if (!data || isLoading) {
+    return (
+      <div className="col-span-2">
+        <div className="mb-6 flex items-center justify-between">
+          <Skeleton
+            aria-hidden="true"
+            className="select-none text-xl font-bold text-transparent"
+          >
+            {t("tripsFoundHeader", { count: 0 })}
+          </Skeleton>
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {(isExtraFiltersOpen ? [1, 2, 3, 4, 5, 6] : [1, 2]).map((item) => (
+            <Card key={item} className="overflow-hidden">
+              <Skeleton className="h-48 w-full rounded-b-none" />
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <Skeleton className="h-7 w-60" />
+                    <Skeleton className="h-5 w-60" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="ms-auto h-7 w-16" />
+                    <Skeleton className="h-5 w-20" />
+                  </div>
+                </div>
+                <Skeleton className="mt-4 h-5 w-full" />
+              </CardContent>
+              <CardFooter className="p-4 pt-0">
+                <Skeleton
+                  aria-hidden="true"
+                  className="h-9 select-none text-transparent"
+                >
+                  {t("viewDetailsButton")}
+                </Skeleton>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-  return (
-    <div className="col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
-      {trips.map((trip) => (
-        <Link
-          key={trip.id}
-          href={`/trips/${trip.id}`}
-          className="group relative block rounded-xl border bg-card text-card-foreground shadow hover:shadow-md overflow-hidden transition-shadow cursor-pointer"
-        >
-          <div className="flex flex-col space-y-1.5 p-0">
-            <Image
-              alt={localeAttribute(trip, "title")}
-              src={trip.image || PLACEHOLDER_IMAGE}
-              width={300}
-              height={200}
-              className="h-48 w-full object-cover"
-            />
-          </div>
-          <div className="p-4 group-hover:bg-muted transition-colors">
-            <h3 className="text-lg font-bold text-center">
-              {localeAttribute(trip, "title")}
-            </h3>
-            <div className="mt-2 flex items-center justify-center text-sm text-muted-foreground">
-              <MapPin className="mr-1 h-4 w-4" />
-              {localeAttribute(trip, "location")}
-            </div>
-            <div className="mt-2 text-center text-lg font-bold">
-              ${trip.price}
-              <div className="text-xs text-muted-foreground">
-                {t("tripCardPricePerPerson")}
-              </div>
-            </div>
-            <div className="mt-2 flex items-center justify-center text-sm">
-              <Calendar className="mr-1 h-4 w-4" />
-              {getDuration(trip.duration)}
-            </div>
-            {trip.reviewsCount !== 0 && (
-              <div className="mt-1 flex items-center justify-center text-sm">
-                <Star className="mr-1 h-4 w-4 text-yellow-500" />
-                {trip.reviewsValue} ({trip.reviewsCount})
-              </div>
-            )}
-            <div className="mt-4">
-              <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 pointer-events-none">
-                {t("viewDetailsButton")}
-              </div>
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
-  );
-}
 
   const pages = generatePages({
     pageIndex,
