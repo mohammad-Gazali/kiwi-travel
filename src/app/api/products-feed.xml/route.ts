@@ -1,4 +1,3 @@
-// src/app/api/products-feed.xml/route.ts
 import { NextResponse } from 'next/server';
 
 async function getAllTrips() {
@@ -8,13 +7,13 @@ async function getAllTrips() {
 }
 
 function escapeXml(unsafe: string) {
-  return unsafe.replace(/[<>&\"']/g, (c) => {
+  return unsafe.replace(/[<>&"']/g, (c) => {
     switch (c) {
       case '<': return "&lt;";
       case '>': return "&gt;";
       case '&': return "&amp;";
-      case '\"': return "&quot;";
-      case \"'\": return "&apos;";
+      case '"': return "&quot;";
+      case "'": return "&apos;";
       default: return c;
     }
   });
