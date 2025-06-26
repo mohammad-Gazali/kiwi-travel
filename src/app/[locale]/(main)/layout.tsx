@@ -35,6 +35,9 @@ export async function generateMetadata({
         'en': '/en',
         'ru': '/ru'
       },
+      types: {
+        'application/rss+xml': `${env.NEXT_PUBLIC_APP_URL}/api/feed-${locale}`.replaceAll('//', '/'),
+      },
     },
     openGraph: {
       title: t("title"),
