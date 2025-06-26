@@ -88,34 +88,41 @@ export default function FeaturedTrips() {
                 className="basis-10/12 pl-2 sm:basis-full md:pl-4 lg:basis-1/2 xl:basis-1/3"
                 key={trip.id}
               >
-                <Card className="overflow-hidden">
-                  <CardHeader className="p-0">
-                    <Image
-                      src={trip.image}
-                      alt={localeAttribute(trip, "title")}
-                      width={300}
-                      height={200}
-                      className="h-48 w-full object-cover"
-                    />
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <CardTitle className="truncate">{localeAttribute(trip, "title")}</CardTitle>
-                    {
-                      trip.reviewsValue !== 0 ? (
+                <Link href={`/trips/${trip.id}`}>
+                  <Card
+                    id={`book-trip-outside-id-${trip.id}`}
+                    className="overflow-hidden"
+                  >
+                    <CardHeader className="p-0">
+                      <Image
+                        src={trip.image}
+                        alt={localeAttribute(trip, "title")}
+                        width={300}
+                        height={200}
+                        className="h-48 w-full object-cover"
+                      />
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <CardTitle className="truncate">
+                        {localeAttribute(trip, "title")}
+                      </CardTitle>
+                      {trip.reviewsValue !== 0 ? (
                         <div className="mt-2 flex items-center">
                           <Star className="h-5 w-5 fill-current text-yellow-400" />
-                          <span className="ml-1 text-sm">{trip.reviewsValue}</span>
+                          <span className="ml-1 text-sm">
+                            {trip.reviewsValue}
+                          </span>
                         </div>
-                      ) : <div className="block h-5 mt-2" aria-hidden="true" />
-                    }
-                  </CardContent>
-                  <CardFooter className="flex items-center justify-between p-4 pt-0">
-                    <span className="text-lg font-bold">${trip.price}</span>
-                    <Link href={`/trips/${trip.id}`}>
-                      <Button id={`book-trip-outside-id-${trip.id}`} size="sm">{t("buttonLabel")}</Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
+                      ) : (
+                        <div className="mt-2 block h-5" aria-hidden="true" />
+                      )}
+                    </CardContent>
+                    <CardFooter className="flex items-center justify-between p-4 pt-0">
+                      <span className="text-lg font-bold">${trip.price}</span>
+                      <Button size="sm">{t("buttonLabel")}</Button>
+                    </CardFooter>
+                  </Card>
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

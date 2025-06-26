@@ -21,7 +21,7 @@ import {
 } from "@clerk/nextjs";
 import { LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "@/i18n/routing";;
+import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import LanguageToggle from "./language-toggle";
 
@@ -63,13 +63,11 @@ export const DrawerButton = () => {
         </DrawerHeader>
         <div className="m-4">
           <div className="flex flex-col gap-2">
-            {
-              isAdmin && (
-                <Link onClick={() => setOpen(false)} href="/dashboard">
-                  <Button className="w-full">{t("dashboard")}</Button>
-                </Link>
-              )
-            }
+            {isAdmin && (
+              <Link onClick={() => setOpen(false)} href="/dashboard">
+                <Button className="w-full">{t("dashboard")}</Button>
+              </Link>
+            )}
             <SignedIn>
               <Link onClick={() => setOpen(false)} href="/bookings">
                 <Button className="w-full">{t("bookings")}</Button>
@@ -80,10 +78,12 @@ export const DrawerButton = () => {
         <DrawerFooter>
           <SignedOut>
             <SignInButton>
-              <Button variant="outline">{t("signIn")}</Button>
+              <Button id="sign-in-button-2" variant="outline">
+                {t("signIn")}
+              </Button>
             </SignInButton>
             <SignUpButton>
-              <Button>{t("signUp")}</Button>
+              <Button id="sign-up-button-2">{t("signUp")}</Button>
             </SignUpButton>
           </SignedOut>
           <SignedIn>

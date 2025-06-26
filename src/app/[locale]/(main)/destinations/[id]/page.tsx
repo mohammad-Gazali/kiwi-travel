@@ -55,11 +55,11 @@ export default async function DestinationTripsPage({
 
   const getLocaleDuration = (duration: string) => {
     return duration
-    .replaceAll("days", t_TimeUnits("days"))
-    .replaceAll("hours", t_TimeUnits("hours"))
-    .replaceAll("day", t_TimeUnits("day"))
-    .replaceAll("hour", t_TimeUnits("hour"))
-  }
+      .replaceAll("days", t_TimeUnits("days"))
+      .replaceAll("hours", t_TimeUnits("hours"))
+      .replaceAll("day", t_TimeUnits("day"))
+      .replaceAll("hour", t_TimeUnits("hour"));
+  };
 
   return (
     <main className="container mx-auto mt-20 px-4 py-8 lg:grid lg:px-0">
@@ -97,36 +97,39 @@ export default async function DestinationTripsPage({
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {destination.trips.map((trip) => (
-            <Card className="overflow-hidden" key={trip.id}>
-              <CardHeader className="relative h-48 w-full">
-                <Image
-                  src={mainImage(trip.assetsUrls)}
-                  alt={localeAttribute(trip, "title")}
-                  fill
-                  className="object-cover"
-                />
-              </CardHeader>
-              <CardContent className="p-4">
-                <h3 className="truncate text-xl font-semibold">
-                  {localeAttribute(trip, "title")}
-                </h3>
-                <p className="mt-1 flex items-center gap-1 text-sm text-gray-500">
-                  <Clock className="size-4" />
-                  {getLocaleDuration(trip.duration)}
-                </p>
-                <p className="mt-2 line-clamp-2">
-                  {localeAttribute(trip, "description")}
-                </p>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-lg font-bold">
-                    ${Math.floor(trip.adultTripPriceInCents / 100)}
-                  </span>
-                  <Link href={`/trips/${trip.id}`}>
-                    <Button id={`book-trip-outside-id-${trip.id}`}>{t("bookNow")}</Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+            <Link key={trip.id} href={`/trips/${trip.id}`}>
+              <Card
+                id={`book-trip-outside-id-${trip.id}`}
+                className="overflow-hidden"
+              >
+                <CardHeader className="relative h-48 w-full">
+                  <Image
+                    src={mainImage(trip.assetsUrls)}
+                    alt={localeAttribute(trip, "title")}
+                    fill
+                    className="object-cover"
+                  />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <h3 className="truncate text-xl font-semibold">
+                    {localeAttribute(trip, "title")}
+                  </h3>
+                  <p className="mt-1 flex items-center gap-1 text-sm text-gray-500">
+                    <Clock className="size-4" />
+                    {getLocaleDuration(trip.duration)}
+                  </p>
+                  <p className="mt-2 line-clamp-2">
+                    {localeAttribute(trip, "description")}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-lg font-bold">
+                      ${Math.floor(trip.adultTripPriceInCents / 100)}
+                    </span>
+                    <Button>{t("bookNow")}</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}
