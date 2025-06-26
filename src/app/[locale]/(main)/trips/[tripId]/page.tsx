@@ -54,6 +54,47 @@ export async function generateMetadata({
   };
 }
 
+function SchemaMarkup({ trip }: { trip: any }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    "name": trip.title,
+    "description": trip.description,
+    "image": trip.assetsUrls,
+    "offers": {
+      "@type": "Offer",
+      "price": (trip.adultTripPriceInCents / 100).toFixed(2),
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": `https://karimtor.com/ru/trips/${trip.id}`
+    },
+    "touristType": "IndividualOrGroup",
+    "touristAgency": {
+      "@type": "TravelAgency",
+      "name": "Karim Tour",
+      "url": "https://karimtor.com",
+      "telephone": "+90 535 269-98-81",
+      "priceRange": "$$",
+      "image": "https://karimtor.com/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Atatürk Blv. 123",
+        "addressLocality": "Alanya",
+        "addressRegion": "Antalya",
+        "postalCode": "07400",
+        "addressCountry": "TR"
+      }
+    }
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
 export default async function TripDetailsPage({
   params,
 }: PageParams<{ tripId: string }>) {
@@ -63,7 +104,6 @@ export default async function TripDetailsPage({
   const localeAttribute = localeAttributeFactory(locale);
 
   const t = await getTranslations("TripDetailsPage");
-
   const t_Amenities = await getTranslations("General.amenities");
   const t_TimeUnits = await getTranslations("General.timeUnits");
 
@@ -75,22 +115,10 @@ export default async function TripDetailsPage({
   const childPrice = trip.childTripPriceInCents / 100;
 
   const amenities = [
-    {
-      title: "transfer",
-      icon: Car,
-    },
-    {
-      title: "guide",
-      icon: BookCheck,
-    },
-    {
-      title: "free_cancel",
-      icon: BanknoteX,
-    },
-    {
-      title: "online_payment",
-      icon: CircleDollarSign,
-    },
+    { title: "transfer", icon: Car },
+    { title: "guide", icon: BookCheck },
+    { title: "free_cancel", icon: BanknoteX },
+    { title: "online_payment", icon: CircleDollarSign },
   ];
 
   const duration = trip.duration
