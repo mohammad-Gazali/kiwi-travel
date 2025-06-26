@@ -183,11 +183,32 @@ export const tripRouter = createTRPCRouter({
         message: "Deleted successfully",
       };
     }),
+  listRssFeed: publicProcedure.input(z.enum(["en", "ru"])).query(({ ctx, input }) => ctx.db.query.trip.findMany({
+    columns: input === "en" ? ({
+      id: true,
+      createdAt: true,
+      titleEn: true,
+      descriptionEn: true,
+      adultTripPriceInCents: true,
+    }) : ({
+      id: true,
+      createdAt: true,
+      titleRu: true,
+      descriptionRu: true,
+      adultTripPriceInCents: true,
+    }),
+    orderBy: (fields, { desc }) => desc(fields.isFeatured),
+    limit: 100,
+  }).then(res => res.map(item => ({
+    id: item.id,
+    price: Math.floor(item.adultTripPriceInCents / 100),
+    createdAt: item.createdAt,
+    title: ('titleEn' in item ? item.titleEn : (item as any).titleRu) as string,
+    description: ('descriptionEn' in item ? item.descriptionEn : (item as any).descriptionRu) as string,
+  })))),
   listSearch: publicProcedure
     .input(tripSearchFormSchema)
     .query(async ({ ctx, input }) => {
-      console.log("Input\n", input)
-
       // ========= query conditions =========
       const dateCondition =
         input.date &&

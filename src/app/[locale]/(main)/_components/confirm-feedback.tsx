@@ -19,7 +19,6 @@ const ConfirmFeedback = () => {
 
   useEffect(() => {
     if (notification) {
-      console.log(localeAttribute(notification, "tripTitle"))
       setOpen(true);
     }
   }, [notification]);
