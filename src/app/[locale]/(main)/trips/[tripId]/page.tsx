@@ -1,6 +1,9 @@
+import { AssetGallery } from "@/components/asset-gallery";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { env } from "@/env";
 import { localeAttributeFactory, mainImage } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import { PageParams } from "@/types/page-params";
@@ -17,14 +20,12 @@ import {
   Star,
   User,
 } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import BookingForm from "./_components/booking-form";
-import { AssetGallery } from "@/components/asset-gallery";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
-import type { WithContext, Product } from "schema-dts";
+import { getLocale, getTranslations } from "next-intl/server";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import type { TouristTrip, WithContext } from "schema-dts";
+import BookingForm from "./_components/booking-form";
 
 export async function generateMetadata({
   params,
@@ -52,47 +53,6 @@ export async function generateMetadata({
       ],
     },
   };
-}
-
-function SchemaMarkup({ trip }: { trip: any }) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "TouristTrip",
-    "name": trip.title,
-    "description": trip.description,
-    "image": trip.assetsUrls,
-    "offers": {
-      "@type": "Offer",
-      "price": (trip.adultTripPriceInCents / 100).toFixed(2),
-      "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock",
-      "url": `https://karimtor.com/ru/trips/${trip.id}`
-    },
-    "touristType": "IndividualOrGroup",
-    "touristAgency": {
-      "@type": "TravelAgency",
-      "name": "Karim Tour",
-      "url": "https://karimtor.com",
-      "telephone": "+90 535 269-98-81",
-      "priceRange": "$$",
-      "image": "https://karimtor.com/logo.svg",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Atatürk Blv. 123",
-        "addressLocality": "Alanya",
-        "addressRegion": "Antalya",
-        "postalCode": "07400",
-        "addressCountry": "TR"
-      }
-    }
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
 }
 
 export default async function TripDetailsPage({
@@ -133,20 +93,28 @@ export default async function TripDetailsPage({
   const reviewsValue = isNaN(_avarage) ? 0 : _avarage;
   const reviewsCount = trip.reviews.length;
 
-  const jsonLd: WithContext<Product> = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: localeAttribute(trip, 'title'),
-    description: localeAttribute(trip, 'description'),
+  const jsonLd: WithContext<TouristTrip> = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    name: localeAttribute(trip, "title"),
+    description: localeAttribute(trip, "description"),
     image: mainImage(trip.assetsUrls),
-  }
+    touristType: "IndividualOrGroup",
+    offers: {
+      "@type": "Offer",
+      price: (trip.adultTripPriceInCents / 100).toFixed(2),
+      priceCurrency: "USD",
+      availability: "InStock",
+      url: `${env.NEXT_PUBLIC_APP_URL}/${locale}/trips/${trip.id}`.replaceAll('//', '/'),
+    },
+  };
 
   return (
     <>
-      <script 
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
       <main className="container mx-auto mt-14 px-4 py-8 md:px-0">
@@ -168,13 +136,11 @@ export default async function TripDetailsPage({
                 </div>
               </div>
               <ul className="flex flex-wrap gap-2 empty:hidden">
-                {
-                  trip.tripTypes.map(({ tripType }) => <li key={tripType.id}>
-                    <Badge>
-                      {localeAttribute(tripType, "name")}
-                    </Badge>
-                  </li>)
-                }
+                {trip.tripTypes.map(({ tripType }) => (
+                  <li key={tripType.id}>
+                    <Badge>{localeAttribute(tripType, "name")}</Badge>
+                  </li>
+                ))}
               </ul>
             </div>
             <p className="text-muted-foreground">
@@ -188,7 +154,7 @@ export default async function TripDetailsPage({
             />
 
             {/* Tabs for Description and Details */}
-            <Tabs defaultValue="description" className="w-full lg:block hidden">
+            <Tabs defaultValue="description" className="hidden w-full lg:block">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="description">
                   {t("tabs.description")}
@@ -197,7 +163,7 @@ export default async function TripDetailsPage({
               </TabsList>
               <TabsContent value="description" className="mt-6 space-y-4">
                 <div
-                  className="prose rich-text-editor-cotent"
+                  className="rich-text-editor-cotent prose"
                   dangerouslySetInnerHTML={{
                     __html: localeAttribute(trip, "longDescription"),
                   }}
@@ -211,7 +177,10 @@ export default async function TripDetailsPage({
                     </h3>
                     <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {trip.features.map(({ feature }) => (
-                        <li key={feature.id} className="flex items-center gap-2">
+                        <li
+                          key={feature.id}
+                          className="flex items-center gap-2"
+                        >
                           <Check className="h-4 w-4 text-primary" />
                           <span>{localeAttribute(feature, "content")}</span>
                         </li>
@@ -262,7 +231,7 @@ export default async function TripDetailsPage({
             />
 
             {/* Tabs for Description and Details for mobile */}
-            <Tabs defaultValue="description" className="lg:hidden mt-6 w-full">
+            <Tabs defaultValue="description" className="mt-6 w-full lg:hidden">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="description">
                   {t("tabs.description")}
@@ -271,7 +240,7 @@ export default async function TripDetailsPage({
               </TabsList>
               <TabsContent value="description" className="mt-6 space-y-4">
                 <div
-                  className="prose rich-text-editor-cotent"
+                  className="rich-text-editor-cotent prose"
                   dangerouslySetInnerHTML={{
                     __html: localeAttribute(trip, "longDescription"),
                   }}
@@ -285,7 +254,10 @@ export default async function TripDetailsPage({
                     </h3>
                     <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {trip.features.map(({ feature }) => (
-                        <li key={feature.id} className="flex items-center gap-2">
+                        <li
+                          key={feature.id}
+                          className="flex items-center gap-2"
+                        >
                           <Check className="h-4 w-4 text-primary" />
                           <span>{localeAttribute(feature, "content")}</span>
                         </li>
@@ -346,10 +318,16 @@ export default async function TripDetailsPage({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t("type")}</span>
-                  <span className="font-medium">{trip.tripTypes.map(t => localeAttribute(t.tripType, "name")).join(", ")}</span>
+                  <span className="font-medium">
+                    {trip.tripTypes
+                      .map((t) => localeAttribute(t.tripType, "name"))
+                      .join(", ")}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("travelTime")}</span>
+                  <span className="text-muted-foreground">
+                    {t("travelTime")}
+                  </span>
                   <span className="font-medium">
                     {format(`0001-01-01T${trip.travelTime}`, "hh:mm a")}
                   </span>
